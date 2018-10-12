@@ -90,7 +90,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Core.cpp" />
+    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="RenderingManager.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="VirtualRealityManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Core.h" />
+    <ClInclude Include="InputManager.h" />
+    <ClInclude Include="RenderingManager.h" />
+    <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="VirtualRealityManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
