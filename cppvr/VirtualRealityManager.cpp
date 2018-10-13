@@ -1,5 +1,7 @@
 #include "VirtualRealityManager.h"
 
+using namespace core;
+
 VirtualRealityManager::VirtualRealityManager() :
 	m_system(nullptr), m_renderModels(nullptr)
 {
@@ -13,11 +15,13 @@ VirtualRealityManager::~VirtualRealityManager()
 	vr::VR_Shutdown();
 }
 
+bool VirtualRealityManager::checkHmdPresent()
+{
+	return vr::VR_IsHmdPresent();
+}
+
 bool VirtualRealityManager::connect()
 {
-	if (!vr::VR_IsHmdPresent())
-		throw std::runtime_error("HMD is not present");
-
 	// IVRSystem initialization
 	vr::HmdError error;
 	m_system = vr::VR_Init(&error, vr::EVRApplicationType::VRApplication_Scene);

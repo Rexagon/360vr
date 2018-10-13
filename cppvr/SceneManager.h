@@ -1,6 +1,12 @@
 #pragma once
+
 #include <memory>
 #include <stack>
+
+#include "BaseManager.h"
+
+namespace core
+{
 
 class Scene
 {
@@ -16,12 +22,14 @@ public:
 	virtual void onUpdate(const float dt) {}
 };
 
-class SceneManager
+class SceneManager : public BaseManager
 {
 public:
+	SceneManager(std::unique_ptr<Scene> entryScene);
+
 	void addScene(std::unique_ptr<Scene> scene);
-	void removeScene();
 	void changeScene(std::unique_ptr<Scene> scene);
+	void removeScene();
 
 	Scene& peekScene() const;
 
@@ -30,3 +38,5 @@ public:
 private:
 	std::stack<std::unique_ptr<Scene>> m_scenes;
 };
+
+}

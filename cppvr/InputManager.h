@@ -1,6 +1,12 @@
 #pragma once
-#include <SFML/Window/Event.hpp>
+
 #include <bitset>
+#include <SFML/Window/Event.hpp>
+
+#include "BaseManager.h"
+
+namespace core
+{
 
 using Key = sf::Keyboard::Key;
 using MouseButton = sf::Mouse::Button;
@@ -11,7 +17,7 @@ namespace details
 	bool isMouseButtonValid(MouseButton button);
 }
 
-class InputManager
+class InputManager : public BaseManager
 {
 	using KeysState = std::bitset<Key::KeyCount>;
 	using MouseButtonsState = std::bitset<MouseButton::ButtonCount>;
@@ -35,3 +41,5 @@ private:
 	MouseButtonsState m_currentMouseButtonsState;
 	MouseButtonsState m_lastMouseButtonsState;
 };
+
+}

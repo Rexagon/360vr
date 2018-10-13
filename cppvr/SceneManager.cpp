@@ -1,5 +1,12 @@
 #include "SceneManager.h"
 
+using namespace core;
+
+core::SceneManager::SceneManager(std::unique_ptr<Scene> entryScene)
+{
+	addScene(std::move(entryScene));
+}
+
 void SceneManager::addScene(std::unique_ptr<Scene> scene)
 {
 	if (!m_scenes.empty())
@@ -12,6 +19,12 @@ void SceneManager::addScene(std::unique_ptr<Scene> scene)
 	m_scenes.push(std::move(scene));
 }
 
+void SceneManager::changeScene(std::unique_ptr<Scene> scene)
+{
+	removeScene();
+	addScene(std::move(scene));
+}
+
 void SceneManager::removeScene()
 {
 	if (m_scenes.empty()) return;
@@ -22,12 +35,6 @@ void SceneManager::removeScene()
 	if (m_scenes.empty()) return;
 
 	m_scenes.top()->onEnter();
-}
-
-void SceneManager::changeScene(std::unique_ptr<Scene> scene)
-{
-	removeScene();
-	addScene(std::move(scene));
 }
 
 Scene & SceneManager::peekScene() const

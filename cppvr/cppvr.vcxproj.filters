@@ -4,20 +4,21 @@
     <ClCompile Include="Core.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="InputManager.cpp">
-      <Filter>Core\Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderingManager.cpp">
       <Filter>Core\Managers</Filter>
     </ClCompile>
     <ClCompile Include="SceneManager.cpp">
       <Filter>Core\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="VirtualRealityManager.cpp">
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="WindowManager.cpp">
       <Filter>Core\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingManager.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualRealityManager.cpp">
+      <Filter>VR</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -27,6 +28,12 @@
     <Filter Include="Core\Managers">
       <UniqueIdentifier>{1a464798-a157-4ad6-a39c-6d5c9e4b0057}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Rendering">
+      <UniqueIdentifier>{98d78805-7bbd-4ae5-b351-dd0e81ad0d48}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VR">
+      <UniqueIdentifier>{f41f715d-8ba0-4930-8a88-0cb2542edf55}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core.h">
@@ -35,14 +42,20 @@
     <ClInclude Include="InputManager.h">
       <Filter>Core\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="RenderingManager.h">
-      <Filter>Core\Managers</Filter>
-    </ClInclude>
     <ClInclude Include="SceneManager.h">
       <Filter>Core\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="VirtualRealityManager.h">
+    <ClInclude Include="WindowManager.h">
       <Filter>Core\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseManager.h">
+      <Filter>Core\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderingManager.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualRealityManager.h">
+      <Filter>VR</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

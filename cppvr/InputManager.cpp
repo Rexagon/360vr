@@ -1,5 +1,7 @@
 #include "InputManager.h"
 
+using namespace core;
+
 bool details::isKeyValid(Key key)
 {
 	return key > Key::Unknown && key < Key::KeyCount;
