@@ -1,32 +1,33 @@
+#include <iostream>
+
 #include "Core.h"
+#include "MainScene.h"
 
-class MainScene : public core::Scene
-{
-public:
-	void onInit() override
-	{
+#include "WindowManager.h"
+#include "SceneManager.h"
+#include "InputManager.h"
 
-	}
+#include "RenderingManager.h"
 
-private:
-
-};
+using namespace ej;
 
 int main()
 {
 	try 
 	{
-		core::Core game;
+		Core game;
 
-		game.provideManager<core::WindowManager>("CVR", 1024, 768);
-		game.provideManager<core::SceneManager>(std::make_unique<MainScene>());
-		game.provideManager<core::InputManager>();
+		game.getManagerLocator().provide<WindowManager>("CVR", 1024, 768);
+		game.getManagerLocator().provide<SceneManager>(std::make_unique<MainScene>());
+		game.getManagerLocator().provide<InputManager>();
+
+		game.getManagerLocator().provide<RenderingManager>();
 
 		game.run();
 	}
-	catch (const std::exception& e) 
-	{
-
+	catch (const std::exception& e) {
+		std::cout << e.what() << std::endl;
+		std::cin.get();
 	}
 
 	return 0;

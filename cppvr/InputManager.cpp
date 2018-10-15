@@ -1,6 +1,6 @@
 #include "InputManager.h"
 
-using namespace core;
+using namespace ej;
 
 bool details::isKeyValid(Key key)
 {
@@ -12,6 +12,11 @@ bool details::isMouseButtonValid(MouseButton button)
 	return button > -1 && button < MouseButton::ButtonCount;
 }
 
+
+InputManager::InputManager(const ManagerLocator& locator) :
+	BaseManager(locator)
+{
+}
 
 void InputManager::updateState()
 {

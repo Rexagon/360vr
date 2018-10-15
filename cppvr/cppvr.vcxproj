@@ -70,6 +70,9 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>opengl32.lib;sfml-graphics-s.lib;sfml-network-s.lib;sfml-window-s.lib;sfml-system-s.lib;sfml-audio-s.lib;ws2_32.lib;freetype.lib;winmm.lib;gdi32.lib;ogg.lib;openal32.lib;flac.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;glew32s.lib;openvr_api.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreAllDefaultLibraries>
+      </IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -87,23 +90,40 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>opengl32.lib;sfml-graphics-s.lib;sfml-network-s.lib;sfml-window-s.lib;sfml-system-s.lib;sfml-audio-s.lib;ws2_32.lib;freetype.lib;winmm.lib;gdi32.lib;ogg.lib;openal32.lib;flac.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;glew32s.lib;openvr_api.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreAllDefaultLibraries>
+      </IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>LIBCMT;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Core.cpp" />
+    <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainScene.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshGeometry.cpp" />
     <ClCompile Include="RenderingManager.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="VirtualRealityManager.cpp" />
     <ClCompile Include="WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseManager.h" />
     <ClInclude Include="Core.h" />
+    <ClInclude Include="FileManager.h" />
+    <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="MainScene.h" />
+    <ClInclude Include="ManagerLocator.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="MeshGeometry.h" />
     <ClInclude Include="RenderingManager.h" />
     <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="VirtualRealityManager.h" />
     <ClInclude Include="WindowManager.h" />
   </ItemGroup>

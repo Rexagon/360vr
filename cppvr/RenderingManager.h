@@ -5,16 +5,16 @@
 
 #include "BaseManager.h"
 
-namespace core
+namespace ej
 {
+	class WindowManager;
 
-class RenderingManager : public BaseManager
-{
-public:
-	explicit RenderingManager(std::shared_ptr<sf::RenderWindow> window);
+	class RenderingManager : public ej::BaseManager
+	{
+	public:
+		explicit RenderingManager(const ej::ManagerLocator& locator);
 
-private:
-	std::shared_ptr<sf::RenderWindow> m_renderWindow;
-};
-
+	private:
+		std::shared_ptr<ej::WindowManager> m_windowManager;
+	};
 }

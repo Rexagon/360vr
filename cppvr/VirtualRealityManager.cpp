@@ -1,9 +1,9 @@
 #include "VirtualRealityManager.h"
 
-using namespace core;
+using namespace ej;
 
-VirtualRealityManager::VirtualRealityManager() :
-	m_system(nullptr), m_renderModels(nullptr)
+VirtualRealityManager::VirtualRealityManager(const ManagerLocator& locator) :
+	BaseManager(locator), m_system(nullptr), m_renderModels(nullptr)
 {
 }
 

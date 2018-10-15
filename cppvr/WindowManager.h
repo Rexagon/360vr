@@ -6,18 +6,16 @@
 
 #include "BaseManager.h"
 
-namespace core
+namespace ej
 {
+	class WindowManager : public BaseManager
+	{
+	public:
+		WindowManager(const ManagerLocator& locator, const std::string& title, uint32_t width, uint32_t height);
 
-class WindowManager : public BaseManager
-{
-public:
-	WindowManager(const std::string& title, uint32_t width, uint32_t height);
+		sf::RenderWindow& getWindow() const;
 
-	sf::RenderWindow& getWindow() const;
-
-private:
-	std::unique_ptr<sf::RenderWindow> m_window;
-};
-
+	private:
+		std::unique_ptr<sf::RenderWindow> m_window;
+	};
 }

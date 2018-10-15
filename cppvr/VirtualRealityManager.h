@@ -4,21 +4,19 @@
 
 #include "BaseManager.h"
 
-namespace core
+namespace ej
 {
+	class VirtualRealityManager : public BaseManager
+	{
+	public:
+		VirtualRealityManager(const ManagerLocator& locator);
+		~VirtualRealityManager();
 
-class VirtualRealityManager : public BaseManager
-{
-public:
-	VirtualRealityManager();
-	~VirtualRealityManager();
+		bool checkHmdPresent();
+		bool connect();
 
-	bool checkHmdPresent();
-	bool connect();
-
-private:
-	vr::IVRSystem* m_system;
-	vr::IVRRenderModels* m_renderModels;
-};
-
+	private:
+		vr::IVRSystem* m_system;
+		vr::IVRRenderModels* m_renderModels;
+	};
 }

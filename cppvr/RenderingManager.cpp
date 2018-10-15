@@ -1,8 +1,15 @@
 #include "RenderingManager.h"
 
-using namespace core;
+#include <GL/glew.h>
 
-RenderingManager::RenderingManager(std::shared_ptr<sf::RenderWindow> window) :
-	m_renderWindow(window)
+#include "WindowManager.h"
+
+using namespace ej;
+
+RenderingManager::RenderingManager(const ManagerLocator& locator) :
+	BaseManager(locator)
 {
+	if (glewInit() != GLEW_OK) {
+		throw std::runtime_error("Unable to initialize GLEW");
+	}
 }

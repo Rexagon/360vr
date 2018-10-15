@@ -2,9 +2,10 @@
 
 #include <cassert>
 
-using namespace core;
+using namespace ej;
 
-WindowManager::WindowManager(const std::string & title, uint32_t width, uint32_t height)
+WindowManager::WindowManager(const ManagerLocator& locator, const std::string & title, uint32_t width, uint32_t height) :
+	BaseManager(locator)
 {
 	auto videoMode = sf::VideoMode(width, height);
 
@@ -17,7 +18,7 @@ WindowManager::WindowManager(const std::string & title, uint32_t width, uint32_t
 	m_window = std::make_unique<sf::RenderWindow>(videoMode, title, style, contextSettings);
 }
 
-sf::RenderWindow & core::WindowManager::getWindow() const
+sf::RenderWindow & WindowManager::getWindow() const
 {
 	assert(m_window != nullptr);
 	return *m_window;

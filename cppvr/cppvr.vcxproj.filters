@@ -1,61 +1,124 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="Core.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="InputManager.cpp">
-      <Filter>Core\Managers</Filter>
+      <Filter>Engine\Core\Managers</Filter>
     </ClCompile>
     <ClCompile Include="SceneManager.cpp">
-      <Filter>Core\Managers</Filter>
+      <Filter>Engine\Core\Managers</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="WindowManager.cpp">
-      <Filter>Core\Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderingManager.cpp">
-      <Filter>Rendering</Filter>
+      <Filter>Engine\Core\Managers</Filter>
     </ClCompile>
     <ClCompile Include="VirtualRealityManager.cpp">
-      <Filter>VR</Filter>
+      <Filter>Engine\VR</Filter>
+    </ClCompile>
+    <ClCompile Include="MainScene.cpp">
+      <Filter>Game\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Core.cpp">
+      <Filter>Engine\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Engine\Rendering\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshGeometry.cpp">
+      <Filter>Engine\Rendering\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Engine\Rendering\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="FileManager.cpp">
+      <Filter>Engine\Core\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingManager.cpp">
+      <Filter>Engine\Rendering\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderManager.cpp">
+      <Filter>Engine\Rendering\Shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Core">
+    <Filter Include="Engine">
+      <UniqueIdentifier>{9eb7b8ba-4af8-4302-8e09-0a1aaf846c2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{cffb6c28-7ac3-4aa8-945f-156dd714b56c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Core">
       <UniqueIdentifier>{303a7378-a80b-4a7b-a639-785f79d2d7e9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Managers">
+    <Filter Include="Engine\Core\Managers">
       <UniqueIdentifier>{1a464798-a157-4ad6-a39c-6d5c9e4b0057}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Rendering">
+    <Filter Include="Engine\Rendering">
       <UniqueIdentifier>{98d78805-7bbd-4ae5-b351-dd0e81ad0d48}</UniqueIdentifier>
     </Filter>
-    <Filter Include="VR">
+    <Filter Include="Engine\VR">
       <UniqueIdentifier>{f41f715d-8ba0-4930-8a88-0cb2542edf55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Scenes">
+      <UniqueIdentifier>{367f8bbd-0b79-40b6-b2d3-e4697e25585a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Core\Stuff">
+      <UniqueIdentifier>{9de597e6-6b81-422a-8118-be96c8dcdf7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Rendering\Mesh">
+      <UniqueIdentifier>{eb55699c-7a38-48cf-be82-46d08f0add37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Rendering\Shader">
+      <UniqueIdentifier>{e0211f3a-4987-4d5d-b15e-b884ef3188e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Rendering\Managers">
+      <UniqueIdentifier>{4fa501e4-603f-4e64-a006-b57250664509}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Core.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="InputManager.h">
-      <Filter>Core\Managers</Filter>
+      <Filter>Engine\Core\Managers</Filter>
     </ClInclude>
     <ClInclude Include="SceneManager.h">
-      <Filter>Core\Managers</Filter>
+      <Filter>Engine\Core\Managers</Filter>
     </ClInclude>
     <ClInclude Include="WindowManager.h">
-      <Filter>Core\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseManager.h">
-      <Filter>Core\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderingManager.h">
-      <Filter>Rendering</Filter>
+      <Filter>Engine\Core\Managers</Filter>
     </ClInclude>
     <ClInclude Include="VirtualRealityManager.h">
-      <Filter>VR</Filter>
+      <Filter>Engine\VR</Filter>
+    </ClInclude>
+    <ClInclude Include="MainScene.h">
+      <Filter>Game\Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="Core.h">
+      <Filter>Engine\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseManager.h">
+      <Filter>Engine\Core\Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="ManagerLocator.h">
+      <Filter>Engine\Core\Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Engine\Rendering\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshGeometry.h">
+      <Filter>Engine\Rendering\Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Engine\Rendering\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="FileManager.h">
+      <Filter>Engine\Core\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderingManager.h">
+      <Filter>Engine\Rendering\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>Engine\Rendering\Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Engine\Core\Stuff</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

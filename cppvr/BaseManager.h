@@ -1,29 +1,16 @@
 #pragma once
 
-#include <typeindex>
-#include <cassert>
-#include <memory>
-
-namespace core
+namespace ej
 {
-class Core;
+	class ManagerLocator;
 
-class RequireManager
-{
-protected:
-	template<typename T>
-	std::shared_ptr<T> get() const;
+	class BaseManager
+	{
+	public:
+		BaseManager(const ManagerLocator& locator) : m_locator(locator) {}
+		virtual ~BaseManager() = default;
 
-private:
-	friend class Core;
-
-	Core* m_core;
-};
-
-class BaseManager : public RequireManager
-{
-public:
-	virtual ~BaseManager() = default;
-};
-
+	protected:
+		const ManagerLocator& m_locator;
+	};
 }

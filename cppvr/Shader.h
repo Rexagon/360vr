@@ -1,0 +1,57 @@
+#pragma once
+
+#include <unordered_map>
+#include <vector>
+#include <string>
+
+#include <GL/glew.h>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
+#include <glm/mat4x4.hpp>
+
+
+namespace ej
+{
+	class Shader
+	{
+	public:
+		Shader();
+		~Shader();
+
+		bool attachPart(const std::string& source, GLenum type, std::string& infoLog);
+		bool link(std::string& infoLog);
+
+		void setAttribute(unsigned int index, const std::string& name);
+
+		void setUniform(const std::string& name, int data);
+		void setUniform(const std::string& name, float data);
+		void setUniform(const std::string& name, const glm::vec2& data);
+		void setUniform(const std::string& name, const glm::ivec2& data);
+		void setUniform(const std::string& name, const glm::vec3& data);
+		void setUniform(const std::string& name, const glm::ivec3& data);
+		void setUniform(const std::string& name, const glm::vec4& data);
+		void setUniform(const std::string& name, const glm::ivec4& data);
+		void setUniform(const std::string& name, const glm::mat4& data);
+
+		void setUniformArray(const std::string& name, int* data, int size);
+		void setUniformArray(const std::string& name, float* data, int size);
+		void setUniformArray(const std::string& name, glm::vec2* data, int size);
+		void setUniformArray(const std::string& name, glm::ivec2* data, int size);
+		void setUniformArray(const std::string& name, glm::vec3* data, int size);
+		void setUniformArray(const std::string& name, glm::ivec3* data, int size);
+		void setUniformArray(const std::string& name, glm::vec4* data, int size);
+		void setUniformArray(const std::string& name, glm::ivec4* data, int size);
+		void setUniformArray(const std::string& name, glm::mat4* data, int size);
+
+		unsigned int getUniformLocation(const std::string& name);
+
+		GLuint getHandle() const;
+
+	private:
+		GLuint m_program;
+
+		std::vector<GLint> m_shaders;
+		std::unordered_map<std::string, GLint> m_uniformLocations;
+	};
+}

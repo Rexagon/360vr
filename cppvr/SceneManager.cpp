@@ -1,8 +1,9 @@
 #include "SceneManager.h"
 
-using namespace core;
+using namespace ej;
 
-core::SceneManager::SceneManager(std::unique_ptr<Scene> entryScene)
+SceneManager::SceneManager(const ManagerLocator& locator, std::unique_ptr<Scene> entryScene) :
+	BaseManager(locator)
 {
 	addScene(std::move(entryScene));
 }
@@ -50,4 +51,11 @@ Scene & SceneManager::peekScene() const
 bool SceneManager::hasScenes() const
 {
 	return !m_scenes.empty();
+}
+
+void SceneManager::clear()
+{
+	while (hasScenes()) {
+		removeScene();
+	}
 }
