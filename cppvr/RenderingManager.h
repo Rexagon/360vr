@@ -9,12 +9,12 @@ namespace ej
 {
 	class WindowManager;
 
-	class RenderingManager : public ej::BaseManager
+	class RenderingManager : public BaseManager
 	{
 	public:
-		explicit RenderingManager(const ej::ManagerLocator& locator);
+		explicit RenderingManager(const ManagerLocator& locator);
 
 	private:
-		std::shared_ptr<ej::WindowManager> m_windowManager;
+		std::shared_ptr<WindowManager> m_windowManager;
 	};
 }

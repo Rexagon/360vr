@@ -14,10 +14,10 @@ namespace ej
 	{
 		struct ShaderSource
 		{
-			enum Type { FILE, STRING, NONE };
+			enum Type { None, File, String };
 
 			ShaderSource() :
-				type(Type::NONE)
+				type(None)
 			{}
 
 			ShaderSource(Type type, const std::string& source) :
@@ -45,12 +45,12 @@ namespace ej
 	public:
 		struct FromFile : ShaderSource
 		{
-			FromFile(const std::string& source) : ShaderSource(ShaderSource::FILE, source) {}
+			FromFile(const std::string& source) : ShaderSource(File, source) {}
 		};
 
 		struct FromString : ShaderSource
 		{
-			FromString(const std::string& source) : ShaderSource(ShaderSource::STRING, source) {}
+			FromString(const std::string& source) : ShaderSource(String, source) {}
 		};
 
 		ShaderManager(const ManagerLocator& locator);
@@ -62,7 +62,7 @@ namespace ej
 		std::shared_ptr<Shader> get(const std::string& name);
 
 	private:
-		std::shared_ptr<Shader> load(const FactoryData& factoryData);
+		std::shared_ptr<Shader> load(const FactoryData& factoryData) const;
 
 		std::unordered_map<std::string, FactoryData> m_factoryData;
 		std::shared_ptr<FileManager> m_fileManager;

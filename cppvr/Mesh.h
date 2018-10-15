@@ -22,16 +22,16 @@ namespace ej
 		bool isInitialized() const;
 
 	private:
-		GLuint m_VAO;
-		GLuint m_VBO;
-		GLuint m_EBO;
+		GLuint m_vao = 0;
+		GLuint m_vbo = 0;
+		GLuint m_ebo = 0;
 
-		unsigned int m_indexCount;
-		unsigned int m_vertexCount;
-		unsigned int m_attributeCount;
+		unsigned int m_indexCount = 0;
+		unsigned int m_vertexCount = 0;
+		unsigned int m_attributeCount = 0;
 
-		GLenum m_topology;
+		GLenum m_topology = 0;
 
-		bool m_isInitialized;
+		bool m_isInitialized = false;
 	};
 }

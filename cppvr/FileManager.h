@@ -12,7 +12,7 @@ namespace ej
 	class FileManager : public BaseManager
 	{
 	public:
-		FileManager(const ManagerLocator& locator);
+		explicit FileManager(const ManagerLocator& locator);
 
 		// Initializes filesystem with specified FileSystem in template argument
 		// T - AbstractFileSystem child class type
@@ -32,7 +32,7 @@ namespace ej
 		// Tries to open specified file
 		// Returns vector of bytes if success
 		// Throws std::runtime_error if failed
-		std::string open(const std::string& filename);
+		std::string open(const std::string& filename) const;
 
 	private:
 		std::unique_ptr<BaseFileSystem> m_fileSystem;
@@ -43,7 +43,7 @@ namespace ej
 	class BaseFileSystem
 	{
 	public:
-		virtual ~BaseFileSystem() {}
+		virtual ~BaseFileSystem() = default;
 
 		virtual std::string open(const std::string& filename) const = 0;
 	};
@@ -52,7 +52,7 @@ namespace ej
 	class DefaultFileSystem : public BaseFileSystem
 	{
 	public:
-		DefaultFileSystem(const std::string& dataFolder = "data/");
+		explicit DefaultFileSystem(const std::string& dataFolder = "data/");
 
 		std::string open(const std::string& filename) const override;
 

@@ -7,7 +7,7 @@ namespace ej
 	class BaseManager
 	{
 	public:
-		BaseManager(const ManagerLocator& locator) : m_locator(locator) {}
+		explicit BaseManager(const ManagerLocator& locator) : m_locator(locator) {}
 		virtual ~BaseManager() = default;
 
 	protected:

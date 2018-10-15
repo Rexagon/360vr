@@ -20,9 +20,9 @@ namespace ej
 		~Shader();
 
 		bool attachPart(const std::string& source, GLenum type, std::string& infoLog);
-		bool link(std::string& infoLog);
+		bool link(std::string& infoLog) const;
 
-		void setAttribute(unsigned int index, const std::string& name);
+		void setAttribute(unsigned int index, const std::string& name) const;
 
 		void setUniform(const std::string& name, int data);
 		void setUniform(const std::string& name, float data);

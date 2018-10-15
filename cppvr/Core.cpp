@@ -21,7 +21,7 @@ void Core::run()
 	sf::Clock timer;
 
 	// Main loop
-	bool isRunning = true;
+	auto isRunning = true;
 	while (isRunning)
 	{
 		auto& window = windowManager->getWindow();
@@ -30,7 +30,7 @@ void Core::run()
 			isRunning = false;
 
 		// Handle events
-		sf::Event event;
+		auto event = sf::Event();
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed) {
@@ -41,7 +41,7 @@ void Core::run()
 		}
 
 		// Handle scene logic
-		const float dt = timer.restart().asSeconds();
+		const auto dt = timer.restart().asSeconds();
 		if (sceneManager->hasScenes())
 		{
 			sceneManager->peekScene().onUpdate(dt);

@@ -14,16 +14,16 @@ namespace ej
 		typedef char ComponentsMask;
 
 		enum Components {
-			POSITIONS = 1 << 0,
-			TEX_COORDS = 1 << 1,
-			NORMALS = 1 << 2,
-			TANGENTS = 1 << 3,
-			BITANGENTS = 1 << 4,
+			Positions = 1 << 0,
+			TexCoords = 1 << 1,
+			Normals = 1 << 2,
+			Tangents = 1 << 3,
+			Bitangents = 1 << 4,
 		};
 
-		static const ComponentsMask SIMPLE_VERTEX = POSITIONS;
-		static const ComponentsMask TEXTURED_VERTEX = POSITIONS | TEX_COORDS;
-		static const ComponentsMask MODEL_VERTEX = POSITIONS | TEX_COORDS | NORMALS | TANGENTS | BITANGENTS;
+		static const ComponentsMask SIMPLE_VERTEX = Positions;
+		static const ComponentsMask TEXTURED_VERTEX = Positions | TexCoords;
+		static const ComponentsMask MODEL_VERTEX = Positions | TexCoords | Normals | Tangents | Bitangents;
 
 		static MeshGeometry createQuad(const glm::vec2& halfSize = glm::vec2(1.0f),
 			ComponentsMask vertexComponents = MODEL_VERTEX);
@@ -37,7 +37,7 @@ namespace ej
 		static MeshGeometry createSphere(float radius, unsigned int xSegments, unsigned int ySegments,
 			ComponentsMask vertexComponents = MODEL_VERTEX);
 
-		MeshGeometry(ComponentsMask vertexComponents = MODEL_VERTEX, GLenum topology = GL_TRIANGLES);
+		explicit MeshGeometry(ComponentsMask vertexComponents = MODEL_VERTEX, GLenum topology = GL_TRIANGLES);
 
 		std::vector<glm::vec3> positions;
 		std::vector<glm::vec2> texCoords;

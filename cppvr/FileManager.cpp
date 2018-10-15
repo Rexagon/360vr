@@ -4,7 +4,7 @@
 
 using namespace ej;
 
-ej::FileManager::FileManager(const ManagerLocator & locator) :
+FileManager::FileManager(const ManagerLocator & locator) :
 	BaseManager(locator)
 {
 }
@@ -14,7 +14,7 @@ void FileManager::close()
 	m_fileSystem.reset(nullptr);
 }
 
-std::string FileManager::open(const std::string & filename)
+std::string FileManager::open(const std::string & filename) const
 {
 	if (m_fileSystem == nullptr) {
 		throw std::runtime_error("Unable to open file: \"" + filename + "\". Filesystem wasn't initialized");

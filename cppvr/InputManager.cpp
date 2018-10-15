@@ -2,12 +2,12 @@
 
 using namespace ej;
 
-bool details::isKeyValid(Key key)
+bool details::isKeyValid(const Key key)
 {
 	return key > Key::Unknown && key < Key::KeyCount;
 }
 
-bool details::isMouseButtonValid(MouseButton button)
+bool details::isMouseButtonValid(const MouseButton button)
 {
 	return button > -1 && button < MouseButton::ButtonCount;
 }
@@ -45,40 +45,40 @@ void InputManager::handleEvent(const sf::Event& event)
 	}
 }
 
-bool InputManager::getKey(Key key) const
+bool InputManager::getKey(const Key key) const
 {
 	return details::isKeyValid(key) &&
 		m_currentKeysState.test(static_cast<size_t>(key));
 }
 
-bool InputManager::getKeyDown(Key key) const
+bool InputManager::getKeyDown(const Key key) const
 {
 	return details::isKeyValid(key) &&
 		!m_lastKeysState.test(key) &&
 		m_currentKeysState.test(key);
 }
 
-bool InputManager::getKeyUp(Key key) const
+bool InputManager::getKeyUp(const Key key) const
 {
 	return details::isKeyValid(key) &&
 		m_lastKeysState.test(key) &&
 		!m_currentKeysState.test(key);
 }
 
-bool InputManager::getMouseButton(MouseButton button) const
+bool InputManager::getMouseButton(const MouseButton button) const
 {
 	return details::isMouseButtonValid(button) &&
 		m_currentMouseButtonsState.test(button);
 }
 
-bool InputManager::getMouseButtonDown(MouseButton button) const
+bool InputManager::getMouseButtonDown(const MouseButton button) const
 {
 	return details::isMouseButtonValid(button) &&
 		!m_lastMouseButtonsState.test(button) &&
 		m_currentMouseButtonsState.test(button);
 }
 
-bool InputManager::getMouseButtonUp(MouseButton button) const
+bool InputManager::getMouseButtonUp(const MouseButton button) const
 {
 	return details::isMouseButtonValid(button) &&
 		m_lastMouseButtonsState.test(button) &&

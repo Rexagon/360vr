@@ -9,10 +9,10 @@ namespace ej
 	class VirtualRealityManager : public BaseManager
 	{
 	public:
-		VirtualRealityManager(const ManagerLocator& locator);
+		explicit VirtualRealityManager(const ManagerLocator& locator);
 		~VirtualRealityManager();
 
-		bool checkHmdPresent();
+		bool checkHmdPresent() const;
 		bool connect();
 
 	private:

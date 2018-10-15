@@ -26,7 +26,7 @@ namespace ej
 	};
 
 	template<typename T, typename ...Args>
-	inline void ManagerLocator::provide(Args && ...args)
+	void ManagerLocator::provide(Args && ...args)
 	{
 		static_assert(std::is_base_of<BaseManager, T>(), "Provided manager must be derived from BaseManager");
 
@@ -35,7 +35,7 @@ namespace ej
 	}
 
 	template<typename T>
-	inline std::shared_ptr<T> ManagerLocator::get() const
+	std::shared_ptr<T> ManagerLocator::get() const
 	{
 		static_assert(std::is_base_of<BaseManager, T>(), "Provided manager must be derived from BaseManager");
 
@@ -45,7 +45,7 @@ namespace ej
 	}
 
 	template<typename T>
-	inline bool ManagerLocator::has() const
+	bool ManagerLocator::has() const
 	{
 		static_assert(std::is_base_of<BaseManager, T>(), "Provided manager must be derived from BaseManager");
 

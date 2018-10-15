@@ -8,8 +8,5 @@ public:
 	void onInit() override;
 	void onClose() override;
 
-	void onUpdate(const float dt) override;
-
-private:
-
+	void onUpdate(float dt) override;
 };

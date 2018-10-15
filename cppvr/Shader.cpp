@@ -16,12 +16,12 @@ Shader::~Shader()
 	}
 }
 
-bool Shader::attachPart(const std::string & source, GLenum type, std::string& infoLog)
+bool Shader::attachPart(const std::string & source, const GLenum type, std::string& infoLog)
 {
-	GLint shader = glCreateShader(type);
+	const GLint shader = glCreateShader(type);
 
-	const GLchar* data = source.c_str();
-	const GLint size = static_cast<GLint>(source.size());
+	auto data = source.c_str();
+	const auto size = static_cast<GLint>(source.size());
 
 	glShaderSource(shader, 1, &data, nullptr);
 
@@ -35,7 +35,7 @@ bool Shader::attachPart(const std::string & source, GLenum type, std::string& in
 		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infoLogLength);
 
 		infoLog.resize(infoLogLength);
-		glGetShaderInfoLog(shader, infoLogLength, NULL, &infoLog[0]);
+		glGetShaderInfoLog(shader, infoLogLength, nullptr, &infoLog[0]);
 
 		glDeleteShader(type);
 
@@ -48,7 +48,7 @@ bool Shader::attachPart(const std::string & source, GLenum type, std::string& in
 	return true;
 }
 
-bool Shader::link(std::string& infoLog)
+bool Shader::link(std::string& infoLog) const
 {
 	glLinkProgram(m_program);
 
@@ -59,7 +59,7 @@ bool Shader::link(std::string& infoLog)
 		glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &infoLogLength);
 
 		infoLog.resize(infoLogLength);
-		glGetProgramInfoLog(m_program, infoLogLength, NULL, &infoLog[0]);
+		glGetProgramInfoLog(m_program, infoLogLength, nullptr, &infoLog[0]);
 
 		return false;
 	}
@@ -67,17 +67,17 @@ bool Shader::link(std::string& infoLog)
 	return true;
 }
 
-void Shader::setAttribute(unsigned int index, const std::string & name)
+void Shader::setAttribute(const unsigned int index, const std::string & name) const
 {
 	glBindAttribLocation(m_program, index, name.c_str());
 }
 
-void Shader::setUniform(const std::string & name, int data)
+void Shader::setUniform(const std::string & name, const int data)
 {
 	glUniform1i(getUniformLocation(name), data);
 }
 
-void Shader::setUniform(const std::string & name, float data)
+void Shader::setUniform(const std::string & name, const float data)
 {
 	glUniform1f(getUniformLocation(name), data);
 }
@@ -117,62 +117,61 @@ void Shader::setUniform(const std::string & name, const glm::mat4 & data)
 	glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, &data[0][0]);
 }
 
-void Shader::setUniformArray(const std::string & name, int * data, int size)
+void Shader::setUniformArray(const std::string & name, int * data, const int size)
 {
 	glUniform1iv(getUniformLocation(name), size, data);
 }
 
-void Shader::setUniformArray(const std::string & name, float * data, int size)
+void Shader::setUniformArray(const std::string & name, float * data, const int size)
 {
 	glUniform1fv(getUniformLocation(name), size, data);
 }
 
-void Shader::setUniformArray(const std::string & name, glm::vec2 * data, int size)
+void Shader::setUniformArray(const std::string & name, glm::vec2 * data, const int size)
 {
 	glUniform2fv(getUniformLocation(name), size, &data[0][0]);
 }
 
-void Shader::setUniformArray(const std::string & name, glm::ivec2 * data, int size)
+void Shader::setUniformArray(const std::string & name, glm::ivec2 * data, const int size)
 {
 	glUniform2iv(getUniformLocation(name), size, &data[0][0]);
 }
 
-void Shader::setUniformArray(const std::string & name, glm::vec3 * data, int size)
+void Shader::setUniformArray(const std::string & name, glm::vec3 * data, const int size)
 {
 	glUniform3fv(getUniformLocation(name), size, &data[0][0]);
 }
 
-void Shader::setUniformArray(const std::string & name, glm::ivec3 * data, int size)
+void Shader::setUniformArray(const std::string & name, glm::ivec3 * data, const int size)
 {
 	glUniform3iv(getUniformLocation(name), size, &data[0][0]);
 }
 
-void Shader::setUniformArray(const std::string & name, glm::vec4 * data, int size)
+void Shader::setUniformArray(const std::string & name, glm::vec4 * data, const int size)
 {
 	glUniform4fv(getUniformLocation(name), size, &data[0][0]);
 }
 
-void Shader::setUniformArray(const std::string & name, glm::ivec4 * data, int size)
+void Shader::setUniformArray(const std::string & name, glm::ivec4 * data, const int size)
 {
 	glUniform4iv(getUniformLocation(name), size, &data[0][0]);
 }
 
-void Shader::setUniformArray(const std::string & name, glm::mat4 * data, int size)
+void Shader::setUniformArray(const std::string & name, glm::mat4 * data, const int size)
 {
 	glUniformMatrix4fv(getUniformLocation(name), size, GL_FALSE, &data[0][0][0]);
 }
 
 unsigned int Shader::getUniformLocation(const std::string & name)
 {
-	auto it = m_uniformLocations.find(name);
+	const auto it = m_uniformLocations.find(name);
 	if (it == m_uniformLocations.end()) {
-		GLuint location = glGetUniformLocation(m_program, name.c_str());
+		const GLuint location = glGetUniformLocation(m_program, name.c_str());
 		m_uniformLocations[name] = location;
 		return location;
 	}
-	else {
-		return it->second;
-	}
+
+	return it->second;
 }
 
 GLuint Shader::getHandle() const

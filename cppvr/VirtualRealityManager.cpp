@@ -15,7 +15,7 @@ VirtualRealityManager::~VirtualRealityManager()
 	vr::VR_Shutdown();
 }
 
-bool VirtualRealityManager::checkHmdPresent()
+bool VirtualRealityManager::checkHmdPresent() const
 {
 	return vr::VR_IsHmdPresent();
 }
@@ -24,7 +24,7 @@ bool VirtualRealityManager::connect()
 {
 	// IVRSystem initialization
 	vr::HmdError error;
-	m_system = vr::VR_Init(&error, vr::EVRApplicationType::VRApplication_Scene);
+	m_system = VR_Init(&error, vr::EVRApplicationType::VRApplication_Scene);
 
 	if (m_system == nullptr) {
 		throw std::runtime_error("IVRSystem initialization error: " + std::to_string(error));
@@ -32,7 +32,7 @@ bool VirtualRealityManager::connect()
 
 	// IVRRenderModels initializations
 	vr::EVRInitError interfaceInitError;
-	m_renderModels = static_cast<vr::IVRRenderModels*>(vr::VR_GetGenericInterface(vr::IVRRenderModels_Version, &interfaceInitError));
+	m_renderModels = static_cast<vr::IVRRenderModels*>(VR_GetGenericInterface(vr::IVRRenderModels_Version, &interfaceInitError));
 	if (m_renderModels == nullptr) {
 		throw std::runtime_error("IVRRenderModels initialization error: " + std::to_string(interfaceInitError));
 	}

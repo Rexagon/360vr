@@ -10,7 +10,7 @@ ShaderManager::ShaderManager(const ManagerLocator & locator) :
 }
 
 void ShaderManager::bind(const std::string & name, const ShaderSource & vertexShaderSource, 
-	const ShaderSource & geometryShaderSource, const ShaderSource & fragmentShaderSource)
+	const ShaderSource & fragmentShaderSource, const ShaderSource & geometryShaderSource)
 {
 	m_factoryData.emplace(name, FactoryData(name, vertexShaderSource, geometryShaderSource, fragmentShaderSource));
 }
@@ -29,16 +29,16 @@ std::shared_ptr<Shader> ej::ShaderManager::get(const std::string & name)
 	return result;
 }
 
-std::shared_ptr<Shader> ej::ShaderManager::load(const FactoryData & factoryData)
+std::shared_ptr<Shader> ej::ShaderManager::load(const FactoryData & factoryData) const
 {
 	std::unique_ptr<Shader> shader = std::make_unique<Shader>();
 
 	std::string infoLog;
 
 	const auto& vertexSourceType = factoryData.vertexShaderSource.type;
-	if (vertexSourceType != ShaderSource::NONE) {
+	if (vertexSourceType != ShaderSource::None) {
 		std::string shaderSource;
-		if (vertexSourceType == ShaderSource::FILE) {
+		if (vertexSourceType == ShaderSource::File) {
 			shaderSource = m_fileManager->open(factoryData.vertexShaderSource.source);
 		}
 		else {
@@ -51,9 +51,9 @@ std::shared_ptr<Shader> ej::ShaderManager::load(const FactoryData & factoryData)
 	}
 
 	const auto& fragmentSourceType = factoryData.fragmentShaderSource.type;
-	if (fragmentSourceType != ShaderSource::NONE) {
+	if (fragmentSourceType != ShaderSource::None) {
 		std::string shaderSource;
-		if (fragmentSourceType == ShaderSource::FILE) {
+		if (fragmentSourceType == ShaderSource::File) {
 			shaderSource = m_fileManager->open(factoryData.fragmentShaderSource.source);
 		}
 		else {
@@ -66,9 +66,9 @@ std::shared_ptr<Shader> ej::ShaderManager::load(const FactoryData & factoryData)
 	}
 
 	const auto& geometrySourceType = factoryData.geometryShaderSource.type;
-	if (geometrySourceType != ShaderSource::NONE) {
+	if (geometrySourceType != ShaderSource::None) {
 		std::string shaderSource;
-		if (geometrySourceType == ShaderSource::FILE) {
+		if (geometrySourceType == ShaderSource::File) {
 			shaderSource = m_fileManager->open(factoryData.geometryShaderSource.source);
 		}
 		else {

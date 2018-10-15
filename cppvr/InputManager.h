@@ -22,7 +22,7 @@ namespace ej
 		using MouseButtonsState = std::bitset<MouseButton::ButtonCount>;
 
 	public:
-		InputManager(const ManagerLocator& locator);
+		explicit InputManager(const ManagerLocator& locator);
 
 		void updateState();
 		void handleEvent(const sf::Event& event);

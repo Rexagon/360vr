@@ -11,8 +11,8 @@ namespace ej
 	class ResourceManager : public BaseManager
 	{
 	public:
-		ResourceManager(const ManagerLocator& locator) : BaseManager(locator) {}
-		virtual ~ResourceManager() {}
+		explicit ResourceManager(const ManagerLocator& locator) : BaseManager(locator) {}
+		virtual ~ResourceManager() = default;
 		
 	protected:
 		void insert(const std::string& name, std::shared_ptr<T> resource);
@@ -23,13 +23,13 @@ namespace ej
 	};
 
 	template<typename T>
-	inline void ResourceManager<T>::insert(const std::string & name, std::shared_ptr<T> resource)
+	void ResourceManager<T>::insert(const std::string & name, std::shared_ptr<T> resource)
 	{
 		m_resources.insert_or_assign(name, resource);
 	}
 
 	template<typename T>
-	inline std::shared_ptr<T> ResourceManager<T>::find(const std::string & name)
+	std::shared_ptr<T> ResourceManager<T>::find(const std::string & name)
 	{
 		auto it = m_resources.find(name);
 
