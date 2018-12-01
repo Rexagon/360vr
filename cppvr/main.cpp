@@ -5,7 +5,9 @@
 
 #include "WindowManager.h"
 #include "SceneManager.h"
+#include "FileManager.h"
 #include "InputManager.h"
+#include "ShaderManager.h"
 
 #include "RenderingManager.h"
 
@@ -18,10 +20,15 @@ int main()
 		Core game;
 
 		game.getManagerLocator().provide<WindowManager>("CVR", 1024, 768);
-		game.getManagerLocator().provide<SceneManager>(std::make_unique<MainScene>());
+		game.getManagerLocator().provide<RenderingManager>();
+		game.getManagerLocator().provide<FileManager>();
+		game.getManagerLocator().provide<ShaderManager>();
 		game.getManagerLocator().provide<InputManager>();
 
-		game.getManagerLocator().provide<RenderingManager>();
+		game.getManagerLocator().get<FileManager>()->init<DefaultFileSystem>();
+
+		game.getManagerLocator().provide<SceneManager>(std::make_unique<MainScene>());
+
 
 		game.run();
 	}

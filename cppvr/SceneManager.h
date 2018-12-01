@@ -19,6 +19,15 @@ namespace ej
 		virtual void onLeave() {}
 
 		virtual void onUpdate(const float dt) {}
+
+	protected:
+		const ManagerLocator& getLocator() {
+			return *m_locator;
+		}
+
+	private:
+		friend class SceneManager;
+		const ManagerLocator* m_locator;
 	};
 
 	class SceneManager : public BaseManager

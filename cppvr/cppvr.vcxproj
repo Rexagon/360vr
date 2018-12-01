@@ -107,6 +107,7 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
+    <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="VirtualRealityManager.cpp" />
     <ClCompile Include="WindowManager.cpp" />
   </ItemGroup>
@@ -114,6 +115,7 @@
     <ClInclude Include="BaseManager.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="FileManager.h" />
+    <ClInclude Include="TextureManager.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="InputManager.h" />

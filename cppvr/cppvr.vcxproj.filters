@@ -38,6 +38,9 @@
     <ClCompile Include="ShaderManager.cpp">
       <Filter>Engine\Rendering\Shader</Filter>
     </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Engine\Rendering\Texture</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">
@@ -72,6 +75,9 @@
     </Filter>
     <Filter Include="Engine\Rendering\Managers">
       <UniqueIdentifier>{4fa501e4-603f-4e64-a006-b57250664509}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Rendering\Texture">
+      <UniqueIdentifier>{ec26ac0f-56c1-4b8b-afd8-f9b23762078a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -119,6 +125,9 @@
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
       <Filter>Engine\Core\Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Engine\Rendering\Texture</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

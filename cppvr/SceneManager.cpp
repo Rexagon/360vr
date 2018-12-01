@@ -15,6 +15,8 @@ void SceneManager::addScene(std::unique_ptr<Scene> scene)
 		m_scenes.top()->onLeave();
 	}
 
+	scene->m_locator = &m_locator;
+
 	scene->onInit();
 	scene->onEnter();
 	m_scenes.push(std::move(scene));
