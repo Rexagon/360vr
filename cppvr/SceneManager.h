@@ -34,6 +34,7 @@ namespace ej
 	{
 	public:
 		SceneManager(const ManagerLocator& locator, std::unique_ptr<Scene> entryScene);
+		~SceneManager();
 
 		void addScene(std::unique_ptr<Scene> scene);
 		void changeScene(std::unique_ptr<Scene> scene);

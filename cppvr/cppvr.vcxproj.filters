@@ -41,6 +41,12 @@
     <ClCompile Include="TextureManager.cpp">
       <Filter>Engine\Rendering\Texture</Filter>
     </ClCompile>
+    <ClCompile Include="VideoStream.cpp">
+      <Filter>Game\Stream</Filter>
+    </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Game\Skybox</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">
@@ -78,6 +84,12 @@
     </Filter>
     <Filter Include="Engine\Rendering\Texture">
       <UniqueIdentifier>{ec26ac0f-56c1-4b8b-afd8-f9b23762078a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Stream">
+      <UniqueIdentifier>{2eb3253f-7421-4e3a-a1bd-97b09fa32a38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Skybox">
+      <UniqueIdentifier>{91fce6b6-0ca2-4cbe-ac1b-bd3059b82050}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -128,6 +140,12 @@
     </ClInclude>
     <ClInclude Include="TextureManager.h">
       <Filter>Engine\Rendering\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoStream.h">
+      <Filter>Game\Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>Game\Skybox</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

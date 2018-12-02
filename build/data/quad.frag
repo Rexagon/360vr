@@ -8,5 +8,6 @@ out vec3 color;
 
 void main()
 {
-  color = texture(diffuseTexture, fTexCoords).xyz;
+  vec2 texCoords = vec2(fTexCoords.x, 1.0 - fTexCoords.y);
+  color = texture(diffuseTexture, texCoords).xyz;
 }

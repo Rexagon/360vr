@@ -8,6 +8,11 @@ SceneManager::SceneManager(const ManagerLocator& locator, std::unique_ptr<Scene>
 	addScene(std::move(entryScene));
 }
 
+SceneManager::~SceneManager()
+{
+	clear();
+}
+
 void SceneManager::addScene(std::unique_ptr<Scene> scene)
 {
 	if (!m_scenes.empty())

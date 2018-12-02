@@ -1,30 +1,30 @@
 #pragma once
 
-#include <GL/glew.h>
+#include <memory>
+#include <mutex>
 
 #include "SceneManager.h"
-#include "ShaderManager.h"
-
-#include "Mesh.h"
+#include "Skybox.h"
 
 class MainScene : public ej::Scene
 {
-public:
-	MainScene();
-	~MainScene();
+	enum SkyboxState
+	{
+		Waiting,
+		NeedInitialize,
+		Initialized
+	} m_skyboxState = Waiting;
 
+public:
 	void onInit() override;
 	void onClose() override;
 
 	void onUpdate(float dt) override;
 
 private:
-	void updatePixels(GLubyte* ptr);
+	std::unique_ptr<Skybox> m_skybox;
+	std::unique_ptr<std::thread> m_streamingThread;
 
-	ej::Mesh m_quad;
-
-	std::shared_ptr<ej::Shader> m_shader;
-	GLuint m_texture;
-	GLuint m_PBOs[2];
-	unsigned int m_currentPBO;
+	VideoStream m_videoStream;
+	bool m_receivingVideo = false;
 };
