@@ -5,6 +5,8 @@
 #include "Shader.h"
 
 #include "VideoStream.h"
+#include "Texture.h"
+#include "Camera.h"
 
 class Skybox
 {
@@ -14,7 +16,7 @@ public:
 
 	void init(const glm::ivec2& size);
 
-	void draw() const;
+	void draw(ej::Camera* camera) const;
 
 	void updateTexture(VideoStream* videoStream);
 
@@ -28,7 +30,7 @@ private:
 
 	ej::Mesh m_quad;
 
-	GLuint m_texture;
+	std::shared_ptr<ej::Texture> m_texture;
 	std::shared_ptr<ej::Shader> m_shader;
 
 	GLuint m_PBOs[2];

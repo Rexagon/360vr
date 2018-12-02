@@ -2,11 +2,18 @@
 
 #include <thread>
 #include <GL/glew.h>
-
-#include <iostream>
+#include "WindowManager.h"
 
 void MainScene::onInit()
 {
+	const auto& windowSize = getLocator().get<ej::WindowManager>()->getWindow().getSize();
+
+	glEnable(GL_CULL_FACE);
+
+	m_camera.setAspect(static_cast<float>(windowSize.x) / windowSize.y);
+
+	m_inputManager = getLocator().get<ej::InputManager>();
+
 	m_receivingVideo = true;
 
 	m_skybox = std::make_unique<Skybox>(getLocator());
@@ -33,6 +40,8 @@ void MainScene::onClose()
 
 void MainScene::onUpdate(const float dt)
 {
+	m_camera.updateProjection();
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if (m_skyboxState == NeedInitialize) {
@@ -44,7 +53,27 @@ void MainScene::onUpdate(const float dt)
 		if (m_videoStream.hasData()) {
 			m_skybox->updateTexture(&m_videoStream);
 		}
-
-		m_skybox->draw();
 	}
+
+	if (dt < 0.5f) {
+		glm::vec3 vec;
+		bool moved = false;
+
+		if (m_inputManager->getKey(ej::Key::A)) {
+			vec -= glm::vec3(0.0f, 1.0f, 0.0f);
+			moved = true;
+		}
+		if (m_inputManager->getKey(ej::Key::D)) {
+			vec += glm::vec3(0.0f, 1.0f, 0.0f);
+			moved = true;
+		}
+
+		if (moved) {
+			m_cameraTransform.rotate(vec * dt * 30.0f);
+		}
+	}
+
+	m_camera.updateView(m_cameraTransform.getRotationMatrix());
+
+	m_skybox->draw(&m_camera);
 }

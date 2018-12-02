@@ -3,8 +3,12 @@
 #include <memory>
 #include <mutex>
 
+#include "InputManager.h"
 #include "SceneManager.h"
+
 #include "Skybox.h"
+#include "Camera.h"
+#include "Transform.h"
 
 class MainScene : public ej::Scene
 {
@@ -22,6 +26,11 @@ public:
 	void onUpdate(float dt) override;
 
 private:
+	std::shared_ptr<ej::InputManager> m_inputManager;
+
+	ej::Camera m_camera;
+	ej::Transform m_cameraTransform;
+
 	std::unique_ptr<Skybox> m_skybox;
 	std::unique_ptr<std::thread> m_streamingThread;
 

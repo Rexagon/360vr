@@ -3,11 +3,17 @@
 #include <iostream>
 
 #include "ShaderManager.h"
+#include "TextureManager.h"
 
 Skybox::Skybox(const ej::ManagerLocator & locator) :
 	m_isInitialized(false), m_size(), m_dataSize(0), 
-	m_texture(0), m_currentPBO(0)
+	m_texture(nullptr), m_currentPBO(0)
 {
+	locator.get<ej::TextureManager>()->bind("loading", 
+		ej::TextureManager::FromFile("loading.jpg"));
+
+	m_texture = locator.get<ej::TextureManager>()->get("loading");
+
 	locator.get<ej::ShaderManager>()->bind("quad",
 		ej::ShaderManager::FromFile("quad.vert"), 
 		ej::ShaderManager::FromFile("quad.frag"));
@@ -16,18 +22,16 @@ Skybox::Skybox(const ej::ManagerLocator & locator) :
 	m_shader->setAttribute(0, "vPosition");
 	m_shader->setAttribute(1, "vTexCoords");
 
+	m_shader->setUniform("viewProjection", glm::mat4());
 	m_shader->setUniform("diffuseTexture", 0);
 
-	m_quad.init(ej::MeshGeometry::createQuad(glm::vec2(0.5f, 0.5f),
+	m_quad.init(ej::MeshGeometry::createCube(glm::vec3(1.0f, 1.0f, 1.0f),
 		ej::MeshGeometry::TEXTURED_VERTEX));
 }
 
 Skybox::~Skybox()
 {
-	if (m_isInitialized) {
-		glDeleteTextures(1, &m_texture);
-		glDeleteBuffers(2, m_PBOs);
-	}
+	glDeleteBuffers(2, m_PBOs);
 }
 
 void Skybox::init(const glm::ivec2 & size)
@@ -41,14 +45,11 @@ void Skybox::init(const glm::ivec2 & size)
 
 	printf("X: %d, Y: %d\n", size.x, size.y);
 
-	glGenTextures(1, &m_texture);
-	glBindTexture(GL_TEXTURE_2D, m_texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	m_texture->resize(size.x, size.y);
+
+	m_texture->bind(0);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, size.x, size.y, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
-	glBindTexture(GL_TEXTURE_2D, m_texture);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glGenBuffers(2, m_PBOs);
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_PBOs[0]);
@@ -60,13 +61,18 @@ void Skybox::init(const glm::ivec2 & size)
 	m_isInitialized = true;
 }
 
-void Skybox::draw() const
+void Skybox::draw(ej::Camera* camera) const
 {
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_texture);
+	m_texture->bind(0);
 
 	glUseProgram(m_shader->getHandle());
+
+	m_shader->setUniform("viewProjection", camera->getViewProjectionMatrix());
+
+	glCullFace(GL_FRONT);
 	m_quad.draw();
+	glCullFace(GL_BACK);
+
 	glUseProgram(0);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -81,7 +87,7 @@ void Skybox::updateTexture(VideoStream* videoStream)
 	m_currentPBO = (m_currentPBO + 1) % 2;
 	const auto nextPBO = (m_currentPBO + 1) % 2;
 
-	glBindTexture(GL_TEXTURE_2D, m_texture);
+	m_texture->bind(0);
 
 	// Nth PBO
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_PBOs[m_currentPBO]);

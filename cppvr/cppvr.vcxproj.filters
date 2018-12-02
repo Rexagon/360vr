@@ -47,6 +47,15 @@
     <ClCompile Include="Skybox.cpp">
       <Filter>Game\Skybox</Filter>
     </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Engine\Core\Stuff\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Engine\Rendering\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Engine\Core\Stuff\Transform</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">
@@ -90,6 +99,12 @@
     </Filter>
     <Filter Include="Game\Skybox">
       <UniqueIdentifier>{91fce6b6-0ca2-4cbe-ac1b-bd3059b82050}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Core\Stuff\Camera">
+      <UniqueIdentifier>{0dd45c16-9276-4860-b29a-17e54831f430}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Core\Stuff\Transform">
+      <UniqueIdentifier>{4792eaae-9533-42f2-bb0e-337340ec24a6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -146,6 +161,15 @@
     </ClInclude>
     <ClInclude Include="Skybox.h">
       <Filter>Game\Skybox</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Engine\Core\Stuff\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Engine\Rendering\Texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Engine\Core\Stuff\Transform</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

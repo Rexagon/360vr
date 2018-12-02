@@ -10,6 +10,7 @@
 #include "ShaderManager.h"
 
 #include "RenderingManager.h"
+#include "TextureManager.h"
 
 using namespace ej;
 
@@ -19,9 +20,10 @@ int main()
 	{
 		Core game;
 
+		game.getManagerLocator().provide<FileManager>();
 		game.getManagerLocator().provide<WindowManager>("CVR", 1024, 768);
 		game.getManagerLocator().provide<RenderingManager>();
-		game.getManagerLocator().provide<FileManager>();
+		game.getManagerLocator().provide<TextureManager>();
 		game.getManagerLocator().provide<ShaderManager>();
 		game.getManagerLocator().provide<InputManager>();
 
