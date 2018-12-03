@@ -48,7 +48,7 @@ MeshGeometry MeshGeometry::createPlane(const glm::vec2 & halfSize, const unsigne
 	for (auto y = 0; y <= static_cast<int>(ySegments); ++y) {
 		for (auto x = 0; x <= static_cast<int>(xSegments); ++x) {
 			if (vertexComponents & Positions) {
-				result.positions.emplace_back(dX * x * 2.0f - 1.0f, 0.0f, dY * y * 2.0f - 1.0f);
+				result.positions.emplace_back(halfSize.x * (dX * x * 2.0f - 1.0f), 0.0f, halfSize.y * (dY * y * 2.0f - 1.0f));
 			}
 
 			if (vertexComponents & TexCoords) {

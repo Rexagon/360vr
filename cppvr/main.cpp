@@ -3,41 +3,49 @@
 #include "Core.h"
 #include "MainScene.h"
 
-#include "WindowManager.h"
 #include "SceneManager.h"
 #include "FileManager.h"
 #include "InputManager.h"
 #include "ShaderManager.h"
+#include "VRManager.h"
 
 #include "RenderingManager.h"
 #include "TextureManager.h"
 
-using namespace ej;
-
-int main()
+class Core : public ej::Core	
 {
-	try 
+public:
+	Core()
 	{
-		Core game;
+		m_managerLocator.provide<ej::FileManager>(std::make_unique<ej::FileManager::DiskFileSystem>());
+		m_managerLocator.provide<ej::RenderingManager>();
+		m_managerLocator.provide<ej::TextureManager>();
+		m_managerLocator.provide<ej::ShaderManager>();
 
-		game.getManagerLocator().provide<FileManager>();
-		game.getManagerLocator().provide<WindowManager>("CVR", 1024, 768);
-		game.getManagerLocator().provide<RenderingManager>();
-		game.getManagerLocator().provide<TextureManager>();
-		game.getManagerLocator().provide<ShaderManager>();
-		game.getManagerLocator().provide<InputManager>();
+		m_managerLocator.provide<ej::VRManager>();
 
-		game.getManagerLocator().get<FileManager>()->init<DefaultFileSystem>();
-
-		game.getManagerLocator().provide<SceneManager>(std::make_unique<MainScene>());
-
-
-		game.run();
-	}
-	catch (const std::exception& e) {
-		std::cout << e.what() << std::endl;
-		std::cin.get();
+		m_inputManager = m_managerLocator.provide<ej::InputManager>();
+		m_sceneManager = m_managerLocator.provide<ej::SceneManager>(std::make_unique<MainScene>());
 	}
 
-	return 0;
-}
+	void onHandleEvent(const sf::Event& event) override
+	{
+		m_inputManager->handleEvent(event);
+	}
+
+	void onUpdate(float dt) override
+	{
+		if (!m_sceneManager->hasScenes()) {
+			stop();
+			return;
+		}
+
+		m_sceneManager->peekScene().onUpdate(dt);
+	}
+
+private:
+	std::shared_ptr<ej::SceneManager> m_sceneManager;
+	std::shared_ptr<ej::InputManager> m_inputManager;
+};
+
+EJ_MAIN(Core);

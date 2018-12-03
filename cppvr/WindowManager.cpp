@@ -16,6 +16,7 @@ WindowManager::WindowManager(const ManagerLocator& locator, const std::string & 
 	contextSettings.minorVersion = 3;
 
 	m_window = std::make_unique<sf::RenderWindow>(videoMode, title, style, contextSettings);
+	m_window->setVerticalSyncEnabled(false);
 }
 
 sf::RenderWindow & WindowManager::getWindow() const

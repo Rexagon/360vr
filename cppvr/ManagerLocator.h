@@ -13,7 +13,7 @@ namespace ej
 	{
 	public:
 		template<typename T, typename... Args>
-		void provide(Args&&... args);
+		std::shared_ptr<T> provide(Args&&... args);
 
 		template<typename T>
 		std::shared_ptr<T> get() const;
@@ -26,12 +26,14 @@ namespace ej
 	};
 
 	template<typename T, typename ...Args>
-	void ManagerLocator::provide(Args && ...args)
+	std::shared_ptr<T> ManagerLocator::provide(Args && ...args)
 	{
 		static_assert(std::is_base_of<BaseManager, T>(), "Provided manager must be derived from BaseManager");
 
-		auto manager = std::static_pointer_cast<BaseManager>(std::make_shared<T>(*this, std::forward<Args>(args)...));
-		m_managers.insert_or_assign(std::type_index(typeid(T)), std::move(manager));
+		auto manager = std::make_shared<T>(*this, std::forward<Args>(args)...);
+		m_managers.insert_or_assign(std::type_index(typeid(T)), std::static_pointer_cast<BaseManager>(manager));
+
+		return manager;
 	}
 
 	template<typename T>

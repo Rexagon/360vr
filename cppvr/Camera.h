@@ -10,12 +10,14 @@ namespace ej {
 		enum ProjectionType
 		{
 			PERSPECTIVE,
-			ISOMETRIC
+			ISOMETRIC,
+			CUSTOM
 		};
 
 		Camera();
 		Camera(float minDepth, float maxDepth);
 		Camera(const glm::vec2& zRange);
+		Camera(const glm::mat4& projection);
 
 		void updateView(const glm::mat4& globalTransformation);
 		void updateProjection();

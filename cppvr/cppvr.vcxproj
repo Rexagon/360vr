@@ -97,8 +97,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Carpet.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="FileManager.cpp" />
+    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainScene.cpp" />
@@ -113,14 +115,16 @@
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="VideoStream.cpp" />
-    <ClCompile Include="VirtualRealityManager.cpp" />
+    <ClCompile Include="VRManager.cpp" />
     <ClCompile Include="WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseManager.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Carpet.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="FileManager.h" />
+    <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureManager.h" />
@@ -136,7 +140,7 @@
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="VideoStream.h" />
-    <ClInclude Include="VirtualRealityManager.h" />
+    <ClInclude Include="VRManager.h" />
     <ClInclude Include="WindowManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

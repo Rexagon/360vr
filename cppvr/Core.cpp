@@ -1,55 +1,53 @@
 ﻿#include "Core.h"
 
 #include "WindowManager.h"
-#include "InputManager.h"
-#include "SceneManager.h"
 
 using namespace ej;
 
+Core::Core() :
+	m_isRunning(false)
+{	
+	m_managerLocator.provide<WindowManager>("ej", 1024, 768);
+}
+
 void Core::run()
 {
-	// Load basic managers
-	auto windowManager = m_managerLocator.get<WindowManager>();
-	assert(windowManager != nullptr);
+	if (m_isRunning) {
+		return;
+	}
 
-	auto sceneManager = m_managerLocator.get<SceneManager>();
-	assert(sceneManager != nullptr);
-
-	auto inputManager = m_managerLocator.get<InputManager>();
-	assert(inputManager != nullptr);
+	const auto windowManager = m_managerLocator.get<WindowManager>();
 	
 	sf::Clock timer;
-
-	// Main loop
-	auto isRunning = true;
-	while (isRunning)
+	
+	m_isRunning = true;
+	while (m_isRunning)
 	{
 		auto& window = windowManager->getWindow();
-
-		if (!sceneManager->hasScenes())
-			isRunning = false;
 
 		// Handle events
 		auto event = sf::Event();
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed) {
-				isRunning = false;
+				m_isRunning = false;
 			}
 
-			inputManager->handleEvent(event);
+			onHandleEvent(event);
 		}
 
 		// Handle scene logic
 		const auto dt = timer.restart().asSeconds();
-		if (sceneManager->hasScenes())
-		{
-			sceneManager->peekScene().onUpdate(dt);
-		}
+		onUpdate(dt);
 
 		// Swap buffers
 		window.display();
 	}
+}
+
+void Core::stop()
+{
+	m_isRunning = false;
 }
 
 ManagerLocator & Core::getManagerLocator()

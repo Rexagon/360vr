@@ -4,6 +4,7 @@
 
 #include "ShaderManager.h"
 #include "TextureManager.h"
+#include "Transform.h"
 
 Skybox::Skybox(const ej::ManagerLocator & locator) :
 	m_isInitialized(false), m_size(), m_dataSize(0), 
@@ -14,16 +15,19 @@ Skybox::Skybox(const ej::ManagerLocator & locator) :
 
 	m_texture = locator.get<ej::TextureManager>()->get("loading");
 
-	locator.get<ej::ShaderManager>()->bind("quad",
-		ej::ShaderManager::FromFile("quad.vert"), 
-		ej::ShaderManager::FromFile("quad.frag"));
+	locator.get<ej::ShaderManager>()->bind("skybox",
+		ej::ShaderManager::FromFile("skybox.vert"), 
+		ej::ShaderManager::FromFile("skybox.frag"));
 
-	m_shader = locator.get<ej::ShaderManager>()->get("quad");
+	m_shader = locator.get<ej::ShaderManager>()->get("skybox");
 	m_shader->setAttribute(0, "vPosition");
 	m_shader->setAttribute(1, "vTexCoords");
 
-	m_shader->setUniform("viewProjection", glm::mat4());
-	m_shader->setUniform("diffuseTexture", 0);
+	glUseProgram(m_shader->getHandle());
+	m_shader->setUniform("uProjection", glm::mat4());
+	m_shader->setUniform("uRotation", glm::mat4());
+	m_shader->setUniform("uDiffuseTexture", 0);
+	glUseProgram(0);
 
 	m_quad.init(ej::MeshGeometry::createCube(glm::vec3(1.0f, 1.0f, 1.0f),
 		ej::MeshGeometry::TEXTURED_VERTEX));
@@ -61,13 +65,14 @@ void Skybox::init(const glm::ivec2 & size)
 	m_isInitialized = true;
 }
 
-void Skybox::draw(ej::Camera* camera) const
+void Skybox::draw(ej::Camera& camera, const ej::Transform& transform) const
 {
 	m_texture->bind(0);
 
 	glUseProgram(m_shader->getHandle());
 
-	m_shader->setUniform("viewProjection", camera->getViewProjectionMatrix());
+	m_shader->setUniform("uProjection", camera.getProjectionMatrix());
+	m_shader->setUniform("uRotation", transform.getRotationMatrixInversed());
 
 	glCullFace(GL_FRONT);
 	m_quad.draw();

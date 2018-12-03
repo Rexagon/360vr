@@ -7,20 +7,27 @@
 using namespace ej;
 
 Camera::Camera() :
-	m_depthRange(0.1f, 100.0f), m_projectionChanged(true), m_projectionType(PERSPECTIVE),
-	m_fov(glm::half_pi<float>() * 0.77f), m_aspect(1.0f), m_left(0.0f), m_right(0.0f), m_bottom(0.0f), m_top(0.0f)
+	m_depthRange(0.1f, 100.0f), m_projectionType(PERSPECTIVE), m_fov(glm::half_pi<float>() * 0.77f),
+	m_aspect(1.0f), m_left(0.0f), m_right(0.0f), m_bottom(0.0f), m_top(0.0f), m_projectionChanged(true)
 {
 }
 
 Camera::Camera(float minDepth, float maxDepth) :
-	m_depthRange(minDepth, maxDepth), m_projectionChanged(true), m_projectionType(PERSPECTIVE),
-	m_fov(glm::half_pi<float>() * 0.77f), m_aspect(1.0f), m_left(0.0f), m_right(0.0f), m_bottom(0.0f), m_top(0.0f)
+	m_depthRange(minDepth, maxDepth), m_projectionType(PERSPECTIVE), m_fov(glm::half_pi<float>() * 0.77f),
+	m_aspect(1.0f), m_left(0.0f), m_right(0.0f), m_bottom(0.0f), m_top(0.0f), m_projectionChanged(true)
 {
 }
 
 Camera::Camera(const glm::vec2& zRange) :
-	m_depthRange(zRange), m_projectionChanged(true), m_projectionType(PERSPECTIVE),
-	m_fov(glm::half_pi<float>() * 0.77f), m_aspect(1.0f), m_left(0.0f), m_right(0.0f), m_bottom(0.0f), m_top(0.0f)
+	m_depthRange(zRange), m_projectionType(PERSPECTIVE), m_fov(glm::half_pi<float>() * 0.77f),
+	m_aspect(1.0f), m_left(0.0f), m_right(0.0f), m_bottom(0.0f), m_top(0.0f), m_projectionChanged(true)
+{
+}
+
+Camera::Camera(const glm::mat4& projection) :
+	m_depthRange(0.0f, 0.0f),
+	m_projectionType(CUSTOM), m_fov(0.0f), m_aspect(1.0f),
+	m_left(0.0f), m_right(0.0f), m_bottom(0.0f), m_top(0.0f), m_projectionMatrix(projection), m_projectionChanged(false)
 {
 }
 
@@ -80,7 +87,7 @@ glm::vec2 Camera::getDepthRange() const
 void Camera::updateView(const glm::mat4& globalTransformation)
 {
 	if (globalTransformation != m_globalTransformation) {
-		m_viewMatrix = globalTransformation;// glm::inverse(globalTransformation);
+		m_viewMatrix = glm::inverse(globalTransformation);
 
 		m_globalTransformation = globalTransformation;
 		m_viewProjectionChanged = true;
@@ -112,6 +119,9 @@ void Camera::updateProjection()
 				m_bottom, m_top, m_depthRange.x, m_depthRange.y);
 			break;
 		}
+
+		case CUSTOM:
+			break;
 		}
 
 		m_projectionChanged = false;

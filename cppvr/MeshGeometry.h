@@ -23,7 +23,7 @@ namespace ej
 
 		static const ComponentsMask SIMPLE_VERTEX = Positions;
 		static const ComponentsMask TEXTURED_VERTEX = Positions | TexCoords;
-		static const ComponentsMask MODEL_VERTEX = Positions | TexCoords | Normals | Tangents | Bitangents;
+		static const ComponentsMask MODEL_VERTEX = Positions | TexCoords | Normals;// | Tangents | Bitangents;
 
 		static MeshGeometry createQuad(const glm::vec2& halfSize = glm::vec2(1.0f),
 			ComponentsMask vertexComponents = MODEL_VERTEX);

@@ -11,9 +11,6 @@
     <ClCompile Include="WindowManager.cpp">
       <Filter>Engine\Core\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="VirtualRealityManager.cpp">
-      <Filter>Engine\VR</Filter>
-    </ClCompile>
     <ClCompile Include="MainScene.cpp">
       <Filter>Game\Scenes</Filter>
     </ClCompile>
@@ -55,6 +52,15 @@
     </ClCompile>
     <ClCompile Include="Transform.cpp">
       <Filter>Engine\Core\Stuff\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="VRManager.cpp">
+      <Filter>Engine\VR</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
+      <Filter>Engine\Rendering\FrameBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Carpet.cpp">
+      <Filter>Game\Carpet</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -106,6 +112,12 @@
     <Filter Include="Engine\Core\Stuff\Transform">
       <UniqueIdentifier>{4792eaae-9533-42f2-bb0e-337340ec24a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\Rendering\FrameBuffer">
+      <UniqueIdentifier>{6fa0cee0-1ddf-44cb-b795-1355e62caef5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Carpet">
+      <UniqueIdentifier>{e2bfd85a-123a-464a-95d1-b04b72ffde46}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="InputManager.h">
@@ -116,9 +128,6 @@
     </ClInclude>
     <ClInclude Include="WindowManager.h">
       <Filter>Engine\Core\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="VirtualRealityManager.h">
-      <Filter>Engine\VR</Filter>
     </ClInclude>
     <ClInclude Include="MainScene.h">
       <Filter>Game\Scenes</Filter>
@@ -170,6 +179,15 @@
     </ClInclude>
     <ClInclude Include="Transform.h">
       <Filter>Engine\Core\Stuff\Transform</Filter>
+    </ClInclude>
+    <ClInclude Include="VRManager.h">
+      <Filter>Engine\VR</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
+      <Filter>Engine\Rendering\FrameBuffer</Filter>
+    </ClInclude>
+    <ClInclude Include="Carpet.h">
+      <Filter>Game\Carpet</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -4,8 +4,8 @@
 
 using namespace ej;
 
-FileManager::FileManager(const ManagerLocator & locator) :
-	BaseManager(locator)
+FileManager::FileManager(const ManagerLocator & locator, std::unique_ptr<BaseFileSystem> fileSystem) :
+	BaseManager(locator), m_fileSystem(std::move(fileSystem))
 {
 }
 
@@ -25,12 +25,12 @@ std::string FileManager::open(const std::string & filename) const
 }
 
 
-DefaultFileSystem::DefaultFileSystem(const std::string & dataFolder) :
+FileManager::DiskFileSystem::DiskFileSystem(const std::string & dataFolder) :
 	m_dataFolder(dataFolder)
 {
 }
 
-std::string DefaultFileSystem::open(const std::string & filename) const
+std::string FileManager::DiskFileSystem::open(const std::string & filename) const
 {
 	std::ifstream file(m_dataFolder + filename, std::ios::binary);
 

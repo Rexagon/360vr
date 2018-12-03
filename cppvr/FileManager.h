@@ -11,22 +11,29 @@ namespace ej
 
 	class FileManager : public BaseManager
 	{
-	public:
-		explicit FileManager(const ManagerLocator& locator);
-
-		// Initializes filesystem with specified FileSystem in template argument
-		// T - AbstractFileSystem child class type
-		// Args - AbstractFileSystem child class constructor arguments
-		template<typename T, typename... Args>
-		void init(Args&&... args)
+		class BaseFileSystem
 		{
-			static_assert(std::is_base_of<BaseFileSystem, T>(),
-				"Template parameter of FileManager::onInit must be a child of AbstractFileSystem class");
+		public:
+			virtual ~BaseFileSystem() = default;
 
-			m_fileSystem = std::make_unique<T>(std::forward<Args>(args)...);
-		}
+			virtual std::string open(const std::string& filename) const = 0;
+		};
 
-		// Cleares up current filesystem object
+	public:
+		class DiskFileSystem : public BaseFileSystem
+		{
+		public:
+			explicit DiskFileSystem(const std::string& dataFolder = "data/");
+
+			std::string open(const std::string& filename) const override;
+
+		private:
+			std::string m_dataFolder;
+		};
+
+		explicit FileManager(const ManagerLocator& locator, std::unique_ptr<BaseFileSystem> fileSystem);
+
+		// Clears current filesystem object
 		void close();
 
 		// Tries to open specified file
@@ -36,27 +43,5 @@ namespace ej
 
 	private:
 		std::unique_ptr<BaseFileSystem> m_fileSystem;
-	};
-
-
-	// Base class for file sytem
-	class BaseFileSystem
-	{
-	public:
-		virtual ~BaseFileSystem() = default;
-
-		virtual std::string open(const std::string& filename) const = 0;
-	};
-
-	// Filesystem which uses OS
-	class DefaultFileSystem : public BaseFileSystem
-	{
-	public:
-		explicit DefaultFileSystem(const std::string& dataFolder = "data/");
-
-		std::string open(const std::string& filename) const override;
-
-	private:
-		std::string m_dataFolder;
 	};
 }

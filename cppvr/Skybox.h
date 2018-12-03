@@ -7,6 +7,7 @@
 #include "VideoStream.h"
 #include "Texture.h"
 #include "Camera.h"
+#include "Transform.h"
 
 class Skybox
 {
@@ -16,7 +17,7 @@ public:
 
 	void init(const glm::ivec2& size);
 
-	void draw(ej::Camera* camera) const;
+	void draw(ej::Camera& camera, const ej::Transform& transform) const;
 
 	void updateTexture(VideoStream* videoStream);
 
