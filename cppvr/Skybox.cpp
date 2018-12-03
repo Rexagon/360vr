@@ -6,20 +6,20 @@
 #include "TextureManager.h"
 #include "Transform.h"
 
-Skybox::Skybox(const ej::ManagerLocator & locator) :
+Skybox::Skybox(const ej::Core & core) :
 	m_isInitialized(false), m_size(), m_dataSize(0), 
 	m_texture(nullptr), m_currentPBO(0)
 {
-	locator.get<ej::TextureManager>()->bind("loading", 
+	core.get<ej::TextureManager>()->bind("loading",
 		ej::TextureManager::FromFile("loading.jpg"));
 
-	m_texture = locator.get<ej::TextureManager>()->get("loading");
+	m_texture = core.get<ej::TextureManager>()->get("loading");
 
-	locator.get<ej::ShaderManager>()->bind("skybox",
+	core.get<ej::ShaderManager>()->bind("skybox",
 		ej::ShaderManager::FromFile("skybox.vert"), 
 		ej::ShaderManager::FromFile("skybox.frag"));
 
-	m_shader = locator.get<ej::ShaderManager>()->get("skybox");
+	m_shader = core.get<ej::ShaderManager>()->get("skybox");
 	m_shader->setAttribute(0, "vPosition");
 	m_shader->setAttribute(1, "vTexCoords");
 
@@ -65,14 +65,14 @@ void Skybox::init(const glm::ivec2 & size)
 	m_isInitialized = true;
 }
 
-void Skybox::draw(ej::Camera& camera, const ej::Transform& transform) const
+void Skybox::draw(const ej::Camera& camera, const ej::Transform& transform) const
 {
 	m_texture->bind(0);
 
 	glUseProgram(m_shader->getHandle());
 
 	m_shader->setUniform("uProjection", camera.getProjectionMatrix());
-	m_shader->setUniform("uRotation", transform.getRotationMatrixInversed());
+	m_shader->setUniform("uRotation", transform.getRotationMatrixInverse());
 
 	glCullFace(GL_FRONT);
 	m_quad.draw();
@@ -87,6 +87,10 @@ void Skybox::updateTexture(VideoStream* videoStream)
 {
 	if (videoStream == nullptr) {
 		return;
+	}
+
+	if (!m_isInitialized) {
+		init(videoStream->getSize());
 	}
 
 	m_currentPBO = (m_currentPBO + 1) % 2;

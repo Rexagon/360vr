@@ -1,10 +1,13 @@
 #pragma once
 
+#include <memory>
 #include <GL/glew.h>
 #include <glm/vec3.hpp>
+#include "PointerDefs.h"
 
-namespace ej {
-	class Texture
+namespace ej 
+{
+	class Texture : public PointerDefs<Texture>
 	{
 	public:
 		Texture(GLenum target = GL_TEXTURE_2D);

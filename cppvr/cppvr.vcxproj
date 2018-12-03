@@ -101,6 +101,8 @@
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
+    <ClCompile Include="HeadSet.cpp" />
+    <ClCompile Include="InputAxis.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainScene.cpp" />
@@ -125,6 +127,9 @@
     <ClInclude Include="Core.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="FrameBuffer.h" />
+    <ClInclude Include="HeadSet.h" />
+    <ClInclude Include="InputAxis.h" />
+    <ClInclude Include="PointerDefs.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureManager.h" />
@@ -132,7 +137,6 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="MainScene.h" />
-    <ClInclude Include="ManagerLocator.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshGeometry.h" />
     <ClInclude Include="RenderingManager.h" />

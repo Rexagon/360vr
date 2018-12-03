@@ -10,7 +10,7 @@ namespace ej
 {
 	class FileManager;
 
-	class TextureManager : public ResourceManager<Texture>
+	class TextureManager : public ResourceManager<Texture>, public PointerDefs<TextureManager>
 	{
 		struct TextureSource
 		{
@@ -66,9 +66,9 @@ namespace ej
 			{}
 		};
 
-		explicit TextureManager(const ManagerLocator& locator);
+		explicit TextureManager(const Core& core);
 
-		void bind(const std::string& name, const TextureSource& source);
+		TextureManager* bind(const std::string& name, const TextureSource& source);
 
 		std::shared_ptr<Texture> get(const std::string& name);
 

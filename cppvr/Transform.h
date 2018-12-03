@@ -2,9 +2,11 @@
 
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include "PointerDefs.h"
 
-namespace ej {
-	class Transform
+namespace ej 
+{
+	class Transform : public PointerDefs<Transform>
 	{
 	public:
 		Transform();
@@ -13,13 +15,13 @@ namespace ej {
 		glm::mat4 getTransformationMatrix() const;
 
 		glm::mat4 getPositionMatrix() const;
-		glm::mat4 getPositionMatrixInversed() const;
+		glm::mat4 getPositionMatrixInverse() const;
 
 		glm::mat4 getRotationMatrix() const;
-		glm::mat4 getRotationMatrixInversed() const;
+		glm::mat4 getRotationMatrixInverse() const;
 
 		glm::mat4 getScaleMatrix() const;
-		glm::mat4 getScaleMatrixInversed() const;
+		glm::mat4 getScaleMatrixInverse() const;
 
 		void move(float x, float y, float z);
 		void move(const glm::vec3& vector);
@@ -64,13 +66,13 @@ namespace ej {
 		mutable glm::mat4 m_transformation;
 
 		mutable glm::mat4 m_positionMatrix;
-		mutable glm::mat4 m_positionMatrixInversed;
+		mutable glm::mat4 m_positionMatrixInverse;
 
 		mutable glm::mat4 m_rotationMatrix;
-		mutable glm::mat4 m_rotationMatrixInversed;
+		mutable glm::mat4 m_rotationMatrixInverse;
 
 		mutable glm::mat4 m_scaleMatrix;
-		mutable glm::mat4 m_scaleMatrixInversed;
+		mutable glm::mat4 m_scaleMatrixInverse;
 
 		mutable bool m_positionChanged;
 		mutable bool m_rotationChanged;

@@ -1,193 +1,232 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainScene.cpp">
+      <Filter>App\Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Engine\Objects\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshGeometry.cpp">
+      <Filter>Engine\Objects\Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Engine\Objects\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingManager.cpp">
+      <Filter>Engine\Managers\RenderingManager</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoStream.cpp">
+      <Filter>App\Objects\Stream</Filter>
+    </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>App\Objects\Skybox</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Engine\Objects\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Engine\Objects\Texture</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Engine\Objects\Transform</Filter>
+    </ClCompile>
+    <ClCompile Include="VRManager.cpp">
+      <Filter>Engine\Managers\VRManager</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
+      <Filter>Engine\Objects\FrameBuffer</Filter>
+    </ClCompile>
+    <ClCompile Include="Carpet.cpp">
+      <Filter>App\Objects\Carpet</Filter>
+    </ClCompile>
+    <ClCompile Include="FileManager.cpp">
+      <Filter>Engine\Managers\FileManager</Filter>
+    </ClCompile>
     <ClCompile Include="InputManager.cpp">
-      <Filter>Engine\Core\Managers</Filter>
+      <Filter>Engine\Managers\InputManager</Filter>
     </ClCompile>
     <ClCompile Include="SceneManager.cpp">
-      <Filter>Engine\Core\Managers</Filter>
+      <Filter>Engine\Managers\SceneManager</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="WindowManager.cpp">
-      <Filter>Engine\Core\Managers</Filter>
+      <Filter>Engine\Managers\WindowManager</Filter>
     </ClCompile>
-    <ClCompile Include="MainScene.cpp">
-      <Filter>Game\Scenes</Filter>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Engine\Managers\TextureManager</Filter>
     </ClCompile>
     <ClCompile Include="Core.cpp">
       <Filter>Engine\Core</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Engine\Rendering\Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshGeometry.cpp">
-      <Filter>Engine\Rendering\Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Engine\Rendering\Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="FileManager.cpp">
-      <Filter>Engine\Core\Managers</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderingManager.cpp">
-      <Filter>Engine\Rendering\Managers</Filter>
+    <ClCompile Include="InputAxis.cpp">
+      <Filter>Engine\Objects\InputAxis</Filter>
     </ClCompile>
     <ClCompile Include="ShaderManager.cpp">
-      <Filter>Engine\Rendering\Shader</Filter>
+      <Filter>Engine\Managers\ShaderManager</Filter>
     </ClCompile>
-    <ClCompile Include="TextureManager.cpp">
-      <Filter>Engine\Rendering\Texture</Filter>
-    </ClCompile>
-    <ClCompile Include="VideoStream.cpp">
-      <Filter>Game\Stream</Filter>
-    </ClCompile>
-    <ClCompile Include="Skybox.cpp">
-      <Filter>Game\Skybox</Filter>
-    </ClCompile>
-    <ClCompile Include="Camera.cpp">
-      <Filter>Engine\Core\Stuff\Camera</Filter>
-    </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Engine\Rendering\Texture</Filter>
-    </ClCompile>
-    <ClCompile Include="Transform.cpp">
-      <Filter>Engine\Core\Stuff\Transform</Filter>
-    </ClCompile>
-    <ClCompile Include="VRManager.cpp">
-      <Filter>Engine\VR</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameBuffer.cpp">
-      <Filter>Engine\Rendering\FrameBuffer</Filter>
-    </ClCompile>
-    <ClCompile Include="Carpet.cpp">
-      <Filter>Game\Carpet</Filter>
+    <ClCompile Include="HeadSet.cpp">
+      <Filter>App\Objects\HeadSet</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">
       <UniqueIdentifier>{9eb7b8ba-4af8-4302-8e09-0a1aaf846c2b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game">
-      <UniqueIdentifier>{cffb6c28-7ac3-4aa8-945f-156dd714b56c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Engine\Core">
       <UniqueIdentifier>{303a7378-a80b-4a7b-a639-785f79d2d7e9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Core\Managers">
+    <Filter Include="Engine\Managers">
       <UniqueIdentifier>{1a464798-a157-4ad6-a39c-6d5c9e4b0057}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Rendering">
-      <UniqueIdentifier>{98d78805-7bbd-4ae5-b351-dd0e81ad0d48}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\VR">
-      <UniqueIdentifier>{f41f715d-8ba0-4930-8a88-0cb2542edf55}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Scenes">
-      <UniqueIdentifier>{367f8bbd-0b79-40b6-b2d3-e4697e25585a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Core\Stuff">
+    <Filter Include="Engine\Stuff">
       <UniqueIdentifier>{9de597e6-6b81-422a-8118-be96c8dcdf7b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Rendering\Mesh">
-      <UniqueIdentifier>{eb55699c-7a38-48cf-be82-46d08f0add37}</UniqueIdentifier>
+    <Filter Include="App">
+      <UniqueIdentifier>{cffb6c28-7ac3-4aa8-945f-156dd714b56c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Rendering\Shader">
-      <UniqueIdentifier>{e0211f3a-4987-4d5d-b15e-b884ef3188e6}</UniqueIdentifier>
+    <Filter Include="App\Scenes">
+      <UniqueIdentifier>{367f8bbd-0b79-40b6-b2d3-e4697e25585a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Rendering\Managers">
-      <UniqueIdentifier>{4fa501e4-603f-4e64-a006-b57250664509}</UniqueIdentifier>
+    <Filter Include="Engine\Objects">
+      <UniqueIdentifier>{e8645ba6-5f97-41ec-a65e-35080ee9d044}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Rendering\Texture">
-      <UniqueIdentifier>{ec26ac0f-56c1-4b8b-afd8-f9b23762078a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Stream">
-      <UniqueIdentifier>{2eb3253f-7421-4e3a-a1bd-97b09fa32a38}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Game\Skybox">
-      <UniqueIdentifier>{91fce6b6-0ca2-4cbe-ac1b-bd3059b82050}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Core\Stuff\Camera">
+    <Filter Include="Engine\Objects\Camera">
       <UniqueIdentifier>{0dd45c16-9276-4860-b29a-17e54831f430}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Engine\Core\Stuff\Transform">
-      <UniqueIdentifier>{4792eaae-9533-42f2-bb0e-337340ec24a6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\Rendering\FrameBuffer">
+    <Filter Include="Engine\Objects\FrameBuffer">
       <UniqueIdentifier>{6fa0cee0-1ddf-44cb-b795-1355e62caef5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Game\Carpet">
+    <Filter Include="Engine\Objects\Mesh">
+      <UniqueIdentifier>{eb55699c-7a38-48cf-be82-46d08f0add37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Objects\InputAxis">
+      <UniqueIdentifier>{2d97223c-57b9-470a-8724-9ac6bbe38628}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Objects\Shader">
+      <UniqueIdentifier>{e0211f3a-4987-4d5d-b15e-b884ef3188e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Objects\Texture">
+      <UniqueIdentifier>{ec26ac0f-56c1-4b8b-afd8-f9b23762078a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Objects\Transform">
+      <UniqueIdentifier>{4792eaae-9533-42f2-bb0e-337340ec24a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Objects">
+      <UniqueIdentifier>{b7408bc7-2bff-4688-b5c6-73097532d17d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Objects\Carpet">
       <UniqueIdentifier>{e2bfd85a-123a-464a-95d1-b04b72ffde46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Objects\Skybox">
+      <UniqueIdentifier>{91fce6b6-0ca2-4cbe-ac1b-bd3059b82050}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Objects\Stream">
+      <UniqueIdentifier>{2eb3253f-7421-4e3a-a1bd-97b09fa32a38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Objects\HeadSet">
+      <UniqueIdentifier>{da2e0332-593c-466a-9020-d3a2962adc2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Managers\FileManager">
+      <UniqueIdentifier>{6ede5738-b256-4592-be3b-1886f649aba6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Managers\InputManager">
+      <UniqueIdentifier>{2df7ef50-44fb-4b64-824e-5dc98ef89704}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Managers\ShaderManager">
+      <UniqueIdentifier>{eac1bc25-3b4a-4cc3-9dd5-9e09d40b8432}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Managers\TextureManager">
+      <UniqueIdentifier>{974dd57c-41c8-4af1-9677-4226c4bc0c44}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Managers\RenderingManager">
+      <UniqueIdentifier>{4fa501e4-603f-4e64-a006-b57250664509}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Managers\VRManager">
+      <UniqueIdentifier>{f41f715d-8ba0-4930-8a88-0cb2542edf55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Managers\WindowManager">
+      <UniqueIdentifier>{d9bfb79a-59ba-4605-b40b-e1fc079945d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Managers\SceneManager">
+      <UniqueIdentifier>{be509228-ddf5-4cb7-9e5d-fa9224d38196}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="InputManager.h">
-      <Filter>Engine\Core\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneManager.h">
-      <Filter>Engine\Core\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="WindowManager.h">
-      <Filter>Engine\Core\Managers</Filter>
-    </ClInclude>
     <ClInclude Include="MainScene.h">
-      <Filter>Game\Scenes</Filter>
+      <Filter>App\Scenes</Filter>
     </ClInclude>
     <ClInclude Include="Core.h">
       <Filter>Engine\Core</Filter>
     </ClInclude>
     <ClInclude Include="BaseManager.h">
-      <Filter>Engine\Core\Stuff</Filter>
-    </ClInclude>
-    <ClInclude Include="ManagerLocator.h">
-      <Filter>Engine\Core\Stuff</Filter>
+      <Filter>Engine\Stuff</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
-      <Filter>Engine\Rendering\Mesh</Filter>
+      <Filter>Engine\Objects\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="MeshGeometry.h">
-      <Filter>Engine\Rendering\Mesh</Filter>
+      <Filter>Engine\Objects\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
-      <Filter>Engine\Rendering\Shader</Filter>
-    </ClInclude>
-    <ClInclude Include="FileManager.h">
-      <Filter>Engine\Core\Managers</Filter>
+      <Filter>Engine\Objects\Shader</Filter>
     </ClInclude>
     <ClInclude Include="RenderingManager.h">
-      <Filter>Engine\Rendering\Managers</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderManager.h">
-      <Filter>Engine\Rendering\Shader</Filter>
+      <Filter>Engine\Managers\RenderingManager</Filter>
     </ClInclude>
     <ClInclude Include="ResourceManager.h">
-      <Filter>Engine\Core\Stuff</Filter>
-    </ClInclude>
-    <ClInclude Include="TextureManager.h">
-      <Filter>Engine\Rendering\Texture</Filter>
+      <Filter>Engine\Stuff</Filter>
     </ClInclude>
     <ClInclude Include="VideoStream.h">
-      <Filter>Game\Stream</Filter>
+      <Filter>App\Objects\Stream</Filter>
     </ClInclude>
     <ClInclude Include="Skybox.h">
-      <Filter>Game\Skybox</Filter>
+      <Filter>App\Objects\Skybox</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>Engine\Core\Stuff\Camera</Filter>
+      <Filter>Engine\Objects\Camera</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
-      <Filter>Engine\Rendering\Texture</Filter>
+      <Filter>Engine\Objects\Texture</Filter>
     </ClInclude>
     <ClInclude Include="Transform.h">
-      <Filter>Engine\Core\Stuff\Transform</Filter>
+      <Filter>Engine\Objects\Transform</Filter>
     </ClInclude>
     <ClInclude Include="VRManager.h">
-      <Filter>Engine\VR</Filter>
+      <Filter>Engine\Managers\VRManager</Filter>
     </ClInclude>
     <ClInclude Include="FrameBuffer.h">
-      <Filter>Engine\Rendering\FrameBuffer</Filter>
+      <Filter>Engine\Objects\FrameBuffer</Filter>
     </ClInclude>
     <ClInclude Include="Carpet.h">
-      <Filter>Game\Carpet</Filter>
+      <Filter>App\Objects\Carpet</Filter>
+    </ClInclude>
+    <ClInclude Include="FileManager.h">
+      <Filter>Engine\Managers\FileManager</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Engine\Managers\InputManager</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Engine\Managers\SceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowManager.h">
+      <Filter>Engine\Managers\WindowManager</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Engine\Managers\TextureManager</Filter>
+    </ClInclude>
+    <ClInclude Include="InputAxis.h">
+      <Filter>Engine\Objects\InputAxis</Filter>
+    </ClInclude>
+    <ClInclude Include="HeadSet.h">
+      <Filter>App\Objects\HeadSet</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderManager.h">
+      <Filter>Engine\Managers\ShaderManager</Filter>
+    </ClInclude>
+    <ClInclude Include="PointerDefs.h">
+      <Filter>Engine\Stuff</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

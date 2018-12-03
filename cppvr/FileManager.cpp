@@ -4,8 +4,8 @@
 
 using namespace ej;
 
-FileManager::FileManager(const ManagerLocator & locator, std::unique_ptr<BaseFileSystem> fileSystem) :
-	BaseManager(locator), m_fileSystem(std::move(fileSystem))
+FileManager::FileManager(const Core & core, std::unique_ptr<BaseFileSystem> fileSystem) :
+	BaseManager(core), m_fileSystem(std::move(fileSystem))
 {
 }
 

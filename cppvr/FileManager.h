@@ -3,13 +3,13 @@
 #include <string>
 #include <memory>
 
-#include "ManagerLocator.h"
+#include "BaseManager.h"
 
 namespace ej
 {
 	class BaseFileSystem;
 
-	class FileManager : public BaseManager
+	class FileManager : public BaseManager, public PointerDefs<FileManager>
 	{
 		class BaseFileSystem
 		{
@@ -31,7 +31,7 @@ namespace ej
 			std::string m_dataFolder;
 		};
 
-		explicit FileManager(const ManagerLocator& locator, std::unique_ptr<BaseFileSystem> fileSystem);
+		explicit FileManager(const Core& core, std::unique_ptr<BaseFileSystem> fileSystem);
 
 		// Clears current filesystem object
 		void close();

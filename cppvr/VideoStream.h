@@ -1,6 +1,7 @@
 #pragma once
 
 #include <mutex>
+#include <atomic>
 
 #include <glm/vec2.hpp>
 
@@ -17,7 +18,7 @@ public:
 	~VideoStream();
 
 	bool init(const std::string& url);
-	void startReceiving(const bool& receiving);
+	void startReceiving(std::atomic_bool& receiving);
 
 	bool isInitialized() const;
 

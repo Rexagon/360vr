@@ -2,15 +2,15 @@
 #include "TextureManager.h"
 #include "ShaderManager.h"
 
-Carpet::Carpet(const ej::ManagerLocator& locator)
+Carpet::Carpet(const ej::Core& core)
 {
-	locator.get<ej::TextureManager>()->bind("carpet", ej::TextureManager::FromFile("carpet.jpg"));
-	m_texture = locator.get<ej::TextureManager>()->get("carpet");
+	core.get<ej::TextureManager>()->bind("carpet", ej::TextureManager::FromFile("carpet.jpg"));
+	m_texture = core.get<ej::TextureManager>()->get("carpet");
 
-	locator.get<ej::ShaderManager>()->bind("carpet", 
+	core.get<ej::ShaderManager>()->bind("carpet",
 		ej::ShaderManager::FromFile("carpet.vert"), 
 		ej::ShaderManager::FromFile("carpet.frag"));
-	m_shader = locator.get<ej::ShaderManager>()->get("carpet");
+	m_shader = core.get<ej::ShaderManager>()->get("carpet");
 
 	m_shader->setAttribute(0, "vPosition");
 	m_shader->setAttribute(1, "vTexCoords");
@@ -24,7 +24,7 @@ Carpet::Carpet(const ej::ManagerLocator& locator)
 	m_mesh.init(ej::MeshGeometry::createPlane(glm::vec2(1.4f, 1.0f), 1, 1));
 }
 
-void Carpet::draw(ej::Camera& camera) const
+void Carpet::draw(const ej::Camera& camera) const
 {
 	m_texture->bind(0);
 

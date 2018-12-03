@@ -3,8 +3,10 @@
 #include <glm/vec2.hpp>
 #include <glm/mat4x4.hpp>
 
+#include "PointerDefs.h"
+
 namespace ej {
-	class Camera
+	class Camera : public PointerDefs<Camera>
 	{
 	public:
 		enum ProjectionType

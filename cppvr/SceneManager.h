@@ -21,19 +21,19 @@ namespace ej
 		virtual void onUpdate(const float dt) {}
 
 	protected:
-		const ManagerLocator& getLocator() {
-			return *m_locator;
+		const Core& getCore() const {
+			return *m_core;
 		}
 
 	private:
 		friend class SceneManager;
-		const ManagerLocator* m_locator;
+		const Core* m_core;
 	};
 
-	class SceneManager : public BaseManager
+	class SceneManager : public BaseManager, public PointerDefs<SceneManager>
 	{
 	public:
-		SceneManager(const ManagerLocator& locator, std::unique_ptr<Scene> entryScene);
+		explicit SceneManager(const Core& core, std::unique_ptr<Scene> entryScene);
 		~SceneManager();
 
 		void addScene(std::unique_ptr<Scene> scene);

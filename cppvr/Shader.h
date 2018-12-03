@@ -10,12 +10,15 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 
+#include "PointerDefs.h"
 
 namespace ej
 {
-	class Shader
+	class Shader : public PointerDefs<Shader>
 	{
 	public:
+		using ptr = std::shared_ptr<Shader>;
+
 		Shader();
 		~Shader();
 

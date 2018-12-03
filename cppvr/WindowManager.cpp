@@ -4,8 +4,8 @@
 
 using namespace ej;
 
-WindowManager::WindowManager(const ManagerLocator& locator, const std::string & title, uint32_t width, uint32_t height) :
-	BaseManager(locator)
+WindowManager::WindowManager(const Core& core, const std::string & title, uint32_t width, uint32_t height) :
+	BaseManager(core)
 {
 	auto videoMode = sf::VideoMode(width, height);
 

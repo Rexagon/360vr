@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <memory>
 
-#include "ManagerLocator.h"
+#include "Core.h"
 
 namespace ej
 {
@@ -11,7 +11,7 @@ namespace ej
 	class ResourceManager : public BaseManager
 	{
 	public:
-		explicit ResourceManager(const ManagerLocator& locator) : BaseManager(locator) {}
+		explicit ResourceManager(const Core& core) : BaseManager(core) {}
 		virtual ~ResourceManager() = default;
 		
 	protected:

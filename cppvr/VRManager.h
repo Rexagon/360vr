@@ -16,10 +16,10 @@ namespace ej
 	using VRButton = vr::EVRButtonId;
 	using VRDeviceIndex = vr::TrackedDeviceIndex_t;
 
-	class VRManager : public BaseManager
+	class VRManager : public BaseManager, public PointerDefs<VRManager>
 	{
 	public:
-		explicit VRManager(const ManagerLocator& locator);
+		explicit VRManager(const Core& core);
 		~VRManager();
 
 		bool connect();

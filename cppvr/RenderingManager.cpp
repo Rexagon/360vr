@@ -6,8 +6,8 @@
 
 using namespace ej;
 
-RenderingManager::RenderingManager(const ManagerLocator& locator) :
-	BaseManager(locator)
+RenderingManager::RenderingManager(const Core& core) :
+	BaseManager(core)
 {
 	if (glewInit() != GLEW_OK) {
 		throw std::runtime_error("Unable to initialize GLEW");

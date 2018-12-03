@@ -1,12 +1,13 @@
 #pragma once
 
 #include <GL/glew.h>
-#include <glm/vec2.hpp>
 
 #include "Texture.h"
+#include "PointerDefs.h"
 
-namespace ej {
-	class FrameBuffer
+namespace ej 
+{
+	class FrameBuffer : public PointerDefs<FrameBuffer>
 	{
 	public:
 		FrameBuffer();

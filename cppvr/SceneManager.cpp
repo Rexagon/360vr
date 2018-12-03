@@ -2,8 +2,8 @@
 
 using namespace ej;
 
-SceneManager::SceneManager(const ManagerLocator& locator, std::unique_ptr<Scene> entryScene) :
-	BaseManager(locator)
+SceneManager::SceneManager(const Core& core, std::unique_ptr<Scene> entryScene) :
+	BaseManager(core)
 {
 	addScene(std::move(entryScene));
 }
@@ -20,7 +20,7 @@ void SceneManager::addScene(std::unique_ptr<Scene> scene)
 		m_scenes.top()->onLeave();
 	}
 
-	scene->m_locator = &m_locator;
+	scene->m_core = &m_core;
 
 	scene->onInit();
 	scene->onEnter();

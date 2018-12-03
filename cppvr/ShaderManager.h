@@ -10,7 +10,7 @@ namespace ej
 {
 	class FileManager;
 
-	class ShaderManager : public ResourceManager<Shader>
+	class ShaderManager : public ResourceManager<Shader>, public PointerDefs<ShaderManager>
 	{
 		struct ShaderSource
 		{
@@ -53,9 +53,9 @@ namespace ej
 			FromString(const std::string& source) : ShaderSource(String, source) {}
 		};
 
-		ShaderManager(const ManagerLocator& locator);
+		explicit ShaderManager(const Core& core);
 
-		void bind(const std::string& name, const ShaderSource& vertexShaderSource, 
+		ShaderManager* bind(const std::string& name, const ShaderSource& vertexShaderSource, 
 			const ShaderSource& fragmentShaderSource = ShaderSource(), 
 			const ShaderSource& geometryShaderSource = ShaderSource());
 

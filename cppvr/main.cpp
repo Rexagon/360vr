@@ -17,15 +17,17 @@ class Core : public ej::Core
 public:
 	Core()
 	{
-		m_managerLocator.provide<ej::FileManager>(std::make_unique<ej::FileManager::DiskFileSystem>());
-		m_managerLocator.provide<ej::RenderingManager>();
-		m_managerLocator.provide<ej::TextureManager>();
-		m_managerLocator.provide<ej::ShaderManager>();
+		provide<ej::WindowManager>("ej", 1024, 768);
 
-		m_managerLocator.provide<ej::VRManager>();
+		provide<ej::FileManager>(std::make_unique<ej::FileManager::DiskFileSystem>());
+		provide<ej::RenderingManager>();
+		provide<ej::TextureManager>();
+		provide<ej::ShaderManager>();
 
-		m_inputManager = m_managerLocator.provide<ej::InputManager>();
-		m_sceneManager = m_managerLocator.provide<ej::SceneManager>(std::make_unique<MainScene>());
+		provide<ej::VRManager>();
+
+		m_inputManager = provide<ej::InputManager>();
+		m_sceneManager = provide<ej::SceneManager>(std::make_unique<MainScene>());
 	}
 
 	void onHandleEvent(const sf::Event& event) override

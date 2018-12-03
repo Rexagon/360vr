@@ -1,16 +1,18 @@
 #pragma once
 
+#include "PointerDefs.h"
+
 namespace ej
 {
-	class ManagerLocator;
+	class Core;
 
 	class BaseManager
 	{
 	public:
-		explicit BaseManager(const ManagerLocator& locator) : m_locator(locator) {}
+		explicit BaseManager(const Core& core) : m_core(core) {}
 		virtual ~BaseManager() = default;
 
 	protected:
-		const ManagerLocator& m_locator;
+		const Core& m_core;
 	};
 }

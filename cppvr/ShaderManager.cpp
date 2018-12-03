@@ -3,16 +3,18 @@
 
 using namespace ej;
 
-ShaderManager::ShaderManager(const ManagerLocator & locator) :
-	ResourceManager(locator)
+ShaderManager::ShaderManager(const Core & core) :
+	ResourceManager(core)
 {
-	m_fileManager = m_locator.get<FileManager>();
+	m_fileManager = core.get<FileManager>();
 }
 
-void ShaderManager::bind(const std::string & name, const ShaderSource & vertexShaderSource, 
+ShaderManager* ShaderManager::bind(const std::string & name, const ShaderSource & vertexShaderSource, 
 	const ShaderSource & fragmentShaderSource, const ShaderSource & geometryShaderSource)
 {
 	m_factoryData.emplace(name, FactoryData(name, vertexShaderSource, geometryShaderSource, fragmentShaderSource));
+
+	return this;
 }
 
 std::shared_ptr<Shader> ej::ShaderManager::get(const std::string & name)

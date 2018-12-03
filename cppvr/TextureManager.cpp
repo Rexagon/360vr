@@ -5,15 +5,17 @@
 
 using namespace ej;
 
-TextureManager::TextureManager(const ManagerLocator& locator) :
-	ResourceManager(locator)
+TextureManager::TextureManager(const Core& core) :
+	ResourceManager(core)
 {
-	m_fileManager = locator.get<FileManager>();
+	m_fileManager = core.get<FileManager>();
 }
 
-void TextureManager::bind(const std::string& name, const TextureSource& source)
+TextureManager* TextureManager::bind(const std::string& name, const TextureSource& source)
 {
 	m_factoryData.emplace(name, source);
+
+	return this;
 }
 
 std::shared_ptr<Texture> TextureManager::get(const std::string& name)

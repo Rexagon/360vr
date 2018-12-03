@@ -3,10 +3,11 @@
 #include <GL/glew.h>
 
 #include "MeshGeometry.h"
+#include "PointerDefs.h"
 
 namespace ej
 {
-	class Mesh
+	class Mesh : public PointerDefs<Mesh>
 	{
 	public:
 		Mesh();

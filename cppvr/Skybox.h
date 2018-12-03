@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ManagerLocator.h"
+#include "Core.h"
 #include "Mesh.h"
 #include "Shader.h"
 
@@ -12,12 +12,12 @@
 class Skybox
 {
 public:
-	Skybox(const ej::ManagerLocator& locator);
+	Skybox(const ej::Core& core);
 	~Skybox();
 
 	void init(const glm::ivec2& size);
 
-	void draw(ej::Camera& camera, const ej::Transform& transform) const;
+	void draw(const ej::Camera& camera, const ej::Transform& transform) const;
 
 	void updateTexture(VideoStream* videoStream);
 

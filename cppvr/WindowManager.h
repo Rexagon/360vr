@@ -8,10 +8,10 @@
 
 namespace ej
 {
-	class WindowManager : public BaseManager
+	class WindowManager : public BaseManager, public PointerDefs<WindowManager>
 	{
 	public:
-		WindowManager(const ManagerLocator& locator, const std::string& title, uint32_t width, uint32_t height);
+		explicit WindowManager(const Core& core, const std::string& title, uint32_t width, uint32_t height);
 
 		sf::RenderWindow& getWindow() const;
 

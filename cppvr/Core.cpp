@@ -7,7 +7,6 @@ using namespace ej;
 Core::Core() :
 	m_isRunning(false)
 {	
-	m_managerLocator.provide<WindowManager>("ej", 1024, 768);
 }
 
 void Core::run()
@@ -16,7 +15,8 @@ void Core::run()
 		return;
 	}
 
-	const auto windowManager = m_managerLocator.get<WindowManager>();
+	const auto windowManager = get<WindowManager>();
+	assert(windowManager != nullptr);
 	
 	sf::Clock timer;
 	
@@ -48,9 +48,4 @@ void Core::run()
 void Core::stop()
 {
 	m_isRunning = false;
-}
-
-ManagerLocator & Core::getManagerLocator()
-{
-	return m_managerLocator;
 }

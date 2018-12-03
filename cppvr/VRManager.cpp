@@ -25,8 +25,8 @@ glm::mat4 toGLM(const vr::HmdMatrix34_t& m)
 	return result;
 }
 
-VRManager::VRManager(const ManagerLocator& locator) :
-	BaseManager(locator), m_system(nullptr), m_compositor(nullptr), m_renderModels(nullptr),
+VRManager::VRManager(const Core& core) :
+	BaseManager(core), m_system(nullptr), m_compositor(nullptr), m_renderModels(nullptr),
 	m_isHmdConnected(false), m_hmdDeviceIndex(-1)
 {
 }

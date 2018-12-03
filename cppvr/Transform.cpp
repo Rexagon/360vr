@@ -12,18 +12,18 @@ Transform::Transform() :
 	m_position(0.0f, 0.0f, 0.0f), m_rotation(1.0f, 0.0f, 0.0f, 0.0f), m_scale(1.0f, 1.0f, 1.0f),
 	m_directionFront(0.0f, 0.0f, -1.0f), m_directionRight(1.0f, 0.0f, 0.0f), m_directionUp(0.0f, 1.0f, 0.0f),
 	m_transformation(1.0f),
-	m_positionMatrix(1.0f), m_positionMatrixInversed(1.0f),
-	m_rotationMatrix(1.0f), m_rotationMatrixInversed(1.0f),
-	m_scaleMatrix(1.0f), m_scaleMatrixInversed(1.0f),
+	m_positionMatrix(1.0f), m_positionMatrixInverse(1.0f),
+	m_rotationMatrix(1.0f), m_rotationMatrixInverse(1.0f),
+	m_scaleMatrix(1.0f), m_scaleMatrixInverse(1.0f),
 	m_positionChanged(true), m_rotationChanged(true), m_scaleChanged(true), m_transformationChanged(true)
 {}
 
-void Transform::setTransformationMatrix(const glm::mat4 & transform)
+void Transform::setTransformationMatrix(const glm::mat4 & transformation)
 {
 	glm::vec3 skew;
 	glm::vec4 perspective;
 
-	glm::decompose(transform, m_scale, m_rotation, m_position, skew, perspective);
+	glm::decompose(transformation, m_scale, m_rotation, m_position, skew, perspective);
 }
 
 glm::mat4 Transform::getTransformationMatrix() const
@@ -47,11 +47,11 @@ glm::mat4 Transform::getPositionMatrix() const
 	return m_positionMatrix;
 }
 
-glm::mat4 Transform::getPositionMatrixInversed() const
+glm::mat4 Transform::getPositionMatrixInverse() const
 {
 	updatePosition();
 
-	return m_positionMatrixInversed;
+	return m_positionMatrixInverse;
 }
 
 glm::mat4 Transform::getRotationMatrix() const
@@ -61,11 +61,11 @@ glm::mat4 Transform::getRotationMatrix() const
 	return m_rotationMatrix;
 }
 
-glm::mat4 Transform::getRotationMatrixInversed() const
+glm::mat4 Transform::getRotationMatrixInverse() const
 {
 	updateRotation();
 
-	return m_rotationMatrixInversed;
+	return m_rotationMatrixInverse;
 }
 
 glm::mat4 Transform::getScaleMatrix() const
@@ -75,11 +75,11 @@ glm::mat4 Transform::getScaleMatrix() const
 	return m_scaleMatrix;
 }
 
-glm::mat4 Transform::getScaleMatrixInversed() const
+glm::mat4 Transform::getScaleMatrixInverse() const
 {
 	updateScale();
 
-	return m_scaleMatrixInversed;
+	return m_scaleMatrixInverse;
 }
 
 void Transform::move(float x, float y, float z)
@@ -231,7 +231,7 @@ void Transform::updatePosition() const
 {
 	if (m_positionChanged) {
 		m_positionMatrix = glm::translate(glm::mat4(1.0f), m_position);
-		m_positionMatrixInversed = glm::translate(glm::mat4(1.0f), -m_position);
+		m_positionMatrixInverse = glm::translate(glm::mat4(1.0f), -m_position);
 
 		m_positionChanged = false;
 		m_transformationChanged = true;
@@ -242,7 +242,7 @@ void Transform::updateRotation() const
 {
 	if (m_rotationChanged) {
 		m_rotationMatrix = glm::mat4_cast(m_rotation);
-		m_rotationMatrixInversed = glm::inverse(m_rotationMatrix);
+		m_rotationMatrixInverse = glm::inverse(m_rotationMatrix);
 
 		// update direction also
 		glm::vec4 temp(0.0f, 0.0f, -1.0f, 1.0f);
@@ -263,7 +263,7 @@ void Transform::updateScale() const
 {
 	if (m_scaleChanged) {
 		m_scaleMatrix = glm::scale(glm::mat4(1.0f), m_scale);
-		m_scaleMatrixInversed = glm::scale(glm::mat4(1.0f),
+		m_scaleMatrixInverse = glm::scale(glm::mat4(1.0f),
 		                                   glm::vec3(1.0f / m_scale.x, 1.0f / m_scale.y, 1.0f / m_scale.z));
 
 		m_scaleChanged = false;

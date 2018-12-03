@@ -114,7 +114,7 @@ bool VideoStream::init(const std::string& url)
 	return true;
 }
 
-void VideoStream::startReceiving(const bool& receiving)
+void VideoStream::startReceiving(std::atomic_bool& receiving)
 {
 	while (receiving && av_read_frame(m_formatContext, &m_packet) >= 0) {
 		if (m_packet.stream_index == m_videoStreamIndex) {
