@@ -13,6 +13,7 @@
 #include "Camera.h"
 #include "Carpet.h"
 #include "HeadSet.h"
+#include "SteamVRObject.h"
 
 class MainScene : public ej::Scene
 {
@@ -24,7 +25,7 @@ public:
 
 private:
 	void initManagers();
-	void drawScene(const ej::Camera& camera) const;
+	void drawScene(vr::EVREye eye) const;
 
 	ej::VRManager::ptr m_vrManager;
 	ej::InputManager::ptr m_inputManager;
@@ -33,6 +34,7 @@ private:
 	std::unique_ptr<Carpet> m_carpet;
 	std::unique_ptr<Skybox> m_skybox;
 	std::unique_ptr<HeadSet> m_headSet;
+	std::unique_ptr<SteamVRObject> m_controller;
 
 	std::unique_ptr<std::thread> m_streamingThread;
 

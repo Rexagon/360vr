@@ -6,13 +6,14 @@
 
 #include "Core.h"
 #include "Texture.h"
+#include "Transform.h"
 
 class Carpet
 {
 public:
 	explicit Carpet(const ej::Core& core);
 
-	void draw(const ej::Camera& camera) const;
+	void draw(const ej::Camera& camera, const ej::Transform& cameraTransform) const;
 
 private:
 	ej::Mesh m_mesh;

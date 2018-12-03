@@ -12,10 +12,10 @@
 #include "RenderingManager.h"
 #include "TextureManager.h"
 
-class Core : public ej::Core	
+class MyCore : public ej::Core	
 {
 public:
-	Core()
+	MyCore()
 	{
 		provide<ej::WindowManager>("ej", 1024, 768);
 
@@ -50,4 +50,4 @@ private:
 	std::shared_ptr<ej::InputManager> m_inputManager;
 };
 
-EJ_MAIN(Core);
+EJ_MAIN(MyCore);

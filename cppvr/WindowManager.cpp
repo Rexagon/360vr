@@ -9,7 +9,7 @@ WindowManager::WindowManager(const Core& core, const std::string & title, uint32
 {
 	auto videoMode = sf::VideoMode(width, height);
 
-	uint32_t style = sf::Style::Titlebar | sf::Style::Close;
+	uint32_t style = sf::Style::Titlebar | sf::Style::Close | sf::Style::Resize;
 
 	sf::ContextSettings contextSettings;
 	contextSettings.majorVersion = 3;

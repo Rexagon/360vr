@@ -113,6 +113,7 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="SteamVRObject.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -131,6 +132,7 @@
     <ClInclude Include="InputAxis.h" />
     <ClInclude Include="PointerDefs.h" />
     <ClInclude Include="Skybox.h" />
+    <ClInclude Include="SteamVRObject.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="TextureManager.h" />
     <ClInclude Include="ResourceManager.h" />

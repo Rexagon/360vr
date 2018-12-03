@@ -4,11 +4,13 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #endif
 
+#include <stack>
 #include <glm/gtx/matrix_decompose.hpp>
 
 using namespace ej;
 
-Transform::Transform() :
+Transform::Transform(Transform* parent) :
+	m_parent(parent),
 	m_position(0.0f, 0.0f, 0.0f), m_rotation(1.0f, 0.0f, 0.0f, 0.0f), m_scale(1.0f, 1.0f, 1.0f),
 	m_directionFront(0.0f, 0.0f, -1.0f), m_directionRight(1.0f, 0.0f, 0.0f), m_directionUp(0.0f, 1.0f, 0.0f),
 	m_transformation(1.0f),
@@ -17,6 +19,25 @@ Transform::Transform() :
 	m_scaleMatrix(1.0f), m_scaleMatrixInverse(1.0f),
 	m_positionChanged(true), m_rotationChanged(true), m_scaleChanged(true), m_transformationChanged(true)
 {}
+
+void Transform::setParent(Transform* parent)
+{
+	m_parent = parent;
+}
+
+Transform* Transform::getParent() const
+{
+	return m_parent;
+}
+
+glm::mat4 Transform::getGlobalTransformationMatrix() const
+{
+	if (m_parent == nullptr) {
+		return getTransformationMatrix();
+	}
+
+	return m_parent->getGlobalTransformationMatrix() * getTransformationMatrix();
+}
 
 void Transform::setTransformationMatrix(const glm::mat4 & transformation)
 {
@@ -111,6 +132,15 @@ void Transform::setPosition(const glm::vec3 & position)
 glm::vec3 Transform::getPosition() const
 {
 	return m_position;
+}
+
+glm::vec3 Transform::getGlobalPosition() const
+{
+	if (m_parent == nullptr) {
+		return getPosition();
+	}
+
+	return m_parent->getGlobalTransformationMatrix() * glm::vec4(getPosition(), 1.0f);
 }
 
 void Transform::rotate(float x, float y, float z)

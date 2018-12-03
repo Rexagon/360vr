@@ -20,6 +20,7 @@ public:
 	void draw(const ej::Camera& camera, const ej::Transform& transform) const;
 
 	void updateTexture(VideoStream* videoStream);
+	const ej::Texture* getTexture() const;
 
 	bool isInitialized() const;
 

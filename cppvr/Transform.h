@@ -9,7 +9,12 @@ namespace ej
 	class Transform : public PointerDefs<Transform>
 	{
 	public:
-		Transform();
+		Transform(Transform* parent = nullptr);
+
+		void setParent(Transform* parent);
+		Transform* getParent() const;
+
+		glm::mat4 getGlobalTransformationMatrix() const;
 
 		void setTransformationMatrix(const glm::mat4& transformation);
 		glm::mat4 getTransformationMatrix() const;
@@ -28,6 +33,7 @@ namespace ej
 		void setPosition(float x, float y, float z);
 		void setPosition(const glm::vec3& position);
 		glm::vec3 getPosition() const;
+		glm::vec3 getGlobalPosition() const;
 
 		void rotate(float x, float y, float z);
 		void rotate(const glm::vec3& eulerAngles);
@@ -54,6 +60,8 @@ namespace ej
 		void updatePosition() const;
 		void updateRotation() const;
 		void updateScale() const;
+
+		Transform* m_parent;
 
 		glm::vec3 m_position;
 		glm::quat m_rotation;

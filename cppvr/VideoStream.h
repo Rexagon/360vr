@@ -28,6 +28,8 @@ public:
 	bool sendCurrentData(uint8_t* dst, size_t size);
 
 private:
+	void decode();
+
 	bool m_isInitialized;
 	std::string m_url;
 

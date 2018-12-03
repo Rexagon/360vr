@@ -10,6 +10,7 @@
 #include <OpenVR/openvr.h>
 
 #include "BaseManager.h"
+#include "MeshGeometry.h"
 
 namespace ej
 {
@@ -27,7 +28,7 @@ namespace ej
 		void update();
 
 		size_t getControllerCount() const;
-		std::vector<VRDeviceIndex> getControllerIndices() const;
+		const std::vector<VRDeviceIndex>& getControllerIndices() const;
 
 		glm::mat4 getEyeProjectionMatrix(vr::EVREye eye, glm::vec2 range) const;
 		glm::mat4 getEyeToHeadTransform(vr::EVREye eye) const;
@@ -44,7 +45,8 @@ namespace ej
 
 		bool isHmdConnected() const;
 
-		vr::IVRCompositor* getCompositor() const;
+		vr::IVRCompositor* getCompositorInterface() const;
+		vr::IVRRenderModels* getRenderModelsInterface() const;
 
 		static bool checkHmdPresent();
 

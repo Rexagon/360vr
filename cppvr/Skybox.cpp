@@ -11,15 +11,14 @@ Skybox::Skybox(const ej::Core & core) :
 	m_texture(nullptr), m_currentPBO(0)
 {
 	core.get<ej::TextureManager>()->bind("loading",
-		ej::TextureManager::FromFile("loading.jpg"));
+		ej::TextureManager::FromFile("textures/loading.jpg"));
 
 	m_texture = core.get<ej::TextureManager>()->get("loading");
 
-	core.get<ej::ShaderManager>()->bind("skybox",
-		ej::ShaderManager::FromFile("skybox.vert"), 
-		ej::ShaderManager::FromFile("skybox.frag"));
+	m_shader = core.get<ej::ShaderManager>()->bind("skybox",
+		ej::ShaderManager::FromFile("shaders/skybox.vert"),
+		ej::ShaderManager::FromFile("shaders/skybox.frag"))->get("skybox");
 
-	m_shader = core.get<ej::ShaderManager>()->get("skybox");
 	m_shader->setAttribute(0, "vPosition");
 	m_shader->setAttribute(1, "vTexCoords");
 
@@ -116,6 +115,11 @@ void Skybox::updateTexture(VideoStream* videoStream)
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+const ej::Texture* Skybox::getTexture() const
+{
+	return m_texture.get();
 }
 
 bool Skybox::isInitialized() const

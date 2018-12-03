@@ -7,13 +7,15 @@ void MainScene::onInit()
 {
 	initManagers();
 
-	m_vrManager->connect();
-
 	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
 
 	m_carpet = std::make_unique<Carpet>(getCore());
 	m_skybox = std::make_unique<Skybox>(getCore());
 	m_headSet = std::make_unique<HeadSet>(getCore());
+	m_controller = std::make_unique<SteamVRObject>(getCore(), 
+		"vr_controller_vive_1_5");
 
 	m_receivingEnabled = true;
 	m_streamingThread = std::make_unique<std::thread>(std::thread([this]() {
@@ -47,8 +49,8 @@ void MainScene::onUpdate(const float dt)
 
 	m_headSet->update(dt);
 
-	drawScene(m_headSet->bindEye(vr::Eye_Left));
-	drawScene(m_headSet->bindEye(vr::Eye_Right));
+	drawScene(vr::Eye_Left);
+	drawScene(vr::Eye_Right);
 	m_headSet->submit();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -68,10 +70,21 @@ void MainScene::initManagers()
 	m_windowManager = getCore().get<ej::WindowManager>();
 }
 
-void MainScene::drawScene(const ej::Camera& camera) const
+void MainScene::drawScene(vr::EVREye eye) const
 {
-	glClear(GL_DEPTH_BUFFER_BIT);
+	const auto& camera = m_headSet->bindEye(eye);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	m_skybox->getTexture()->bind(3);
+
+	m_carpet->draw(camera, m_headSet->getEyeTransform(eye));
+
+	if (m_vrManager->getControllerCount() > 0) {
+		for (const auto& index : m_vrManager->getControllerIndices()) {
+			m_controller->draw(camera, m_headSet->getEyeTransform(eye), m_vrManager->getDeviceTransformation(index));
+		}
+	}
 
 	m_skybox->draw(camera, m_headSet->getTransform());
-	m_carpet->draw(camera);
 }

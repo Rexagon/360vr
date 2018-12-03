@@ -1,4 +1,5 @@
 #include "VideoStream.h"
+#include <iostream>
 
 extern "C" {
 #include <libavutil/imgutils.h>
@@ -116,27 +117,20 @@ bool VideoStream::init(const std::string& url)
 
 void VideoStream::startReceiving(std::atomic_bool& receiving)
 {
-	while (receiving && av_read_frame(m_formatContext, &m_packet) >= 0) {
+	while (receiving) {
+		int ret;
+		if ((ret = av_read_frame(m_formatContext, &m_packet)) < 0) {
+			throw std::runtime_error("Unable to read frame");
+		}
+
 		if (m_packet.stream_index == m_videoStreamIndex) {
-
-			const auto ret = avcodec_send_packet(m_decoderContext, &m_packet);
-			if (ret >= 0) {
-
-				while (avcodec_receive_frame(m_decoderContext, m_frame) >= 0)
-				{
-					// printf("[Frame] t: %lld\tw: %d\th: %d\n", m_frame->best_effort_timestamp, m_frame->width, m_frame->height);
-
-					std::lock_guard<std::mutex> lock(m_dataMutex);
-					sws_scale(m_swsContext, m_frame->data, m_frame->linesize, 0, m_decoderContext->height, 
-						m_buffer->data, m_buffer->linesize);
-					m_hasData = true;
-				}
-			}
-
+			decode();
 		}
 
 		av_packet_unref(&m_packet);
 	}
+
+	avcodec_send_packet(m_decoderContext, nullptr);
 }
 
 bool VideoStream::isInitialized() const
@@ -166,4 +160,24 @@ bool VideoStream::sendCurrentData(uint8_t* dst, size_t size)
 
 	m_hasData = false;
 	return true;
+}
+
+void VideoStream::decode()
+{
+	int ret = avcodec_send_packet(m_decoderContext, &m_packet);
+	if (ret < 0) {
+		throw std::runtime_error("Unable to send packet for decoding");
+	}
+
+	if (ret >= 0) {
+
+		ret = avcodec_receive_frame(m_decoderContext, m_frame) >= 0;
+
+		// printf("[Frame] t: %lld\tw: %d\th: %d\n", m_frame->best_effort_timestamp, m_frame->width, m_frame->height);
+
+		std::lock_guard<std::mutex> lock(m_dataMutex);
+		sws_scale(m_swsContext, m_frame->data, m_frame->linesize, 0, m_decoderContext->height,
+			m_buffer->data, m_buffer->linesize);
+		m_hasData = true;
+	}
 }

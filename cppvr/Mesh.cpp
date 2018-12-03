@@ -30,35 +30,35 @@ void Mesh::init(const MeshGeometry& geometry)
 
 	size_t positionsBufferSize = 0;
 	if (geometry.vertexComponents & MeshGeometry::Positions) {
-		positionsBufferSize = sizeof(glm::vec3) * m_vertexCount;
+		positionsBufferSize = sizeof(glm::vec3) * geometry.positions.size();
 		bufferSize += positionsBufferSize;
 		++m_attributeCount;
 	}
 
 	size_t texCoordsBufferSize = 0;
 	if (geometry.vertexComponents & MeshGeometry::TexCoords) {
-		texCoordsBufferSize = sizeof(glm::vec3) * m_vertexCount;
+		texCoordsBufferSize = sizeof(glm::vec2) * geometry.texCoords.size();
 		bufferSize += texCoordsBufferSize;
 		++m_attributeCount;
 	}
 
 	size_t normalsBufferSize = 0;
 	if (geometry.vertexComponents & MeshGeometry::Normals) {
-		normalsBufferSize = sizeof(glm::vec3) * m_vertexCount;
+		normalsBufferSize = sizeof(glm::vec3) * geometry.normals.size();
 		bufferSize += normalsBufferSize;
 		++m_attributeCount;
 	}
 
 	size_t tangentsBufferSize = 0;
 	if (geometry.vertexComponents & MeshGeometry::Tangents) {
-		tangentsBufferSize = sizeof(glm::vec3) * m_vertexCount;
+		tangentsBufferSize = sizeof(glm::vec3) * geometry.tangents.size();
 		bufferSize += tangentsBufferSize;
 		++m_attributeCount;
 	}
 
 	size_t bitangentsBufferSize = 0;
 	if (geometry.vertexComponents & MeshGeometry::Bitangents) {
-		bitangentsBufferSize = sizeof(glm::vec3) * m_vertexCount;
+		bitangentsBufferSize = sizeof(glm::vec3) * geometry.bitangents.size();
 		bufferSize += bitangentsBufferSize;
 		++m_attributeCount;
 	}
@@ -105,8 +105,7 @@ void Mesh::init(const MeshGeometry& geometry)
 
 		offset += bitangentsBufferSize;
 	}
-
-
+	
 	glBufferData(GL_ARRAY_BUFFER, bufferSize, data.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

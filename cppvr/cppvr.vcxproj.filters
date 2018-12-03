@@ -68,6 +68,9 @@
     <ClCompile Include="HeadSet.cpp">
       <Filter>App\Objects\HeadSet</Filter>
     </ClCompile>
+    <ClCompile Include="SteamVRObject.cpp">
+      <Filter>App\Objects\SteamVRObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">
@@ -151,6 +154,9 @@
     <Filter Include="Engine\Managers\SceneManager">
       <UniqueIdentifier>{be509228-ddf5-4cb7-9e5d-fa9224d38196}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App\Objects\SteamVRObject">
+      <UniqueIdentifier>{13e21d42-be6f-406f-8b68-7ec084d13d6a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainScene.h">
@@ -227,6 +233,9 @@
     </ClInclude>
     <ClInclude Include="PointerDefs.h">
       <Filter>Engine\Stuff</Filter>
+    </ClInclude>
+    <ClInclude Include="SteamVRObject.h">
+      <Filter>App\Objects\SteamVRObject</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

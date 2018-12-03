@@ -14,14 +14,17 @@ HeadSet::HeadSet(const ej::Core & core)
 
 		m_eyeCameras[i] = std::make_unique<ej::Camera>(
 			m_vrManager->getEyeProjectionMatrix(static_cast<vr::EVREye>(i), zRange));
+
+		m_eyeTransforms[i].setParent(&m_transform);
+		m_eyeTransforms[i].setTransformationMatrix(m_vrManager->getEyeToHeadTransform(static_cast<vr::EVREye>(i)));
 	}
 
 	m_screenQuad.init(ej::MeshGeometry::createQuad(glm::vec2(1.0f), 
 		ej::MeshGeometry::TEXTURED_VERTEX));
 
 	m_screenQuadShader = core.get<ej::ShaderManager>()->bind("quad",
-		ej::ShaderManager::FromFile("quad.vert"),
-		ej::ShaderManager::FromFile("quad.frag"))->get("quad");
+		ej::ShaderManager::FromFile("shaders/quad.vert"),
+		ej::ShaderManager::FromFile("shaders/quad.frag"))->get("quad");
 
 	m_screenQuadShader->setAttribute(0, "vPosition");
 	m_screenQuadShader->setAttribute(1, "vTexCoords");
@@ -35,12 +38,12 @@ HeadSet::HeadSet(const ej::Core & core)
 void HeadSet::update(const float dt)
 {
 	if (m_vrManager->isHmdConnected()) {
+
 		m_transform.setPosition(m_vrManager->getHmdPosition());
 		m_transform.setRotation(m_vrManager->getHmdRotation());
 
 		for (size_t i = 0; i < 2; ++i) {
-			m_eyeCameras[i]->updateView(m_transform.getTransformationMatrix() *
-				m_vrManager->getEyeToHeadTransform(static_cast<vr::EVREye>(i)));
+			m_eyeCameras[i]->updateView(m_eyeTransforms[i].getGlobalTransformationMatrix());
 		}
 	}
 }
@@ -69,8 +72,8 @@ void HeadSet::submit()
 		vr::ColorSpace_Gamma
 	};
 
-	m_vrManager->getCompositor()->Submit(vr::Eye_Left, &leftEyeTexture);
-	m_vrManager->getCompositor()->Submit(vr::Eye_Right, &rightEyeBuffer);
+	m_vrManager->getCompositorInterface()->Submit(vr::Eye_Left, &leftEyeTexture);
+	m_vrManager->getCompositorInterface()->Submit(vr::Eye_Right, &rightEyeBuffer);
 	glFlush();
 }
 
@@ -88,4 +91,9 @@ void HeadSet::drawDebug()
 const ej::Transform& HeadSet::getTransform() const
 {
 	return m_transform;
+}
+
+const ej::Transform& HeadSet::getEyeTransform(vr::EVREye eye) const
+{
+	return m_eyeTransforms[eye];
 }

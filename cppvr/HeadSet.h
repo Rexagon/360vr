@@ -21,6 +21,7 @@ public:
 	void drawDebug();
 
 	const ej::Transform& getTransform() const;
+	const ej::Transform& getEyeTransform(vr::EVREye eye) const;
 
 private:
 	ej::VRManager::ptr m_vrManager;
@@ -29,6 +30,7 @@ private:
 	ej::FrameBuffer m_eyeBuffers[2];
 
 	ej::Transform m_transform;
+	ej::Transform m_eyeTransforms[2];
 
 	// For desktop rendering
 	ej::Mesh m_screenQuad;
