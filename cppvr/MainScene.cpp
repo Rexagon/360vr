@@ -2,7 +2,6 @@
 
 #include <thread>
 #include <GL/glew.h>
-#include "ShaderManager.h"
 
 void MainScene::onInit()
 {
@@ -16,12 +15,13 @@ void MainScene::onInit()
 	m_skybox = std::make_unique<Skybox>(getCore());
 	m_headSet = std::make_unique<HeadSet>(getCore());
 
+	m_receivingEnabled = true;
 	m_streamingThread = std::make_unique<std::thread>(std::thread([this]() {
 		try {
 			m_videoStream.init("rtmp://rtuitlab.ru/stream/test");
+			m_isConnected = true;
 
-			m_isConnectedToStream = true;
-			m_videoStream.startReceiving(m_isConnectedToStream);
+			m_videoStream.startReceiving(m_receivingEnabled);
 		}
 		catch (const std::runtime_error& e) {
 			printf("Error in video stream thread: %s", e.what());
@@ -31,7 +31,7 @@ void MainScene::onInit()
 
 void MainScene::onClose()
 {
-	m_isConnectedToStream = false;
+	m_receivingEnabled = false;
 	if (m_streamingThread->joinable()) {
 		m_streamingThread->join();
 	}
@@ -39,7 +39,7 @@ void MainScene::onClose()
 
 void MainScene::onUpdate(const float dt)
 {
-	if (m_isConnectedToStream && m_videoStream.hasData()) {
+	if (m_isConnected && m_videoStream.hasData()) {
 		m_skybox->updateTexture(&m_videoStream);
 	}
 

@@ -37,5 +37,6 @@ private:
 	std::unique_ptr<std::thread> m_streamingThread;
 
 	VideoStream m_videoStream;
-	std::atomic_bool m_isConnectedToStream;
+	std::atomic_bool m_isConnected;
+	std::atomic_bool m_receivingEnabled;
 };

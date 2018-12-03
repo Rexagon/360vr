@@ -40,6 +40,8 @@ void SceneManager::removeScene()
 	m_scenes.top()->onLeave();
 	m_scenes.top()->onClose();
 
+	m_scenes.pop();
+
 	if (m_scenes.empty()) return;
 
 	m_scenes.top()->onEnter();
@@ -64,5 +66,6 @@ void SceneManager::clear()
 {
 	while (hasScenes()) {
 		removeScene();
+		printf("Removed scene");
 	}
 }
