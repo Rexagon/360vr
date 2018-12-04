@@ -34,7 +34,10 @@ private:
 	std::unique_ptr<Carpet> m_carpet;
 	std::unique_ptr<Skybox> m_skybox;
 	std::unique_ptr<HeadSet> m_headSet;
-	std::unique_ptr<SteamVRObject> m_controller;
+
+	std::unique_ptr<SteamVRObject> m_viveController;
+	std::unique_ptr<SteamVRObject> m_oculusLeftController;
+	std::unique_ptr<SteamVRObject> m_oculusRightController;
 
 	std::unique_ptr<std::thread> m_streamingThread;
 

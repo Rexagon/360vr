@@ -69,6 +69,8 @@ void VRManager::update()
 
 	const float predictedSecondsFromNow = frameDuration - secondsSinceLastVsync + vsyncToPhotons;
 
+	//printf("%f\n", predictedSecondsFromNow);
+
 	m_system->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, predictedSecondsFromNow, &m_trackedDevicePoses[0], DEVICE_COUNT);
 
 	for (VRDeviceIndex i = 0; i < DEVICE_COUNT; ++i) {
@@ -146,6 +148,11 @@ glm::quat VRManager::getDeviceRotation(VRDeviceIndex device) const
 glm::mat4 VRManager::getDeviceTransformation(VRDeviceIndex device) const
 {
 	return m_trackedDeviceMatrices[device];
+}
+
+vr::ETrackedControllerRole ej::VRManager::getControllerRole(VRDeviceIndex device)
+{
+	return m_system->GetControllerRoleForTrackedDeviceIndex(device);
 }
 
 glm::vec3 VRManager::getHmdPosition() const

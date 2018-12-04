@@ -14,13 +14,18 @@ void MainScene::onInit()
 	m_carpet = std::make_unique<Carpet>(getCore());
 	m_skybox = std::make_unique<Skybox>(getCore());
 	m_headSet = std::make_unique<HeadSet>(getCore());
-	m_controller = std::make_unique<SteamVRObject>(getCore(), 
+
+	m_viveController = std::make_unique<SteamVRObject>(getCore(), 
 		"vr_controller_vive_1_5");
+	m_oculusLeftController = std::make_unique<SteamVRObject>(getCore(),
+		"oculus_cv1_controller_left");
+	m_oculusRightController = std::make_unique<SteamVRObject>(getCore(),
+		"oculus_cv1_controller_right");
 
 	m_receivingEnabled = true;
 	m_streamingThread = std::make_unique<std::thread>(std::thread([this]() {
 		try {
-			m_videoStream.init("rtmp://rtuitlab.ru/stream/test");
+			m_videoStream.init("VR animation_coma.mp4");
 			m_isConnected = true;
 
 			m_videoStream.startReceiving(m_receivingEnabled);
@@ -82,7 +87,25 @@ void MainScene::drawScene(vr::EVREye eye) const
 
 	if (m_vrManager->getControllerCount() > 0) {
 		for (const auto& index : m_vrManager->getControllerIndices()) {
-			m_controller->draw(camera, m_headSet->getEyeTransform(eye), m_vrManager->getDeviceTransformation(index));
+			SteamVRObject* model = nullptr;
+
+			switch (m_vrManager->getControllerRole(index)) {
+			case vr::TrackedControllerRole_OptOut:
+				model = m_viveController.get();
+				break;
+			case vr::TrackedControllerRole_LeftHand:
+				model = m_oculusLeftController.get();
+				break;
+			case vr::TrackedControllerRole_RightHand:
+				model = m_oculusRightController.get();
+				break;
+			default:
+				break;
+			}
+
+			if (model) {
+				model->draw(camera, m_headSet->getEyeTransform(eye), m_vrManager->getDeviceTransformation(index));
+			}
 		}
 	}
 

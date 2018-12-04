@@ -1,6 +1,7 @@
 #pragma once
 
 #include <mutex>
+#include <queue>
 #include <atomic>
 
 #include <glm/vec2.hpp>
@@ -39,13 +40,14 @@ private:
 	AVFormatContext* m_formatContext;
 	int m_videoStreamIndex;
 
-	AVFrame* m_frame;
 	AVFrame* m_buffer;
 	uint8_t* m_bufferFrameData;
 	AVPacket m_packet;
 
+	int64_t m_currentTimestamp;
+
 	glm::vec2 m_size;
 
-	bool m_hasData;
 	std::mutex m_dataMutex;
+	std::queue<AVFrame*> m_frameQueue;
 };

@@ -37,6 +37,8 @@ namespace ej
 		glm::quat getDeviceRotation(VRDeviceIndex device) const;
 		glm::mat4 getDeviceTransformation(VRDeviceIndex device) const;
 
+		vr::ETrackedControllerRole getControllerRole(VRDeviceIndex device);
+
 		glm::vec3 getHmdPosition() const;
 		glm::quat getHmdRotation() const;
 		glm::mat4 getHmdTransformation() const;

@@ -3,6 +3,7 @@
 
 extern "C" {
 #include <libavutil/imgutils.h>
+#include <libavutil/time.h>
 }
 
 VideoStream::VideoStream() :
@@ -10,15 +11,19 @@ VideoStream::VideoStream() :
 	m_decoder(nullptr), m_swsContext(nullptr),
 	m_decoderContext(nullptr), m_formatContext(nullptr), 
 	m_videoStreamIndex(0),
-	m_frame(nullptr), m_buffer(nullptr), m_packet(), m_size(),
-	m_hasData(false)
+	m_buffer(nullptr), m_packet(), m_size()
 {
 }
 
 VideoStream::~VideoStream()
 {
 	if (m_isInitialized) {
-		av_frame_free(&m_frame);
+		while (!m_frameQueue.empty()) {
+			AVFrame* frame = m_frameQueue.front();
+			av_frame_free(&frame);
+			m_frameQueue.pop();
+		}
+
 		av_frame_free(&m_buffer);
 		av_free(m_bufferFrameData);
 
@@ -89,7 +94,6 @@ bool VideoStream::init(const std::string& url)
 	m_size = glm::vec2(m_decoderContext->width, m_decoderContext->height);
 
 	av_init_packet(&m_packet);
-	m_frame = av_frame_alloc();
 
 	m_buffer = av_frame_alloc();
 	m_buffer->width = m_decoderContext->width;
@@ -117,6 +121,8 @@ bool VideoStream::init(const std::string& url)
 
 void VideoStream::startReceiving(std::atomic_bool& receiving)
 {
+	m_currentTimestamp = av_gettime_relative();
+
 	while (receiving) {
 		int ret;
 		if ((ret = av_read_frame(m_formatContext, &m_packet)) < 0) {
@@ -145,20 +151,42 @@ glm::vec2 VideoStream::getSize() const
 
 bool VideoStream::hasData() const
 {
-	return m_hasData;
+	return !m_frameQueue.empty();
 }
 
 bool VideoStream::sendCurrentData(uint8_t* dst, size_t size)
 {
 	std::lock_guard<std::mutex> lock(m_dataMutex);
 
-	if (m_buffer == nullptr) {
-		return false;
+	AVFrame* frame = m_frameQueue.front();
+
+	const auto now = av_gettime();
+
+	AVRational rational{ 1, 1000000 };
+
+	int64_t rescaledNow = av_rescale_q(now, rational,
+		m_formatContext->streams[m_videoStreamIndex]->time_base);
+
+	int64_t pts;
+	if (frame->pkt_dts != AV_NOPTS_VALUE) {
+		pts = frame->best_effort_timestamp;
 	}
+	else {
+		pts = 0;
+	}
+	pts *= av_q2d(m_formatContext->streams[m_videoStreamIndex]->time_base);
+
+	std::cout << rescaledNow << " " << pts << std::endl;
+
+	sws_scale(m_swsContext, frame->data, frame->linesize, 0, m_decoderContext->height,
+		m_buffer->data, m_buffer->linesize);
 
 	std::memcpy(dst, m_buffer->data[0], size);
 
-	m_hasData = false;
+	av_frame_free(&frame);
+
+	m_frameQueue.pop();
+
 	return true;
 }
 
@@ -170,14 +198,16 @@ void VideoStream::decode()
 	}
 
 	if (ret >= 0) {
+		AVFrame* frame = av_frame_alloc();
 
-		ret = avcodec_receive_frame(m_decoderContext, m_frame) >= 0;
+		ret = avcodec_receive_frame(m_decoderContext, frame);
+		if (ret < 0) {
+			av_frame_free(&frame);
+		}
 
-		// printf("[Frame] t: %lld\tw: %d\th: %d\n", m_frame->best_effort_timestamp, m_frame->width, m_frame->height);
-
-		std::lock_guard<std::mutex> lock(m_dataMutex);
-		sws_scale(m_swsContext, m_frame->data, m_frame->linesize, 0, m_decoderContext->height,
-			m_buffer->data, m_buffer->linesize);
-		m_hasData = true;
+		if (frame) {
+			std::lock_guard<std::mutex> lock(m_dataMutex);
+			m_frameQueue.push(frame);
+		}
 	}
 }
