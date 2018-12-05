@@ -11,16 +11,19 @@ VideoStream::VideoStream() :
 	m_decoder(nullptr), m_swsContext(nullptr),
 	m_decoderContext(nullptr), m_formatContext(nullptr), 
 	m_videoStreamIndex(0),
-	m_buffer(nullptr), m_packet(), m_size()
+	m_buffer(nullptr), m_packet(), m_size(), m_hasData(false)
 {
 }
 
 VideoStream::~VideoStream()
 {
 	if (m_isInitialized) {
+		if (m_decoderThread->joinable()) {
+			m_decoderThread->join();
+		}
+
 		while (!m_frameQueue.empty()) {
-			AVFrame* frame = m_frameQueue.front();
-			av_frame_free(&frame);
+			av_frame_free(&m_frameQueue.front());
 			m_frameQueue.pop();
 		}
 
@@ -121,16 +124,72 @@ bool VideoStream::init(const std::string& url)
 
 void VideoStream::startReceiving(std::atomic_bool& receiving)
 {
-	m_currentTimestamp = av_gettime_relative();
+	m_decoderThread = std::make_unique<std::thread>([this](std::atomic_bool& decoding) {
+		sf::Clock m_timer;
+		m_timer.restart();
+
+		while (decoding) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(11));
+			
+			if (m_frameQueue.empty()) {
+				continue;
+			}
+
+			AVFrame* frame = nullptr;
+
+			{
+				std::lock_guard<std::mutex> lock(m_queueMutex);
+				frame = m_frameQueue.front();
+
+				if (frame == nullptr) {
+					continue;
+				}
+
+				AVStream* stream = m_formatContext->streams[m_videoStreamIndex];
+				const auto seconds = (frame->pkt_dts - stream->start_time) * av_q2d(stream->time_base);
+
+				if (m_timer.getElapsedTime().asSeconds() < seconds) {
+					continue;
+				}
+
+				m_frameQueue.pop();
+			}
+			
+			std::lock_guard<std::mutex> lock(m_bufferMutex);
+
+			sws_scale(m_swsContext, frame->data, frame->linesize, 0, m_decoderContext->height,
+				m_buffer->data, m_buffer->linesize);
+
+			av_frame_free(&frame);
+
+			m_hasData = true;
+		}
+	}, std::ref(receiving));
 
 	while (receiving) {
-		int ret;
-		if ((ret = av_read_frame(m_formatContext, &m_packet)) < 0) {
-			throw std::runtime_error("Unable to read frame");
+		if (m_frameQueue.size() > 64) {
+			std::this_thread::sleep_for(std::chrono::milliseconds(11));
+			continue;
+		}
+
+		if (av_read_frame(m_formatContext, &m_packet) < 0) {
+			printf("Error: Unable to read frame\n");
+			break;
 		}
 
 		if (m_packet.stream_index == m_videoStreamIndex) {
-			decode();
+			if (avcodec_send_packet(m_decoderContext, &m_packet) < 0) {
+				throw std::runtime_error("Unable to send packet for decoding");
+			}
+
+			AVFrame* frame = av_frame_alloc();
+
+			if (avcodec_receive_frame(m_decoderContext, frame) < 0) {
+				av_frame_free(&frame);
+			} else {
+				std::lock_guard<std::mutex> lock(m_queueMutex);
+				m_frameQueue.push(frame);				
+			}
 		}
 
 		av_packet_unref(&m_packet);
@@ -151,63 +210,17 @@ glm::vec2 VideoStream::getSize() const
 
 bool VideoStream::hasData() const
 {
-	return !m_frameQueue.empty();
+	return m_hasData;
 }
 
 bool VideoStream::sendCurrentData(uint8_t* dst, size_t size)
 {
-	std::lock_guard<std::mutex> lock(m_dataMutex);
+	if (!m_hasData) return false;
 
-	AVFrame* frame = m_frameQueue.front();
-
-	const auto now = av_gettime();
-
-	AVRational rational{ 1, 1000000 };
-
-	int64_t rescaledNow = av_rescale_q(now, rational,
-		m_formatContext->streams[m_videoStreamIndex]->time_base);
-
-	int64_t pts;
-	if (frame->pkt_dts != AV_NOPTS_VALUE) {
-		pts = frame->best_effort_timestamp;
-	}
-	else {
-		pts = 0;
-	}
-	pts *= av_q2d(m_formatContext->streams[m_videoStreamIndex]->time_base);
-
-	std::cout << rescaledNow << " " << pts << std::endl;
-
-	sws_scale(m_swsContext, frame->data, frame->linesize, 0, m_decoderContext->height,
-		m_buffer->data, m_buffer->linesize);
+	std::lock_guard<std::mutex> lock(m_bufferMutex);
 
 	std::memcpy(dst, m_buffer->data[0], size);
-
-	av_frame_free(&frame);
-
-	m_frameQueue.pop();
+	m_hasData = false;
 
 	return true;
-}
-
-void VideoStream::decode()
-{
-	int ret = avcodec_send_packet(m_decoderContext, &m_packet);
-	if (ret < 0) {
-		throw std::runtime_error("Unable to send packet for decoding");
-	}
-
-	if (ret >= 0) {
-		AVFrame* frame = av_frame_alloc();
-
-		ret = avcodec_receive_frame(m_decoderContext, frame);
-		if (ret < 0) {
-			av_frame_free(&frame);
-		}
-
-		if (frame) {
-			std::lock_guard<std::mutex> lock(m_dataMutex);
-			m_frameQueue.push(frame);
-		}
-	}
 }

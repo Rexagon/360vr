@@ -25,7 +25,7 @@ void MainScene::onInit()
 	m_receivingEnabled = true;
 	m_streamingThread = std::make_unique<std::thread>(std::thread([this]() {
 		try {
-			m_videoStream.init("VR animation_coma.mp4");
+			m_videoStream.init("rtmp://rtuitlab.ru/stream/test");
 			m_isConnected = true;
 
 			m_videoStream.startReceiving(m_receivingEnabled);

@@ -5,6 +5,7 @@
 #include <atomic>
 
 #include <glm/vec2.hpp>
+#include <SFML/System/Clock.hpp>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -29,8 +30,6 @@ public:
 	bool sendCurrentData(uint8_t* dst, size_t size);
 
 private:
-	void decode();
-
 	bool m_isInitialized;
 	std::string m_url;
 
@@ -44,10 +43,12 @@ private:
 	uint8_t* m_bufferFrameData;
 	AVPacket m_packet;
 
-	int64_t m_currentTimestamp;
-
 	glm::vec2 m_size;
 
-	std::mutex m_dataMutex;
+	std::mutex m_queueMutex;
 	std::queue<AVFrame*> m_frameQueue;
+
+	bool m_hasData;
+	std::mutex m_bufferMutex;
+	std::unique_ptr<std::thread> m_decoderThread;
 };

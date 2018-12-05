@@ -7,6 +7,9 @@
 *.out
 *.app
 
+# Test video
+*.mp4
+
 temp/
 Debug/
 Thumbs.db

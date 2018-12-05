@@ -67,7 +67,7 @@ void VRManager::update()
 	const auto frameDuration = 1.f / displayFrequency;
 	const float vsyncToPhotons = m_system->GetFloatTrackedDeviceProperty(vr::k_unTrackedDeviceIndex_Hmd, vr::Prop_SecondsFromVsyncToPhotons_Float);
 
-	const float predictedSecondsFromNow = frameDuration - secondsSinceLastVsync + vsyncToPhotons;
+	const float predictedSecondsFromNow = frameDuration * 2.0f - secondsSinceLastVsync + vsyncToPhotons;
 
 	//printf("%f\n", predictedSecondsFromNow);
 
