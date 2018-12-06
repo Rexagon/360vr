@@ -13,7 +13,7 @@ class Carpet
 public:
 	explicit Carpet(const ej::Core& core);
 
-	void draw(const ej::Camera& camera, const ej::Transform& cameraTransform) const;
+	void draw(const ej::Camera& camera, const ej::Transform& cameraTransform, const ej::Transform& transform) const;
 
 private:
 	ej::Mesh m_mesh;

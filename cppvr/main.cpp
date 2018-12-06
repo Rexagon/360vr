@@ -11,6 +11,7 @@
 
 #include "RenderingManager.h"
 #include "TextureManager.h"
+#include "RotationManager.h"
 
 class MyCore : public ej::Core	
 {
@@ -25,6 +26,8 @@ public:
 		provide<ej::ShaderManager>();
 
 		provide<ej::VRManager>();
+
+		provide<RotationManager>();
 
 		m_inputManager = provide<ej::InputManager>();
 		m_sceneManager = provide<ej::SceneManager>(std::make_unique<MainScene>());

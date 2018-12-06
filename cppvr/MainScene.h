@@ -10,10 +10,10 @@
 #include "WindowManager.h"
 
 #include "Skybox.h"
-#include "Camera.h"
 #include "Carpet.h"
 #include "HeadSet.h"
 #include "SteamVRObject.h"
+#include "RotationManager.h"
 
 class MainScene : public ej::Scene
 {
@@ -30,6 +30,9 @@ private:
 	ej::VRManager::ptr m_vrManager;
 	ej::InputManager::ptr m_inputManager;
 	ej::WindowManager::ptr m_windowManager;
+	RotationManager::ptr m_rotationManager;
+
+	ej::Transform m_carpetTransform;
 
 	std::unique_ptr<Carpet> m_carpet;
 	std::unique_ptr<Skybox> m_skybox;

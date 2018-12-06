@@ -34,6 +34,8 @@ void MainScene::onInit()
 			printf("Error in video stream thread: %s", e.what());
 		}
 	}));
+
+	m_rotationManager->start();
 }
 
 void MainScene::onClose()
@@ -54,6 +56,8 @@ void MainScene::onUpdate(const float dt)
 
 	m_headSet->update(dt);
 
+	m_carpetTransform.setRotation(m_rotationManager->getState());
+
 	drawScene(vr::Eye_Left);
 	drawScene(vr::Eye_Right);
 	m_headSet->submit();
@@ -73,6 +77,8 @@ void MainScene::initManagers()
 	m_inputManager = getCore().get<ej::InputManager>();
 
 	m_windowManager = getCore().get<ej::WindowManager>();
+
+	m_rotationManager = getCore().get<RotationManager>();
 }
 
 void MainScene::drawScene(vr::EVREye eye) const
@@ -83,7 +89,7 @@ void MainScene::drawScene(vr::EVREye eye) const
 
 	m_skybox->getTexture()->bind(3);
 
-	m_carpet->draw(camera, m_headSet->getEyeTransform(eye));
+	m_carpet->draw(camera, m_headSet->getEyeTransform(eye), m_carpetTransform);
 
 	if (m_vrManager->getControllerCount() > 0) {
 		for (const auto& index : m_vrManager->getControllerIndices()) {

@@ -23,7 +23,7 @@ Carpet::Carpet(const ej::Core& core)
 	m_mesh.init(ej::MeshGeometry::createPlane(glm::vec2(1.4f, 1.0f), 1, 1));
 }
 
-void Carpet::draw(const ej::Camera& camera, const ej::Transform& cameraTransform) const
+void Carpet::draw(const ej::Camera& camera, const ej::Transform& cameraTransform, const ej::Transform& transform) const
 {
 	m_texture->bind(0);
 
@@ -31,6 +31,7 @@ void Carpet::draw(const ej::Camera& camera, const ej::Transform& cameraTransform
 
 	glUseProgram(m_shader->getHandle());
 	m_shader->setUniform("uViewProjection", camera.getViewProjectionMatrix());
+	m_shader->setUniform("uTransform", transform.getGlobalTransformationMatrix());
 	m_shader->setUniform("uCameraPosition", cameraTransform.getGlobalPosition());
 	m_mesh.draw();
 	

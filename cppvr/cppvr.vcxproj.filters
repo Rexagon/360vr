@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="MainScene.cpp">
       <Filter>App\Scenes</Filter>
     </ClCompile>
@@ -70,6 +69,12 @@
     </ClCompile>
     <ClCompile Include="SteamVRObject.cpp">
       <Filter>App\Objects\SteamVRObject</Filter>
+    </ClCompile>
+    <ClCompile Include="RotationManager.cpp">
+      <Filter>App\Managers\RotationManager</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>App</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +162,12 @@
     <Filter Include="App\Objects\SteamVRObject">
       <UniqueIdentifier>{13e21d42-be6f-406f-8b68-7ec084d13d6a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App\Managers">
+      <UniqueIdentifier>{1035b4b9-a85b-40f1-82e8-afc99fab9ae6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Managers\RotationManager">
+      <UniqueIdentifier>{421048cc-31d8-4c66-81c4-481887546efd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainScene.h">
@@ -236,6 +247,9 @@
     </ClInclude>
     <ClInclude Include="SteamVRObject.h">
       <Filter>App\Objects\SteamVRObject</Filter>
+    </ClInclude>
+    <ClInclude Include="RotationManager.h">
+      <Filter>App\Managers\RotationManager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
