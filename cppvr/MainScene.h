@@ -14,6 +14,7 @@
 #include "HeadSet.h"
 #include "SteamVRObject.h"
 #include "RotationManager.h"
+#include "ChairManager.h"
 
 class MainScene : public ej::Scene
 {
@@ -31,6 +32,7 @@ private:
 	ej::InputManager::ptr m_inputManager;
 	ej::WindowManager::ptr m_windowManager;
 	RotationManager::ptr m_rotationManager;
+	ChairManager::ptr m_chairManager;
 
 	ej::Transform m_carpetTransform;
 

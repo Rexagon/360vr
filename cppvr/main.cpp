@@ -8,6 +8,7 @@
 #include "InputManager.h"
 #include "ShaderManager.h"
 #include "VRManager.h"
+#include "ChairManager.h"
 
 #include "RenderingManager.h"
 #include "TextureManager.h"
@@ -28,6 +29,7 @@ public:
 		provide<ej::VRManager>();
 
 		provide<RotationManager>();
+		provide<ChairManager>();
 
 		m_inputManager = provide<ej::InputManager>();
 		m_sceneManager = provide<ej::SceneManager>(std::make_unique<MainScene>());

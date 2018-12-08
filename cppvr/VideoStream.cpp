@@ -124,6 +124,10 @@ bool VideoStream::init(const std::string& url)
 
 void VideoStream::startReceiving(std::atomic_bool& receiving)
 {
+	if (!m_isInitialized) {
+		return;
+	}
+
 	m_decoderThread = std::make_unique<std::thread>([this](std::atomic_bool& decoding) {
 		sf::Clock m_timer;
 		m_timer.restart();

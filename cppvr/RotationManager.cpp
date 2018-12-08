@@ -34,7 +34,7 @@ void RotationManager::start()
 		unsigned short port;
 
 		while (m_isReceiving) {
-			if (m_socket.receive(data, sender, port) == sf::Socket::Done) {
+			if (m_socket.receive(data, sender, port) == sf::Socket::Status::Done) {
 				handlePacket(std::move(data));
 			}
 			else {

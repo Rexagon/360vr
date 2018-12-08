@@ -22,7 +22,7 @@ void MainScene::onInit()
 	m_oculusRightController = std::make_unique<SteamVRObject>(getCore(),
 		"oculus_cv1_controller_right");
 
-	m_receivingEnabled = true;
+	m_receivingEnabled = false;
 	m_streamingThread = std::make_unique<std::thread>(std::thread([this]() {
 		try {
 			m_videoStream.init("rtmp://rtuitlab.ru/stream/test");
@@ -36,6 +36,13 @@ void MainScene::onInit()
 	}));
 
 	m_rotationManager->start();
+
+	try {
+		m_chairManager->init(5);
+	}
+	catch (const std::runtime_error& e) {
+		printf("ERROR: %s\n", e.what());
+	}
 }
 
 void MainScene::onClose()
@@ -44,6 +51,7 @@ void MainScene::onClose()
 	if (m_streamingThread->joinable()) {
 		m_streamingThread->join();
 	}
+	m_chairManager->close();
 }
 
 void MainScene::onUpdate(const float dt)

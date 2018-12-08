@@ -76,6 +76,9 @@
     <ClCompile Include="main.cpp">
       <Filter>App</Filter>
     </ClCompile>
+    <ClCompile Include="ChairManager.cpp">
+      <Filter>App\Managers\ChairManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">
@@ -168,6 +171,9 @@
     <Filter Include="App\Managers\RotationManager">
       <UniqueIdentifier>{421048cc-31d8-4c66-81c4-481887546efd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App\Managers\ChairManager">
+      <UniqueIdentifier>{60e5d905-1cd4-4cfa-b164-cc3debd24914}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainScene.h">
@@ -250,6 +256,9 @@
     </ClInclude>
     <ClInclude Include="RotationManager.h">
       <Filter>App\Managers\RotationManager</Filter>
+    </ClInclude>
+    <ClInclude Include="ChairManager.h">
+      <Filter>App\Managers\ChairManager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

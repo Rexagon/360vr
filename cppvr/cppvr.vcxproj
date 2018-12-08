@@ -98,6 +98,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Carpet.cpp" />
+    <ClCompile Include="ChairManager.cpp" />
     <ClCompile Include="Core.cpp" />
     <ClCompile Include="FileManager.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
@@ -126,6 +127,7 @@
     <ClInclude Include="BaseManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Carpet.h" />
+    <ClInclude Include="ChairManager.h" />
     <ClInclude Include="Core.h" />
     <ClInclude Include="FileManager.h" />
     <ClInclude Include="FrameBuffer.h" />
