@@ -16,9 +16,6 @@
     <ClCompile Include="RenderingManager.cpp">
       <Filter>Engine\Managers\RenderingManager</Filter>
     </ClCompile>
-    <ClCompile Include="VideoStream.cpp">
-      <Filter>App\Objects\Stream</Filter>
-    </ClCompile>
     <ClCompile Include="Skybox.cpp">
       <Filter>App\Objects\Skybox</Filter>
     </ClCompile>
@@ -36,9 +33,6 @@
     </ClCompile>
     <ClCompile Include="FrameBuffer.cpp">
       <Filter>Engine\Objects\FrameBuffer</Filter>
-    </ClCompile>
-    <ClCompile Include="Carpet.cpp">
-      <Filter>App\Objects\Carpet</Filter>
     </ClCompile>
     <ClCompile Include="FileManager.cpp">
       <Filter>Engine\Managers\FileManager</Filter>
@@ -70,14 +64,14 @@
     <ClCompile Include="SteamVRObject.cpp">
       <Filter>App\Objects\SteamVRObject</Filter>
     </ClCompile>
-    <ClCompile Include="RotationManager.cpp">
-      <Filter>App\Managers\RotationManager</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>App</Filter>
     </ClCompile>
-    <ClCompile Include="ChairManager.cpp">
-      <Filter>App\Managers\ChairManager</Filter>
+    <ClCompile Include="Model.cpp">
+      <Filter>App\Objects\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugCamera.cpp">
+      <Filter>App\Objects\DebugCamera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -126,14 +120,8 @@
     <Filter Include="App\Objects">
       <UniqueIdentifier>{b7408bc7-2bff-4688-b5c6-73097532d17d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="App\Objects\Carpet">
-      <UniqueIdentifier>{e2bfd85a-123a-464a-95d1-b04b72ffde46}</UniqueIdentifier>
-    </Filter>
     <Filter Include="App\Objects\Skybox">
       <UniqueIdentifier>{91fce6b6-0ca2-4cbe-ac1b-bd3059b82050}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="App\Objects\Stream">
-      <UniqueIdentifier>{2eb3253f-7421-4e3a-a1bd-97b09fa32a38}</UniqueIdentifier>
     </Filter>
     <Filter Include="App\Objects\HeadSet">
       <UniqueIdentifier>{da2e0332-593c-466a-9020-d3a2962adc2f}</UniqueIdentifier>
@@ -165,14 +153,11 @@
     <Filter Include="App\Objects\SteamVRObject">
       <UniqueIdentifier>{13e21d42-be6f-406f-8b68-7ec084d13d6a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="App\Managers">
-      <UniqueIdentifier>{1035b4b9-a85b-40f1-82e8-afc99fab9ae6}</UniqueIdentifier>
+    <Filter Include="App\Objects\Model">
+      <UniqueIdentifier>{e2bfd85a-123a-464a-95d1-b04b72ffde46}</UniqueIdentifier>
     </Filter>
-    <Filter Include="App\Managers\RotationManager">
-      <UniqueIdentifier>{421048cc-31d8-4c66-81c4-481887546efd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="App\Managers\ChairManager">
-      <UniqueIdentifier>{60e5d905-1cd4-4cfa-b164-cc3debd24914}</UniqueIdentifier>
+    <Filter Include="App\Objects\DebugCamera">
+      <UniqueIdentifier>{9173ce85-77a6-4a32-b559-248fec9fb6bd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -200,9 +185,6 @@
     <ClInclude Include="ResourceManager.h">
       <Filter>Engine\Stuff</Filter>
     </ClInclude>
-    <ClInclude Include="VideoStream.h">
-      <Filter>App\Objects\Stream</Filter>
-    </ClInclude>
     <ClInclude Include="Skybox.h">
       <Filter>App\Objects\Skybox</Filter>
     </ClInclude>
@@ -220,9 +202,6 @@
     </ClInclude>
     <ClInclude Include="FrameBuffer.h">
       <Filter>Engine\Objects\FrameBuffer</Filter>
-    </ClInclude>
-    <ClInclude Include="Carpet.h">
-      <Filter>App\Objects\Carpet</Filter>
     </ClInclude>
     <ClInclude Include="FileManager.h">
       <Filter>Engine\Managers\FileManager</Filter>
@@ -254,11 +233,11 @@
     <ClInclude Include="SteamVRObject.h">
       <Filter>App\Objects\SteamVRObject</Filter>
     </ClInclude>
-    <ClInclude Include="RotationManager.h">
-      <Filter>App\Managers\RotationManager</Filter>
+    <ClInclude Include="Model.h">
+      <Filter>App\Objects\Model</Filter>
     </ClInclude>
-    <ClInclude Include="ChairManager.h">
-      <Filter>App\Managers\ChairManager</Filter>
+    <ClInclude Include="DebugCamera.h">
+      <Filter>App\Objects\DebugCamera</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

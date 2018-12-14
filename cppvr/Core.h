@@ -30,6 +30,8 @@ namespace ej
 
 	protected:
 		virtual void onHandleEvent(const sf::Event& event) = 0;
+
+		virtual void onBeforeUpdate(float dt) {}
 		virtual void onUpdate(float dt) = 0;
 
 	private:

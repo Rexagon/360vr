@@ -23,7 +23,11 @@ void Core::run()
 	m_isRunning = true;
 	while (m_isRunning)
 	{
+		const auto dt = timer.restart().asSeconds();
+
 		auto& window = windowManager->getWindow();
+
+		onBeforeUpdate(dt);
 
 		// Handle events
 		auto event = sf::Event();
@@ -37,7 +41,6 @@ void Core::run()
 		}
 
 		// Handle scene logic
-		const auto dt = timer.restart().asSeconds();
 		onUpdate(dt);
 
 		// Swap buffers

@@ -9,12 +9,11 @@
 #include "SceneManager.h"
 #include "WindowManager.h"
 
+#include "Model.h"
 #include "Skybox.h"
-#include "Carpet.h"
 #include "HeadSet.h"
+#include "DebugCamera.h"
 #include "SteamVRObject.h"
-#include "RotationManager.h"
-#include "ChairManager.h"
 
 class MainScene : public ej::Scene
 {
@@ -26,27 +25,21 @@ public:
 
 private:
 	void initManagers();
-	void drawScene(vr::EVREye eye) const;
+	void drawScene(const ej::Camera& camera, const ej::Transform& cameraTransform) const;
 
 	ej::VRManager::ptr m_vrManager;
 	ej::InputManager::ptr m_inputManager;
 	ej::WindowManager::ptr m_windowManager;
-	RotationManager::ptr m_rotationManager;
-	ChairManager::ptr m_chairManager;
 
-	ej::Transform m_carpetTransform;
+	ej::Transform m_meshTransform;
 
-	std::unique_ptr<Carpet> m_carpet;
+	std::unique_ptr<Model> m_model;
 	std::unique_ptr<Skybox> m_skybox;
+
 	std::unique_ptr<HeadSet> m_headSet;
+	std::unique_ptr<DebugCamera> m_debugCamera;
 
 	std::unique_ptr<SteamVRObject> m_viveController;
 	std::unique_ptr<SteamVRObject> m_oculusLeftController;
 	std::unique_ptr<SteamVRObject> m_oculusRightController;
-
-	std::unique_ptr<std::thread> m_streamingThread;
-
-	VideoStream m_videoStream;
-	std::atomic_bool m_isConnected;
-	std::atomic_bool m_receivingEnabled;
 };

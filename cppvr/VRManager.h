@@ -23,7 +23,7 @@ namespace ej
 		explicit VRManager(const Core& core);
 		~VRManager();
 
-		bool connect();
+		void connect();
 
 		void update();
 
@@ -56,7 +56,7 @@ namespace ej
 	private:
 		static const size_t DEVICE_COUNT = vr::k_unMaxTrackedDeviceCount;
 
-		bool processEvent(const vr::VREvent_t & event);
+		void processEvent(const vr::VREvent_t & event);
 		void updateControllersInfo();
 
 		vr::IVRSystem* m_system;

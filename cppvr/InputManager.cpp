@@ -44,6 +44,7 @@ void InputManager::handleEvent(const sf::Event& event)
 			m_currentKeysState.set(event.key.code);
 		}
 		break;
+
 	case sf::Event::KeyReleased:
 		if (details::isKeyValid(event.key.code))
 		{
@@ -142,4 +143,14 @@ float InputManager::getAxis(const std::string& name)
 	}
 
 	return it->second->getValue();
+}
+
+glm::vec2 ej::InputManager::getMousePositionDelta() const
+{
+	return m_currentMousePosition - m_lastMousePosition;
+}
+
+glm::vec2 ej::InputManager::getMousePosition() const
+{
+	return m_currentMousePosition;
 }

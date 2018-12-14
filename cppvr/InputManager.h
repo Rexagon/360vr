@@ -44,6 +44,9 @@ namespace ej
 
 		float getAxis(const std::string& name);
 
+		glm::vec2 getMousePositionDelta() const;
+		glm::vec2 getMousePosition() const;
+
 	private:
 		bool m_anyKeyUp;
 		bool m_anyKeyDown;
