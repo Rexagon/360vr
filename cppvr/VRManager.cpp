@@ -15,9 +15,7 @@ glm::mat4 toGLM(const vr::HmdMatrix34_t& mat)
 
 VRManager::VRManager(const Core& core) :
 	BaseManager(core), m_system(nullptr), m_compositor(nullptr), m_renderModels(nullptr),
-	m_isHmdConnected(false), m_hmdDeviceIndex(-1)
-{
-}
+	m_isHmdConnected(false), m_hmdDeviceIndex(-1), m_trackedDevicePoses(), m_trackedDeviceMatrices(), m_isInitialized(false) {}
 
 VRManager::~VRManager()
 {
@@ -183,6 +181,11 @@ glm::uvec2 VRManager::getRenderTargetSize() const
 	uint32_t width, height;
 	m_system->GetRecommendedRenderTargetSize(&width, &height);
 	return glm::uvec2(width, height);
+}
+
+bool VRManager::isInitialized() const
+{
+	return m_isInitialized;
 }
 
 bool VRManager::isHmdConnected() const

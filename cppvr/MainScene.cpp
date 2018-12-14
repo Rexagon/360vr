@@ -34,15 +34,6 @@ void MainScene::onInit()
 			printf("Error in video stream thread: %s", e.what());
 		}
 	}));
-
-	m_rotationManager->start();
-
-	try {
-		m_chairManager->init(5);
-	}
-	catch (const std::runtime_error& e) {
-		printf("ERROR: %s\n", e.what());
-	}
 }
 
 void MainScene::onClose()
@@ -80,13 +71,26 @@ void MainScene::onUpdate(const float dt)
 void MainScene::initManagers()
 {
 	m_vrManager = getCore().get<ej::VRManager>();
-	m_vrManager->connect();
-
 	m_inputManager = getCore().get<ej::InputManager>();
-
 	m_windowManager = getCore().get<ej::WindowManager>();
-
 	m_rotationManager = getCore().get<RotationManager>();
+	m_chairManager = getCore().get<ChairManager>();
+
+	try {
+		m_vrManager->connect();
+	}
+	catch (const std::runtime_error& e) {
+		printf("ERROR: %s\n", e.what());
+	}
+
+	m_rotationManager->start();
+
+	try {
+		m_chairManager->init(5);
+	}
+	catch (const std::runtime_error& e) {
+		printf("ERROR: %s\n", e.what());
+	}
 }
 
 void MainScene::drawScene(vr::EVREye eye) const

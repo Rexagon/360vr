@@ -45,6 +45,7 @@ namespace ej
 
 		glm::uvec2 getRenderTargetSize() const;
 
+		bool isInitialized() const;
 		bool isHmdConnected() const;
 
 		vr::IVRCompositor* getCompositorInterface() const;
@@ -62,6 +63,7 @@ namespace ej
 		vr::IVRCompositor* m_compositor;
 		vr::IVRRenderModels* m_renderModels;
 
+		bool m_isInitialized;
 		bool m_isHmdConnected;
 		VRDeviceIndex m_hmdDeviceIndex;
 		std::vector<VRDeviceIndex> m_controllerDevicesIndices;

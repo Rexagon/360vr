@@ -1,6 +1,7 @@
 #include "ChairManager.h"
 
 #include <string>
+#include <stdexcept>
 
 ChairManager::ChairManager(const ej::Core& core) :
 	ej::BaseManager(core), m_isInitialized(false)
