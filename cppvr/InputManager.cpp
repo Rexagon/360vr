@@ -1,5 +1,7 @@
 #include "InputManager.h"
 
+#include "Core.h"
+
 using namespace ej;
 
 bool details::isKeyValid(const Key key)
@@ -16,6 +18,7 @@ bool details::isMouseButtonValid(const MouseButton button)
 InputManager::InputManager(const Core& core) :
 	BaseManager(core)
 {
+	m_windowManager = core.get<ej::WindowManager>();
 }
 
 void InputManager::updateState()
@@ -68,7 +71,7 @@ void InputManager::handleEvent(const sf::Event& event)
 		break;
 
 	case sf::Event::MouseMoved:
-		m_currentMousePosition = glm::vec2(event.mouseMove.x, event.mouseMove.y);
+		m_currentMousePosition = glm::ivec2(event.mouseMove.x, event.mouseMove.y);
 		break;
 
 	case sf::Event::MouseWheelScrolled:
@@ -145,12 +148,24 @@ float InputManager::getAxis(const std::string& name)
 	return it->second->getValue();
 }
 
-glm::vec2 ej::InputManager::getMousePositionDelta() const
+void ej::InputManager::setMouseCursorVisible(bool visible)
+{
+	m_windowManager->getWindow().setMouseCursorVisible(visible);
+}
+
+void ej::InputManager::setMousePosition(const glm::ivec2 & position)
+{
+	m_currentMousePosition = position;
+	sf::Mouse::setPosition(sf::Vector2i(position.x, position.y),
+		m_windowManager->getWindow());
+}
+
+glm::ivec2 ej::InputManager::getMousePositionDelta() const
 {
 	return m_currentMousePosition - m_lastMousePosition;
 }
 
-glm::vec2 ej::InputManager::getMousePosition() const
+glm::ivec2 ej::InputManager::getMousePosition() const
 {
 	return m_currentMousePosition;
 }

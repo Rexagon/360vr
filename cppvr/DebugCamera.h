@@ -17,15 +17,21 @@ public:
 	ej::Camera& getCamera();
 	ej::Transform& getTransform();
 
-	void setSpeed(float speed);
-	float getSpeed() const;
+	void setMovementSpeed(float speed);
+	float getMovementSpeed() const;
+
+	void setRotationSpeed(float speed);
+	float getRotationSpeed() const;
 
 private:
-	float m_speed;
+	float m_movementSpeed;
+	float m_rotationSpeed;
 
 	ej::InputManager::ptr m_inputManager;
 	ej::WindowManager::ptr m_windowManager;
 
 	ej::Camera m_camera;
 	ej::Transform m_transform;
+
+	glm::vec2 m_lastMousePosition;
 };

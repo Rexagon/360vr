@@ -1,7 +1,7 @@
 #include "DebugCamera.h"
 
 DebugCamera::DebugCamera(const ej::Core & core) :
-	m_speed(1.0f)
+	m_movementSpeed(1.0f), m_rotationSpeed(1.0f)
 {
 	m_inputManager = core.get<ej::InputManager>();
 	m_windowManager = core.get<ej::WindowManager>();
@@ -12,6 +12,35 @@ void DebugCamera::update(const float dt)
 	const auto windowSize = m_windowManager->getWindow().getSize();
 	m_camera.setAspect(static_cast<float>(windowSize.x) / windowSize.y);
 	m_camera.updateProjection();
+	
+	// Handle rotation
+	const auto windowCenter = glm::ivec2(windowSize.x / 2, windowSize.y / 2);
+
+	if (m_inputManager->getMouseButtonDown(ej::MouseButton::Right)) {
+		m_lastMousePosition = m_inputManager->getMousePosition();
+		m_inputManager->setMousePosition(windowCenter);
+		m_inputManager->setMouseCursorVisible(false);
+	}
+
+	if (m_inputManager->getMouseButtonUp(ej::MouseButton::Right)) {
+		m_inputManager->setMousePosition(m_lastMousePosition);
+
+		m_inputManager->setMouseCursorVisible(true);
+	}
+
+	if (m_inputManager->getMouseButton(ej::MouseButton::Right)) {
+		glm::vec2 deltaMouse = m_inputManager->getMousePosition() - windowCenter;
+
+		const auto horizontalRotation = glm::angleAxis(-deltaMouse.x * dt * m_rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+		m_transform.rotate(horizontalRotation);
+
+		const auto verticalRotation = glm::angleAxis(-deltaMouse.y * dt * m_rotationSpeed, m_transform.getDirectionRight());
+		m_transform.rotate(verticalRotation);
+
+		m_inputManager->setMousePosition(windowCenter);
+	}
+
+	// Handle movement
 
 	glm::vec3 direction{ 0.0f, 0.0f, 0.0f };
 
@@ -36,16 +65,9 @@ void DebugCamera::update(const float dt)
 		direction.y += 1.0f;
 	}
 
-	glm::vec2 deltaMouse = m_inputManager->getMousePositionDelta();
+	m_transform.move(m_transform.getRotation() * direction * dt * m_movementSpeed);	
 
-	float rotationSpeed = 10.0f;
-
-	const auto hotizontalRotation = glm::angleAxis(-deltaMouse.x * dt * rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
-	const auto verticalRotatoin = glm::angleAxis(-deltaMouse.y * dt * rotationSpeed, m_transform.getDirectionRight());
-
-	m_transform.rotate(hotizontalRotation * verticalRotatoin);
-
-	m_transform.move(m_transform.getRotation() * direction * dt * m_speed);	
+	// Update view
 
 	m_camera.updateView(m_transform.getGlobalTransformationMatrix());
 }
@@ -60,12 +82,22 @@ ej::Transform & DebugCamera::getTransform()
 	return m_transform;
 }
 
-void DebugCamera::setSpeed(float speed)
+void DebugCamera::setMovementSpeed(float speed)
 {
-	m_speed = speed;
+	m_movementSpeed = speed;
 }
 
-float DebugCamera::getSpeed() const
+float DebugCamera::getMovementSpeed() const
 {
-	return m_speed;
+	return m_movementSpeed;
+}
+
+void DebugCamera::setRotationSpeed(float speed)
+{
+	m_rotationSpeed = speed;
+}
+
+float DebugCamera::getRotationSpeed() const
+{
+	return m_rotationSpeed;
 }

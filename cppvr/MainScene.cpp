@@ -20,6 +20,9 @@ void MainScene::onInit()
 	if (m_vrManager->isInitialized()) {
 		m_headSet = std::make_unique<HeadSet>(getCore());
 	}
+	else {
+		m_windowManager->getWindow().setVerticalSyncEnabled(true);
+	}
 
 	m_viveController = std::make_unique<SteamVRObject>(getCore(), 
 		"vr_controller_vive_1_5");
@@ -61,6 +64,10 @@ void MainScene::onUpdate(const float dt)
 
 		drawScene(m_debugCamera->getCamera(), m_debugCamera->getTransform());
 	}
+
+	if (m_inputManager->getKeyDown(ej::Key::Escape)) {
+		getCore().get<ej::SceneManager>()->removeScene();
+	}
 }
 
 void MainScene::initManagers()
@@ -70,7 +77,7 @@ void MainScene::initManagers()
 	m_windowManager = getCore().get<ej::WindowManager>();
 
 	try {
-		m_vrManager->connect();
+		//m_vrManager->connect();
 	}
 	catch (const std::runtime_error& e) {
 		printf("ERROR: %s\n", e.what());

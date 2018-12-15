@@ -7,6 +7,7 @@
 
 #include "InputAxis.h"
 #include "BaseManager.h"
+#include "WindowManager.h"
 
 namespace ej
 {
@@ -44,10 +45,15 @@ namespace ej
 
 		float getAxis(const std::string& name);
 
-		glm::vec2 getMousePositionDelta() const;
-		glm::vec2 getMousePosition() const;
+		void setMouseCursorVisible(bool visible);
+
+		void setMousePosition(const glm::ivec2& position);
+		glm::ivec2 getMousePositionDelta() const;
+		glm::ivec2 getMousePosition() const;
 
 	private:
+		ej::WindowManager::ptr m_windowManager;
+
 		bool m_anyKeyUp;
 		bool m_anyKeyDown;
 		KeysState m_currentKeysState;
@@ -58,8 +64,8 @@ namespace ej
 		MouseButtonsState m_currentMouseButtonsState;
 		MouseButtonsState m_lastMouseButtonsState;
 
-		glm::vec2 m_lastMousePosition;
-		glm::vec2 m_currentMousePosition;
+		glm::ivec2 m_lastMousePosition;
+		glm::ivec2 m_currentMousePosition;
 
 		float m_mouseWheelDelta;
 

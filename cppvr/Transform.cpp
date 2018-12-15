@@ -281,8 +281,8 @@ void Transform::updateRotation() const
 		glm::vec3 directionFront(temp.x, temp.y, temp.z);
 
 		m_directionFront = glm::normalize(directionFront);
-		m_directionRight = glm::cross(m_directionFront, glm::vec3(0.0f, 1.0f, 0.0f));
-		m_directionUp = glm::cross(m_directionRight, m_directionFront);
+		m_directionRight = glm::normalize(glm::cross(m_directionFront, glm::vec3(0.0f, 1.0f, 0.0f)));
+		m_directionUp = glm::normalize(glm::cross(m_directionRight, m_directionFront));
 
 		m_rotationChanged = false;
 		m_transformationChanged = true;
