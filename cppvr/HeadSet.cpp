@@ -38,7 +38,6 @@ HeadSet::HeadSet(const ej::Core & core)
 void HeadSet::update(const float dt)
 {
 	if (m_vrManager->isHmdConnected()) {
-
 		m_transform.setPosition(m_vrManager->getHmdPosition());
 		m_transform.setRotation(m_vrManager->getHmdRotation());
 

@@ -39,6 +39,8 @@ namespace ej
 
 		vr::ETrackedControllerRole getControllerRole(VRDeviceIndex device);
 
+		std::string getDeviceRenderModelName(VRDeviceIndex device);
+
 		glm::vec3 getHmdPosition() const;
 		glm::quat getHmdRotation() const;
 		glm::mat4 getHmdTransformation() const;

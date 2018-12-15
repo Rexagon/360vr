@@ -187,6 +187,25 @@ vr::ETrackedControllerRole ej::VRManager::getControllerRole(VRDeviceIndex device
 	return m_system->GetControllerRoleForTrackedDeviceIndex(device);
 }
 
+std::string ej::VRManager::getDeviceRenderModelName(VRDeviceIndex device)
+{
+	if (!m_isInitialized) {
+		return {};
+	}
+
+	char temp[128];
+	const auto len = m_system->GetStringTrackedDeviceProperty(device, vr::Prop_RenderModelName_String, temp, 128);
+	if (len == 0) {
+		return {};
+	}
+
+	std::string result;
+	result.resize(len - 1);
+	std::memcpy(result.data(), temp, len - 1);
+
+	return result;
+}
+
 glm::vec3 VRManager::getHmdPosition() const
 {
 	if (!m_isHmdConnected) {

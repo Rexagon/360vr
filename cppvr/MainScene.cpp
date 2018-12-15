@@ -23,13 +23,6 @@ void MainScene::onInit()
 	else {
 		m_windowManager->getWindow().setVerticalSyncEnabled(true);
 	}
-
-	m_viveController = std::make_unique<SteamVRObject>(getCore(), 
-		"vr_controller_vive_1_5");
-	m_oculusLeftController = std::make_unique<SteamVRObject>(getCore(),
-		"oculus_cv1_controller_left");
-	m_oculusRightController = std::make_unique<SteamVRObject>(getCore(),
-		"oculus_cv1_controller_right");
 }
 
 void MainScene::onClose()
@@ -42,6 +35,11 @@ void MainScene::onUpdate(const float dt)
 	
 	if (m_vrManager->isHmdConnected()) {
 		m_headSet->update(dt);
+
+		for (const auto& index : m_vrManager->getControllerIndices()) {
+			const auto name = m_vrManager->getDeviceRenderModelName(index);
+			m_controllers.try_emplace(name, std::make_unique<SteamVRObject>(getCore(), name));
+		}
 
 		for (size_t i = 0; i < 2; ++i) {
 			const auto eye = static_cast<vr::EVREye>(i);
@@ -88,32 +86,34 @@ void MainScene::drawScene(const ej::Camera& camera, const ej::Transform& cameraT
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	m_skybox->draw(camera, cameraTransform);
 	m_skybox->getTexture()->bind(3);
 
 	m_model->draw(camera, cameraTransform, m_meshTransform);
 
 	if (m_vrManager->getControllerCount() > 0) {
 		for (const auto& index : m_vrManager->getControllerIndices()) {
+			if (m_vrManager->getControllerRole(index) == vr::TrackedControllerRole_Invalid) {
+				continue;
+			}
+
 			SteamVRObject* model = nullptr;
 
-			switch (m_vrManager->getControllerRole(index)) {
-			case vr::TrackedControllerRole_OptOut:
-				model = m_viveController.get();
-				break;
-			case vr::TrackedControllerRole_LeftHand:
-				model = m_oculusLeftController.get();
-				break;
-			case vr::TrackedControllerRole_RightHand:
-				model = m_oculusRightController.get();
-				break;
-			default:
-				break;
+			const auto name = m_vrManager->getDeviceRenderModelName(index);
+			const auto it = m_controllers.find(name);
+			if (it != m_controllers.end()) {
+				model = it->second.get();
 			}
 
 			if (model) {
 				model->draw(camera, cameraTransform, m_vrManager->getDeviceTransformation(index));
 			}
 		}
+	}
+
+	if (m_vrManager->isHmdConnected()) {
+		m_skybox->draw(camera, m_headSet->getTransform());
+	}
+	else {
+		m_skybox->draw(camera, cameraTransform);
 	}
 }

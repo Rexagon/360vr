@@ -3,6 +3,7 @@
 #include <mutex>
 #include <memory>
 #include <atomic>
+#include <unordered_map>
 
 #include "VRManager.h"
 #include "InputManager.h"
@@ -39,7 +40,5 @@ private:
 	std::unique_ptr<HeadSet> m_headSet;
 	std::unique_ptr<DebugCamera> m_debugCamera;
 
-	std::unique_ptr<SteamVRObject> m_viveController;
-	std::unique_ptr<SteamVRObject> m_oculusLeftController;
-	std::unique_ptr<SteamVRObject> m_oculusRightController;
+	std::unordered_map<std::string, std::unique_ptr<SteamVRObject>> m_controllers;
 };

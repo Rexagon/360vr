@@ -14,6 +14,8 @@ WindowManager::WindowManager(const Core& core, const std::string & title, uint32
 	sf::ContextSettings contextSettings;
 	contextSettings.majorVersion = 3;
 	contextSettings.minorVersion = 3;
+	contextSettings.depthBits = 24;
+	contextSettings.stencilBits = 8;
 
 	m_window = std::make_unique<sf::RenderWindow>(videoMode, title, style, contextSettings);
 	m_window->setVerticalSyncEnabled(false);
