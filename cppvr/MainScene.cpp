@@ -1,15 +1,12 @@
 #include "MainScene.h"
 
-#include <thread>
 #include <GL/glew.h>
 
 void MainScene::onInit()
 {
 	initManagers();
 
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
+	m_renderingManager->apply();
 
 	m_model = std::make_unique<Model>(getCore());
 	m_skybox = std::make_unique<Skybox>(getCore());
@@ -73,9 +70,12 @@ void MainScene::initManagers()
 	m_vrManager = getCore().get<ej::VRManager>();
 	m_inputManager = getCore().get<ej::InputManager>();
 	m_windowManager = getCore().get<ej::WindowManager>();
+	m_renderingManager = getCore().get<ej::RenderingManager>();
 
 	try {
-		//m_vrManager->connect();
+		//if (m_vrManager->checkHmdPresent()) {
+		//	m_vrManager->connect();
+		}
 	}
 	catch (const std::runtime_error& e) {
 		printf("ERROR: %s\n", e.what());

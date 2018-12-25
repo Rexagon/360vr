@@ -1,14 +1,13 @@
 #pragma once
 
-#include <mutex>
 #include <memory>
-#include <atomic>
 #include <unordered_map>
 
 #include "VRManager.h"
 #include "InputManager.h"
 #include "SceneManager.h"
 #include "WindowManager.h"
+#include "RenderingManager.h"
 
 #include "Model.h"
 #include "Skybox.h"
@@ -31,6 +30,7 @@ private:
 	ej::VRManager::ptr m_vrManager;
 	ej::InputManager::ptr m_inputManager;
 	ej::WindowManager::ptr m_windowManager;
+	ej::RenderingManager::ptr m_renderingManager;
 
 	ej::Transform m_meshTransform;
 
