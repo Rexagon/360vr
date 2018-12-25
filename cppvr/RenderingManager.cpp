@@ -8,12 +8,12 @@ using namespace ej;
 
 RenderingManager::RenderingManager(const Core& core) :
 	BaseManager(core),
-	m_viewport{0}, m_clearColor{0.0f, 0.0f, 0.0f, 1.0f}, m_clearDepth(0.0f),
+	m_viewport{0}, m_clearColor{0.0f, 0.0f, 0.0f, 1.0f}, m_clearDepth(1.0f),
 	m_isDepthTestEnabled(true), m_isDepthWriteEnabled(true), m_depthTestFunction(GL_LEQUAL),
 	m_clipControlOrigin(GL_LOWER_LEFT), m_clipControlDepth(GL_NEGATIVE_ONE_TO_ONE),
 	m_isBlendingEnabled(false), m_blendingFunctionSrc(GL_SRC_ALPHA), m_blendingFunctionDst(GL_ONE_MINUS_SRC_ALPHA),
 	m_isFaceCullingEnabled(true), m_faceCullingSide(GL_BACK), m_polygonMode(GL_FILL), 
-	m_currentShader(nullptr)
+	m_currentShader(nullptr), m_currentFrameBuffer(nullptr)
 {
 	if (glewInit() != GLEW_OK) {
 		throw std::runtime_error("Unable to initialize GLEW");

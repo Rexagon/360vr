@@ -9,6 +9,8 @@
 Skybox::Skybox(const ej::Core & core) :
 	m_isInitialized(false), m_texture(nullptr), m_shader(nullptr)
 {
+	m_renderingManager = core.get<ej::RenderingManager>();
+
 	core.get<ej::TextureManager>()->bind("loading",
 		ej::TextureManager::FromFile("textures/loading.jpg"));
 
@@ -21,11 +23,11 @@ Skybox::Skybox(const ej::Core & core) :
 	m_shader->setAttribute(0, "vPosition");
 	m_shader->setAttribute(1, "vTexCoords");
 
-	glUseProgram(m_shader->getHandle());
+	m_renderingManager->setCurrentShader(m_shader.get());
 	m_shader->setUniform("uProjection", glm::mat4());
 	m_shader->setUniform("uRotation", glm::mat4());
 	m_shader->setUniform("uDiffuseTexture", 0);
-	glUseProgram(0);
+	m_renderingManager->setCurrentShader(nullptr);
 
 	m_cube.init(ej::MeshGeometry::createCube(glm::vec3(1.0f, 1.0f, 1.0f),
 		ej::MeshGeometry::TEXTURED_VERTEX));
@@ -37,22 +39,18 @@ Skybox::~Skybox()
 
 void Skybox::draw(const ej::Camera& camera, const ej::Transform& transform) const
 {
+	m_renderingManager->setFaceCullingSide(GL_FRONT);
+
 	if (m_texture) {
 		m_texture->bind(0);
 	}
 
-	glUseProgram(m_shader->getHandle());
+	m_renderingManager->setCurrentShader(m_shader.get());
 
 	m_shader->setUniform("uProjection", camera.getProjectionMatrix());
 	m_shader->setUniform("uRotation", transform.getRotationMatrixInverse());
 
-	glCullFace(GL_FRONT);
 	m_cube.draw();
-	glCullFace(GL_BACK);
-
-	glUseProgram(0);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Skybox::setTexture(ej::Texture::ptr texture)

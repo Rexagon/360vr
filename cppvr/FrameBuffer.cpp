@@ -14,16 +14,6 @@ FrameBuffer::~FrameBuffer()
 	glDeleteRenderbuffers(1, &m_depthBuffer);
 }
 
-void FrameBuffer::bind() const
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, m_id);
-}
-
-void FrameBuffer::unbind()
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
 Texture & FrameBuffer::getColorTexture()
 {
 	return m_colorTexture;

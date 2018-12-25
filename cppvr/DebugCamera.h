@@ -1,18 +1,17 @@
 #pragma once
 
-#include "Core.h"
 #include "Camera.h"
 #include "Transform.h"
 
 #include "InputManager.h"
 #include "WindowManager.h"
 
-class DebugCamera
+class DebugCamera : public ej::PointerDefs<DebugCamera>
 {
 public:
 	DebugCamera(const ej::Core& core);
 
-	void update(const float dt);
+	void update(float dt);
 
 	ej::Camera& getCamera();
 	ej::Transform& getTransform();

@@ -2,6 +2,8 @@
 
 #include <GL/glew.h>
 
+#include "Core.h"
+
 void MainScene::onInit()
 {
 	initManagers();
@@ -44,16 +46,16 @@ void MainScene::onUpdate(const float dt)
 		}
 		m_headSet->submit();
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		m_renderingManager->setCurrentFrameBuffer(nullptr);
 		const auto& windowSize = m_windowManager->getWindow().getSize();
-		glViewport(0, 0, windowSize.x, windowSize.y);
+		m_renderingManager->setViewport(0, 0, windowSize.x, windowSize.y);
 		
 		m_headSet->drawDebug();
 	}
 	else {
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		m_renderingManager->setCurrentFrameBuffer(nullptr);
 		const auto& windowSize = m_windowManager->getWindow().getSize();
-		glViewport(0, 0, windowSize.x, windowSize.y);
+		m_renderingManager->setViewport(0, 0, windowSize.x, windowSize.y);
 
 		m_debugCamera->update(dt);
 
@@ -75,7 +77,7 @@ void MainScene::initManagers()
 	try {
 		//if (m_vrManager->checkHmdPresent()) {
 		//	m_vrManager->connect();
-		}
+		//}
 	}
 	catch (const std::runtime_error& e) {
 		printf("ERROR: %s\n", e.what());

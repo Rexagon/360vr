@@ -4,6 +4,8 @@
 
 Model::Model(const ej::Core& core)
 {
+	m_renderingManager = core.get<ej::RenderingManager>();
+
 	core.get<ej::TextureManager>()->bind("carpet", 
 		ej::TextureManager::FromFile("textures/carpet.jpg"));
 	m_texture = core.get<ej::TextureManager>()->get("carpet");
@@ -16,28 +18,26 @@ Model::Model(const ej::Core& core)
 	m_shader->setAttribute(1, "vTexCoords");
 	m_shader->setAttribute(2, "vNormal");
 
-	glUseProgram(m_shader->getHandle());
+	m_renderingManager->setCurrentShader(m_shader.get());
 	m_shader->setUniform("uDiffuseTexture", 0);
-	glUseProgram(0);
+	m_renderingManager->setCurrentShader(nullptr);
 
 	m_mesh.init(ej::MeshGeometry::createPlane(glm::vec2(1.4f, 1.0f), 1, 1));
 }
 
 void Model::draw(const ej::Camera& camera, const ej::Transform& cameraTransform, const ej::Transform& transform) const
 {
+	m_renderingManager->setFaceCullingSide(GL_BACK);
+
 	m_texture->bind(0);
 
-	glCullFace(GL_BACK);
+	m_renderingManager->setCurrentShader(m_shader.get());
 
-	glUseProgram(m_shader->getHandle());
 	m_shader->setUniform("uViewProjection", camera.getViewProjectionMatrix());
 	m_shader->setUniform("uTransform", transform.getGlobalTransformationMatrix());
 	m_shader->setUniform("uCameraPosition", cameraTransform.getGlobalPosition());
-	m_mesh.draw();
-	
-	glUseProgram(0);
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+	m_mesh.draw();
 }
 
 void Model::setTexture(ej::Texture::ptr texture)

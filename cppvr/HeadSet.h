@@ -1,15 +1,15 @@
 #pragma once
 
-#include "Core.h"
-
+#include "Mesh.h"
 #include "Camera.h"
 #include "Shader.h"
-#include "FrameBuffer.h"
-#include "VRManager.h"
 #include "Transform.h"
-#include "Mesh.h"
+#include "FrameBuffer.h"
 
-class HeadSet
+#include "VRManager.h"
+#include "RenderingManager.h"
+
+class HeadSet : public ej::PointerDefs<HeadSet>
 {
 public:
 	HeadSet(const ej::Core& core);
@@ -25,6 +25,7 @@ public:
 
 private:
 	ej::VRManager::ptr m_vrManager;
+	ej::RenderingManager::ptr m_renderingManager;
 
 	ej::Camera::uptr m_eyeCameras[2];
 	ej::FrameBuffer m_eyeBuffers[2];

@@ -1,5 +1,7 @@
 #include "DebugCamera.h"
 
+#include "Core.h"
+
 DebugCamera::DebugCamera(const ej::Core & core) :
 	m_movementSpeed(1.0f), m_rotationSpeed(1.0f)
 {

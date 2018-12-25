@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Core.h"
 #include "Mesh.h"
 #include "Shader.h"
-
 #include "Texture.h"
 #include "Camera.h"
 #include "Transform.h"
 
-class Skybox
+#include "RenderingManager.h"
+
+class Skybox : public ej::PointerDefs<Skybox>
 {
 public:
 	Skybox(const ej::Core& core);
@@ -22,6 +22,8 @@ public:
 	bool isInitialized() const;
 
 private:
+	ej::RenderingManager::ptr m_renderingManager;
+
 	bool m_isInitialized;
 
 	ej::Mesh m_cube;

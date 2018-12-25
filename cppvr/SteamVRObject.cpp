@@ -8,6 +8,7 @@
 SteamVRObject::SteamVRObject(const ej::Core& core, const std::string & name) :
 	m_isInitialized(false), m_name(name), m_renderModel(nullptr), m_iVRRenderModels(nullptr)
 {
+	m_renderingManager = core.get<ej::RenderingManager>();
 	m_iVRRenderModels = core.get<ej::VRManager>()->getRenderModelsInterface();
 
 	m_shader = core.get<ej::ShaderManager>()->bind("steamvr",
@@ -18,11 +19,11 @@ SteamVRObject::SteamVRObject(const ej::Core& core, const std::string & name) :
 	m_shader->setAttribute(1, "vTexCoords");
 	m_shader->setAttribute(2, "vNormal");
 
-	glUseProgram(m_shader->getHandle());
+	m_renderingManager->setCurrentShader(m_shader.get());
 	m_shader->setUniform("uViewProjection", glm::mat4());
 	m_shader->setUniform("uDiffuseTexture", 0);
 	m_shader->setUniform("uSkyboxTexture", 3);
-	glUseProgram(0);
+	m_renderingManager->setCurrentShader(0);
 }
 
 SteamVRObject::~SteamVRObject()
@@ -44,15 +45,15 @@ void SteamVRObject::draw(const ej::Camera& camera, const ej::Transform& cameraTr
 		return;
 	}
 
-	glCullFace(GL_BACK);
+	m_renderingManager->setFaceCullingSide(GL_BACK);
 
-	glUseProgram(m_shader->getHandle());
+	m_renderingManager->setCurrentShader(m_shader.get());
+
 	m_shader->setUniform("uViewProjection", camera.getViewProjectionMatrix());
 	m_shader->setUniform("uTransform", transform);
 	m_shader->setUniform("uCameraPosition", cameraTransform.getGlobalPosition());
 
 	m_mesh.draw();
-	glUseProgram(0);
 }
 
 void SteamVRObject::tryLoad()

@@ -4,13 +4,14 @@
 
 #include <OpenVR/openvr.h>
 
-#include "Core.h"
 #include "Mesh.h"
 #include "Camera.h"
 #include "Shader.h"
 #include "Transform.h"
 
-class SteamVRObject
+#include "RenderingManager.h"
+
+class SteamVRObject : ej::PointerDefs<SteamVRObject>
 {
 public:
 	SteamVRObject(const ej::Core& core, const std::string& name);
@@ -21,6 +22,8 @@ public:
 
 private:
 	void tryLoad();
+
+	ej::RenderingManager::ptr m_renderingManager;
 
 	bool m_isInitialized;
 	std::string m_name;

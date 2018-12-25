@@ -15,9 +15,6 @@ namespace ej
 
 		void init(unsigned int width, unsigned int height, bool depthEnabled);
 
-		void bind() const;
-		static void unbind();
-
 		Texture& getColorTexture();
 
 		GLuint getHandle() const { return m_id; }

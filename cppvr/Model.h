@@ -5,12 +5,12 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "Shader.h"
-
-#include "Core.h"
 #include "Texture.h"
 #include "Transform.h"
 
-class Model
+#include  "RenderingManager.h"
+
+class Model : public ej::PointerDefs<Model>
 {
 public:
 	explicit Model(const ej::Core& core);
@@ -20,6 +20,8 @@ public:
 	void setTexture(ej::Texture::ptr texture);
 
 private:
+	ej::RenderingManager::ptr m_renderingManager;
+
 	ej::Mesh m_mesh;
 	ej::Shader::ptr m_shader;
 	ej::Texture::ptr m_texture;

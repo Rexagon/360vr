@@ -5,6 +5,7 @@
 HeadSet::HeadSet(const ej::Core & core)
 {
 	m_vrManager = core.get<ej::VRManager>();
+	m_renderingManager = core.get<ej::RenderingManager>();
 
 	const glm::vec2 zRange(0.1f, 100.0f);
 	const auto renderTargetSize = m_vrManager->getRenderTargetSize();
@@ -29,10 +30,10 @@ HeadSet::HeadSet(const ej::Core & core)
 	m_screenQuadShader->setAttribute(0, "vPosition");
 	m_screenQuadShader->setAttribute(1, "vTexCoords");
 
-	glUseProgram(m_screenQuadShader->getHandle());
+	m_renderingManager->setCurrentShader(m_screenQuadShader.get());
 	m_screenQuadShader->setUniform("uLeftEyeTexture", 0);
 	m_screenQuadShader->setUniform("uRightEyeTexture", 1);
-	glUseProgram(0);
+	m_renderingManager->setCurrentShader(nullptr);
 }
 
 void HeadSet::update(const float dt)
@@ -49,10 +50,10 @@ void HeadSet::update(const float dt)
 
 const ej::Camera& HeadSet::bindEye(vr::EVREye eye)
 {
-	m_eyeBuffers[eye].bind();
+	m_renderingManager->setCurrentFrameBuffer(&m_eyeBuffers[eye]);
 
 	const auto& size = m_eyeBuffers[eye].getColorTexture().getSize();
-	glViewport(0, 0, size.x, size.y);
+	m_renderingManager->setViewport(0, 0, size.x, size.y);
 
 	return *m_eyeCameras[eye];
 }
@@ -82,9 +83,9 @@ void HeadSet::drawDebug()
 		m_eyeBuffers[i].getColorTexture().bind(i);
 	}
 
-	glUseProgram(m_screenQuadShader->getHandle());
+	m_renderingManager->setCurrentShader(m_screenQuadShader.get());
+
 	m_screenQuad.draw();
-	glUseProgram(0);
 }
 
 const ej::Transform& HeadSet::getTransform() const
