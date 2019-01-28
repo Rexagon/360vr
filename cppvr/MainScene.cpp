@@ -75,9 +75,9 @@ void MainScene::initManagers()
 	m_renderingManager = getCore().get<ej::RenderingManager>();
 
 	try {
-		//if (m_vrManager->checkHmdPresent()) {
-		//	m_vrManager->connect();
-		//}
+		if (m_vrManager->checkHmdPresent()) {
+			m_vrManager->connect();
+		}
 	}
 	catch (const std::runtime_error& e) {
 		printf("ERROR: %s\n", e.what());

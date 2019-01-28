@@ -73,6 +73,12 @@
     <ClCompile Include="DebugCamera.cpp">
       <Filter>App\Objects\DebugCamera</Filter>
     </ClCompile>
+    <ClCompile Include="Video.cpp">
+      <Filter>App\Objects\Video</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoManager.cpp">
+      <Filter>App\Managers\VideoManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">
@@ -159,6 +165,15 @@
     <Filter Include="App\Objects\DebugCamera">
       <UniqueIdentifier>{9173ce85-77a6-4a32-b559-248fec9fb6bd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App\Managers">
+      <UniqueIdentifier>{243d36c3-585a-4801-909c-f1e2a62c2ceb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Managers\VideoManager">
+      <UniqueIdentifier>{f25fb610-046f-45be-9740-2bdab45f1509}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App\Objects\Video">
+      <UniqueIdentifier>{937dbdc2-0ae4-4952-9f28-f94be7475a9d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainScene.h">
@@ -238,6 +253,12 @@
     </ClInclude>
     <ClInclude Include="DebugCamera.h">
       <Filter>App\Objects\DebugCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoManager.h">
+      <Filter>App\Managers\VideoManager</Filter>
+    </ClInclude>
+    <ClInclude Include="Video.h">
+      <Filter>App\Objects\Video</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
