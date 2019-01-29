@@ -138,6 +138,8 @@ void Video::receive()
 			av_frame_free(&frame);
 		}
 		else {
+			//printf("Received frame: %lld\n", frame->pts);
+
 			std::lock_guard<std::mutex> lock(m_frameQueueMutex);
 			m_frameQueue.push_back(frame);
 		}
@@ -172,6 +174,7 @@ void Video::decode()
 
 	{
 		std::lock_guard<std::mutex> lock(m_frameQueueMutex);
+
 		frame = m_frameQueue.front();
 
 		if (frame == nullptr) {
@@ -181,7 +184,9 @@ void Video::decode()
 		AVStream* stream = m_formatContext->streams[m_videoStreamIndex];
 		const auto seconds = (frame->pkt_dts - stream->start_time) * av_q2d(stream->time_base);
 
-		if (m_timer.getElapsedTime().asSeconds() < seconds) {
+		//printf("Decoded frame: %f\n", seconds);
+
+		if (m_currentVideoTime < seconds) {
 			return;
 		}
 

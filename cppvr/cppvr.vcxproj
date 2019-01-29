@@ -117,6 +117,7 @@
     <ClCompile Include="SteamVRObject.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="TextureStreamer.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="Video.cpp" />
     <ClCompile Include="VideoManager.cpp" />
@@ -147,6 +148,7 @@
     <ClInclude Include="RenderingManager.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="ShaderManager.h" />
+    <ClInclude Include="TextureStreamer.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="Video.h" />
     <ClInclude Include="VideoManager.h" />

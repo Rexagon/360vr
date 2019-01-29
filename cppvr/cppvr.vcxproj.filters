@@ -79,6 +79,9 @@
     <ClCompile Include="VideoManager.cpp">
       <Filter>App\Managers\VideoManager</Filter>
     </ClCompile>
+    <ClCompile Include="TextureStreamer.cpp">
+      <Filter>App\Objects\TextureStreamer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">
@@ -174,6 +177,9 @@
     <Filter Include="App\Objects\Video">
       <UniqueIdentifier>{937dbdc2-0ae4-4952-9f28-f94be7475a9d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App\Objects\TextureStreamer">
+      <UniqueIdentifier>{f8498105-d645-4398-a60c-45b0a54a53d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainScene.h">
@@ -259,6 +265,9 @@
     </ClInclude>
     <ClInclude Include="Video.h">
       <Filter>App\Objects\Video</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureStreamer.h">
+      <Filter>App\Objects\TextureStreamer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

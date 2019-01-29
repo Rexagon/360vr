@@ -44,3 +44,8 @@ void Model::setTexture(ej::Texture::ptr texture)
 {
 	m_texture = texture;
 }
+
+ej::Texture* Model::getTexture() const
+{
+	return m_texture.get();
+}

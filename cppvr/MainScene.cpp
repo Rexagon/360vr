@@ -22,6 +22,15 @@ void MainScene::onInit()
 	else {
 		m_windowManager->getWindow().setVerticalSyncEnabled(true);
 	}
+
+	m_video = std::make_unique<Video>("516397450.mp4");
+	m_video->init();
+
+	m_videoManager->setCurrentVideo(m_video);
+
+	m_video->play();
+
+	m_textureStreamer = std::make_unique<TextureStreamer>();
 }
 
 void MainScene::onClose()
@@ -30,6 +39,10 @@ void MainScene::onClose()
 
 void MainScene::onUpdate(const float dt)
 {
+	if (m_video->hasData()) {
+		m_textureStreamer->write(m_model->getTexture(), m_video.get());
+	}
+
 	m_vrManager->update();
 	
 	if (m_vrManager->isHmdConnected()) {
@@ -70,6 +83,7 @@ void MainScene::onUpdate(const float dt)
 void MainScene::initManagers()
 {
 	m_vrManager = getCore().get<ej::VRManager>();
+	m_videoManager = getCore().get<VideoManager>();
 	m_inputManager = getCore().get<ej::InputManager>();
 	m_windowManager = getCore().get<ej::WindowManager>();
 	m_renderingManager = getCore().get<ej::RenderingManager>();
@@ -82,6 +96,8 @@ void MainScene::initManagers()
 	catch (const std::runtime_error& e) {
 		printf("ERROR: %s\n", e.what());
 	}
+
+	m_videoManager->init();
 }
 
 void MainScene::drawScene(const ej::Camera& camera, const ej::Transform& cameraTransform) const
