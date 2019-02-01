@@ -84,6 +84,10 @@ void Video::init()
 		throw std::runtime_error("Unable to open decoder\n");
 	}
 
+	if (m_decoderContext->time_base.num > 1000 && m_decoderContext->time_base.den == 1) {
+		m_decoderContext->time_base.den = 1000;
+	}
+
 	m_swsContext = sws_getContext(m_decoderContext->width, m_decoderContext->height,
 		m_decoderContext->pix_fmt, m_decoderContext->width, m_decoderContext->height,
 		AV_PIX_FMT_RGB24, SWS_BICUBIC, nullptr, nullptr, nullptr);
@@ -150,7 +154,7 @@ void Video::receive()
 
 bool Video::shouldReceive() const
 {
-	return m_frameQueue.size() < 64;
+	return m_frameQueue.size() < 256;
 }
 
 void Video::flush() const
@@ -164,39 +168,36 @@ void Video::decode()
 		return;
 	}
 
-	m_currentVideoTime += m_timer.restart().asSeconds();
+	//m_currentVideoTime += static_cast<double>(m_timer.restart().asSeconds());
 
 	if (m_frameQueue.empty()) {
 		return;
 	}
 
-	AVFrame* frame = nullptr;
+	AVFrame* frame = m_frameQueue.front();
 
+	if (frame == nullptr) {
+		return;
+	}
+
+	AVStream* stream = m_formatContext->streams[m_videoStreamIndex];
+
+	const auto seconds = (frame->pkt_dts - stream->start_time) * av_q2d(stream->time_base);
+
+	if (m_timer.getElapsedTime().asSeconds() < seconds) {
+		return;
+	}
+	
 	{
 		std::lock_guard<std::mutex> lock(m_frameQueueMutex);
-
-		frame = m_frameQueue.front();
-
-		if (frame == nullptr) {
-			return;
-		}
-
-		AVStream* stream = m_formatContext->streams[m_videoStreamIndex];
-		const auto seconds = (frame->pkt_dts - stream->start_time) * av_q2d(stream->time_base);
-
-		//printf("Decoded frame: %f\n", seconds);
-
-		if (m_currentVideoTime < seconds) {
-			return;
-		}
-
 		m_frameQueue.pop_front();
 	}
 
-	std::lock_guard<std::mutex> lock(m_bufferMutex);
-
-	sws_scale(m_swsContext, frame->data, frame->linesize, 0, m_decoderContext->height,
-		m_buffer->data, m_buffer->linesize);
+	{
+		std::lock_guard<std::mutex> lock(m_bufferMutex);
+		sws_scale(m_swsContext, frame->data, frame->linesize, 0, m_decoderContext->height,
+			m_buffer->data, m_buffer->linesize);
+	}
 
 	av_frame_free(&frame);
 

@@ -40,7 +40,7 @@ void VideoManager::init()
 
 			receiver();
 			
-			std::this_thread::sleep_until(now + std::chrono::milliseconds(10));
+			std::this_thread::sleep_until(now + std::chrono::milliseconds(5));
 		}
 	});
 
@@ -51,7 +51,7 @@ void VideoManager::init()
 
 			decoder();
 
-			std::this_thread::sleep_until(now + std::chrono::milliseconds(10));
+			std::this_thread::sleep_until(now + std::chrono::milliseconds(5));
 		}
 	});
 

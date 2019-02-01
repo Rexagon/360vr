@@ -79,12 +79,16 @@ void HeadSet::submit()
 
 void HeadSet::drawDebug()
 {
-	for (unsigned i = 0; i < 2; ++i) {
+	for (unsigned int i = 0; i < 2; ++i) {
 		m_eyeBuffers[i].getColorTexture().bind(i);
 	}
 
 	m_renderingManager->setCurrentShader(m_screenQuadShader.get());
 
+	m_renderingManager->setClearColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+	m_renderingManager->setFaceCullingEnabled(false);
 	m_screenQuad.draw();
 }
 

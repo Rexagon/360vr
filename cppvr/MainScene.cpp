@@ -10,7 +10,7 @@ void MainScene::onInit()
 
 	m_renderingManager->apply();
 
-	m_model = std::make_unique<Model>(getCore());
+	//m_model = std::make_unique<Model>(getCore());
 	m_skybox = std::make_unique<Skybox>(getCore());
 
 	m_debugCamera = std::make_unique<DebugCamera>(getCore());
@@ -23,7 +23,7 @@ void MainScene::onInit()
 		m_windowManager->getWindow().setVerticalSyncEnabled(true);
 	}
 
-	m_video = std::make_unique<Video>("516397450.mp4");
+	m_video = std::make_unique<Video>("rtmp://rtuitlab.ru:1935/stream/test");
 	m_video->init();
 
 	m_videoManager->setCurrentVideo(m_video);
@@ -40,8 +40,10 @@ void MainScene::onClose()
 void MainScene::onUpdate(const float dt)
 {
 	if (m_video->hasData()) {
-		m_textureStreamer->write(m_model->getTexture(), m_video.get());
+		m_textureStreamer->write(m_skybox->getTexture(), m_video.get());
 	}
+
+	const auto& windowSize = m_windowManager->getWindow().getSize();
 
 	m_vrManager->update();
 	
@@ -60,14 +62,12 @@ void MainScene::onUpdate(const float dt)
 		m_headSet->submit();
 
 		m_renderingManager->setCurrentFrameBuffer(nullptr);
-		const auto& windowSize = m_windowManager->getWindow().getSize();
 		m_renderingManager->setViewport(0, 0, windowSize.x, windowSize.y);
-		
+
 		m_headSet->drawDebug();
 	}
 	else {
 		m_renderingManager->setCurrentFrameBuffer(nullptr);
-		const auto& windowSize = m_windowManager->getWindow().getSize();
 		m_renderingManager->setViewport(0, 0, windowSize.x, windowSize.y);
 
 		m_debugCamera->update(dt);
@@ -106,7 +106,7 @@ void MainScene::drawScene(const ej::Camera& camera, const ej::Transform& cameraT
 
 	m_skybox->getTexture()->bind(3);
 
-	m_model->draw(camera, cameraTransform, m_meshTransform);
+	//m_model->draw(camera, cameraTransform, m_meshTransform);
 
 	if (m_vrManager->getControllerCount() > 0) {
 		for (const auto& index : m_vrManager->getControllerIndices()) {

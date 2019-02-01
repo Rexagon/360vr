@@ -45,7 +45,7 @@ private:
 	bool m_isPlaying;
 
 	sf::Clock m_timer;
-	float m_currentVideoTime;
+	double m_currentVideoTime;
 
 	glm::vec2 m_size;
 
