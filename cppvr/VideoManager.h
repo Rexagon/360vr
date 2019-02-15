@@ -18,9 +18,6 @@ public:
 	bool isInitialized() const;
 
 private:
-	void receiver();
-	void decoder();
-
 	bool m_isInitialized;
 
 	std::mutex m_currentVideoMutex;
@@ -29,6 +26,9 @@ private:
 	std::unique_ptr<std::thread> m_receiverThread;
 	bool m_isReceiving;
 
-	std::unique_ptr<std::thread> m_decoderThread;
-	bool m_isDecoding;
+	std::unique_ptr<std::thread> m_videoDecoderThread;
+	bool m_isDecodingVideo;
+
+	std::unique_ptr<std::thread> m_audioDecoderThread;
+	bool m_isDecodingAudio;
 };

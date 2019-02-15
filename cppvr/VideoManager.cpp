@@ -6,7 +6,7 @@ extern "C" {
 
 VideoManager::VideoManager(const ej::Core & core) :
 	BaseManager(core),
-	m_isInitialized(false), m_isReceiving(false), m_isDecoding(false)
+	m_isInitialized(false), m_isReceiving(false), m_isDecodingAudio(false)
 {
 }
 
@@ -17,10 +17,12 @@ VideoManager::~VideoManager()
 	}
 
 	m_isReceiving = false;
-	m_isDecoding = false;
+	m_isDecodingVideo = false;
+	m_isDecodingAudio = false;
 
 	m_receiverThread->join();
-	m_decoderThread->join();
+	m_videoDecoderThread->join();
+	m_audioDecoderThread->join();
 
 	avformat_network_deinit();
 }
@@ -38,18 +40,35 @@ void VideoManager::init()
 		while (m_isReceiving) {
 			auto now = std::chrono::high_resolution_clock::now();
 
-			receiver();
+			if (m_currentVideo != nullptr && m_currentVideo->shouldReceive()) {
+				m_currentVideo->receive();
+			}
 			
 			std::this_thread::sleep_until(now + std::chrono::milliseconds(1));
 		}
 	});
 
-	m_decoderThread = std::make_unique<std::thread>([this]() {
-		m_isDecoding = true;
-		while (m_isDecoding) {
+	m_videoDecoderThread = std::make_unique<std::thread>([this]() {
+		m_isDecodingVideo = true;
+		while (m_isDecodingVideo) {
 			auto now = std::chrono::high_resolution_clock::now();
 
-			decoder();
+			if (m_currentVideo != nullptr) {
+				m_currentVideo->decodeVideo();
+			}
+
+			std::this_thread::sleep_until(now + std::chrono::milliseconds(1));
+		}
+	});
+
+	m_audioDecoderThread = std::make_unique<std::thread>([this]() {
+		m_isDecodingAudio = true;
+		while (m_isDecodingAudio) {
+			auto now = std::chrono::high_resolution_clock::now();
+
+			if (m_currentVideo != nullptr) {
+				m_currentVideo->decodeAudio();
+			}
 
 			std::this_thread::sleep_until(now + std::chrono::milliseconds(1));
 		}
@@ -67,22 +86,4 @@ void VideoManager::setCurrentVideo(Video::ptr video)
 bool VideoManager::isInitialized() const
 {
 	return m_isInitialized;
-}
-
-void VideoManager::receiver()
-{
-	if (m_currentVideo == nullptr || !m_currentVideo->shouldReceive()) {
-		return;
-	}
-
-	m_currentVideo->receive();
-}
-
-void VideoManager::decoder()
-{
-	if (m_currentVideo == nullptr) {
-		return;
-	}
-
-	m_currentVideo->decode();
 }

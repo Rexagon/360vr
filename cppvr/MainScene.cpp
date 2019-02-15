@@ -31,8 +31,6 @@ void MainScene::onInit()
 
 	m_videoManager->setCurrentVideo(m_video);
 
-	m_video->play();
-
 	m_textureStreamer = std::make_unique<TextureStreamer>();
 }
 

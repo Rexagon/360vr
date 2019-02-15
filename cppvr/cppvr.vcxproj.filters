@@ -82,6 +82,9 @@
     <ClCompile Include="TextureStreamer.cpp">
       <Filter>App\Objects\TextureStreamer</Filter>
     </ClCompile>
+    <ClCompile Include="AudioStream.cpp">
+      <Filter>App\Objects\AudioStream</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Engine">
@@ -180,6 +183,9 @@
     <Filter Include="App\Objects\TextureStreamer">
       <UniqueIdentifier>{f8498105-d645-4398-a60c-45b0a54a53d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App\Objects\AudioStream">
+      <UniqueIdentifier>{1f739606-e629-4454-9f25-f128d85bedff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainScene.h">
@@ -268,6 +274,9 @@
     </ClInclude>
     <ClInclude Include="TextureStreamer.h">
       <Filter>App\Objects\TextureStreamer</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioStream.h">
+      <Filter>App\Objects\AudioStream</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

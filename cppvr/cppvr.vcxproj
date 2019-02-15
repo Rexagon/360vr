@@ -96,6 +96,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AudioStream.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DebugCamera.cpp" />
     <ClCompile Include="Model.cpp" />
@@ -125,6 +126,7 @@
     <ClCompile Include="WindowManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AudioStream.h" />
     <ClInclude Include="BaseManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="DebugCamera.h" />
