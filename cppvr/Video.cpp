@@ -168,8 +168,6 @@ void Video::decode()
 		return;
 	}
 
-	//m_currentVideoTime += static_cast<double>(m_timer.restart().asSeconds());
-
 	if (m_frameQueue.empty()) {
 		return;
 	}
@@ -182,9 +180,19 @@ void Video::decode()
 
 	AVStream* stream = m_formatContext->streams[m_videoStreamIndex];
 
-	const auto seconds = (frame->pkt_dts - stream->start_time) * av_q2d(stream->time_base);
+	if (m_currentVideoTime == 0.0f) {
+		m_currentVideoTime = frame->best_effort_timestamp * av_q2d(stream->time_base) + 1.0f;
+	}
+	else {
+		m_currentVideoTime += static_cast<double>(m_timer.restart().asSeconds());
+	}
 
-	if (m_timer.getElapsedTime().asSeconds() < seconds) {
+	auto seconds = 0.0f;
+	if (frame->pkt_dts != AV_NOPTS_VALUE) {
+		seconds = frame->best_effort_timestamp * av_q2d(stream->time_base);
+	}
+
+	if (m_currentVideoTime < seconds) {
 		return;
 	}
 	

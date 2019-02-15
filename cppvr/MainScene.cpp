@@ -10,7 +10,10 @@ void MainScene::onInit()
 
 	m_renderingManager->apply();
 
-	//m_model = std::make_unique<Model>(getCore());
+	m_model = std::make_unique<Model>(getCore());
+	m_meshTransform.setPosition(0.0f, 1.0f, -2.0f);
+	m_meshTransform.setRotation(-90.0f, 180.0f, 0.0f);
+
 	m_skybox = std::make_unique<Skybox>(getCore());
 
 	m_debugCamera = std::make_unique<DebugCamera>(getCore());
@@ -23,7 +26,7 @@ void MainScene::onInit()
 		m_windowManager->getWindow().setVerticalSyncEnabled(true);
 	}
 
-	m_video = std::make_unique<Video>("rtmp://rtuitlab.ru:1935/stream/test");
+	m_video = std::make_unique<Video>("http://192.240.127.34:1935/live/cs14.stream/playlist.m3u8");
 	m_video->init();
 
 	m_videoManager->setCurrentVideo(m_video);
@@ -40,7 +43,7 @@ void MainScene::onClose()
 void MainScene::onUpdate(const float dt)
 {
 	if (m_video->hasData()) {
-		m_textureStreamer->write(m_skybox->getTexture(), m_video.get());
+		m_textureStreamer->write(m_model->getTexture(), m_video.get());
 	}
 
 	const auto& windowSize = m_windowManager->getWindow().getSize();
@@ -106,7 +109,7 @@ void MainScene::drawScene(const ej::Camera& camera, const ej::Transform& cameraT
 
 	m_skybox->getTexture()->bind(3);
 
-	//m_model->draw(camera, cameraTransform, m_meshTransform);
+	m_model->draw(camera, cameraTransform, m_meshTransform);
 
 	if (m_vrManager->getControllerCount() > 0) {
 		for (const auto& index : m_vrManager->getControllerIndices()) {

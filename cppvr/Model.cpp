@@ -20,6 +20,7 @@ Model::Model(const ej::Core& core)
 
 	m_renderingManager->setCurrentShader(m_shader.get());
 	m_shader->setUniform("uDiffuseTexture", 0);
+	m_shader->setUniform("uFlipTexture", 1);
 	m_renderingManager->setCurrentShader(nullptr);
 
 	m_mesh.init(ej::MeshGeometry::createPlane(glm::vec2(1.4f, 1.0f), 1, 1));
