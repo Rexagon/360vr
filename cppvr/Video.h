@@ -11,6 +11,7 @@ extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libswscale/swscale.h>
 #include <libavformat/avformat.h>
+#include <libswresample/swresample.h>
 }
 
 #include "PointerDefs.h"
@@ -32,10 +33,10 @@ public:
 	void decodeAudio();
 
 	glm::vec2 getSize() const;
-	bool hasData() const;
+	bool hasVideoData() const;
 
-	bool writeData(uint8_t* destination, size_t size);
-	AudioStream& getAudioStream();
+	bool writeVideoData(uint8_t* destination, size_t size);
+	bool writeAudioData(const int16_t** destination, size_t& size);
 
 private:
 	void initVideoStream();
@@ -46,11 +47,12 @@ private:
 
 	sf::Clock m_videoTimer;
 	double m_currentVideoTime;
+	bool m_videoStarted = false;
 
 	sf::Clock m_audioTimer;
-	double m_currentAudioTime;
 	double m_lastAudioDts;
 	double m_lastAudioDelay;
+	bool m_audioStarted = false;
 
 	glm::vec2 m_size;
 
@@ -63,6 +65,7 @@ private:
 
 	AVCodec* m_audioDecoder;
 	AVCodecContext* m_audioDecoderContext;
+	SwrContext* m_swrContext;
 
 	AVStream* m_videoStream;
 	AVStream* m_audioStream;
@@ -72,7 +75,6 @@ private:
 	AVFrame* m_videoBuffer;
 	uint8_t* m_videoBufferFrameData;
 
-	std::mutex m_audioBufferMutex;
 	bool m_hasAudioData;
 	std::vector<uint8_t> m_audioBuffer;
 

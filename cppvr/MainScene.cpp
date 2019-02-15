@@ -40,7 +40,7 @@ void MainScene::onClose()
 
 void MainScene::onUpdate(const float dt)
 {
-	if (m_video->hasData()) {
+	if (m_video->hasVideoData()) {
 		m_textureStreamer->write(m_model->getTexture(), m_video.get());
 	}
 

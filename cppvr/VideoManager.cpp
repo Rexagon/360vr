@@ -6,7 +6,7 @@ extern "C" {
 
 VideoManager::VideoManager(const ej::Core & core) :
 	BaseManager(core),
-	m_isInitialized(false), m_isReceiving(false), m_isDecodingAudio(false)
+	m_isInitialized(false), m_isReceiving(false), m_isDecodingVideo(false)
 {
 }
 
@@ -18,11 +18,9 @@ VideoManager::~VideoManager()
 
 	m_isReceiving = false;
 	m_isDecodingVideo = false;
-	m_isDecodingAudio = false;
 
 	m_receiverThread->join();
 	m_videoDecoderThread->join();
-	m_audioDecoderThread->join();
 
 	avformat_network_deinit();
 }
@@ -55,19 +53,6 @@ void VideoManager::init()
 
 			if (m_currentVideo != nullptr) {
 				m_currentVideo->decodeVideo();
-			}
-
-			std::this_thread::sleep_until(now + std::chrono::milliseconds(1));
-		}
-	});
-
-	m_audioDecoderThread = std::make_unique<std::thread>([this]() {
-		m_isDecodingAudio = true;
-		while (m_isDecodingAudio) {
-			auto now = std::chrono::high_resolution_clock::now();
-
-			if (m_currentVideo != nullptr) {
-				m_currentVideo->decodeAudio();
 			}
 
 			std::this_thread::sleep_until(now + std::chrono::milliseconds(1));

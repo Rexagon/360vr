@@ -46,7 +46,7 @@ void TextureStreamer::write(ej::Texture* texture, Video* video)
 	// Write data
 	const auto ptr = static_cast<GLubyte*>(glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY));
 	if (ptr) {
-		video->writeData(ptr, dataSize);
+		video->writeVideoData(ptr, dataSize);
 		//std::memset(ptr, rand() % 255, m_dataSize);
 		glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
 	}

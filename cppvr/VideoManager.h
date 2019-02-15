@@ -28,7 +28,4 @@ private:
 
 	std::unique_ptr<std::thread> m_videoDecoderThread;
 	bool m_isDecodingVideo;
-
-	std::unique_ptr<std::thread> m_audioDecoderThread;
-	bool m_isDecodingAudio;
 };

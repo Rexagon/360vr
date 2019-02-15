@@ -1,19 +1,20 @@
 #include "Video.h"
 
 extern "C" {
-#include <libavutil/imgutils.h>
+#include <libavutil/opt.h>
 #include <libavutil/time.h>
+#include <libavutil/imgutils.h>
 }
 
-Video::Video(const std::string& file) :
-	m_isInitialized(false), m_file(file), m_currentVideoTime(0.0),
-	m_currentAudioTime(0.0), m_lastAudioDts(0.0), m_lastAudioDelay(0.0),
-	m_size(), m_formatContext(nullptr),
+Video::Video(const std::string& file): 
+	m_isInitialized(false), m_file(file), m_currentVideoTime(0),
+	m_lastAudioDts(0), m_lastAudioDelay(0), m_size(),
+	m_formatContext(nullptr), m_packet(),
 	m_videoDecoder(nullptr), m_videoDecoderContext(nullptr), m_swsContext(nullptr),
-	m_audioDecoder(nullptr), m_audioDecoderContext(nullptr),
-	m_videoStream(nullptr), m_audioStream(nullptr), 
+	m_audioDecoder(nullptr), m_audioDecoderContext(nullptr), m_swrContext(nullptr),
+	m_videoStream(nullptr), m_audioStream(nullptr),	
 	m_hasVideoData(false), m_videoBuffer(nullptr), m_videoBufferFrameData(nullptr),
-	m_hasAudioData(false),  m_packet()
+	m_hasAudioData(false), m_soundStream(this)
 {
 }
 
@@ -117,8 +118,14 @@ void Video::receive()
 		else {
 			//printf("Received audio frame: %lld\n", frame->pts);
 
-			std::lock_guard<std::mutex> lock(m_audioQueueMutex);
-			m_audioQueue.push_back(frame);
+			{
+				std::lock_guard<std::mutex> lock(m_audioQueueMutex);
+				m_audioQueue.push_back(frame);
+			}
+
+			if (m_soundStream.getStatus() != sf::SoundStream::Status::Playing) {
+				m_soundStream.play();
+			}
 		}
 	}
 
@@ -148,11 +155,13 @@ void Video::decodeVideo()
 		return;
 	}
 
-	if (m_currentVideoTime == 0.0f) {
-		m_currentVideoTime = frame->best_effort_timestamp * av_q2d(m_videoStream->time_base) + 1.0f;
+	if (m_videoStarted == false) {
+		m_currentVideoTime = m_videoStream->start_time * av_q2d(m_videoStream->time_base);
+		m_videoTimer.restart();
+		m_videoStarted = true;
 	}
 	else {
-		m_currentVideoTime += static_cast<double>(m_videoTimer.restart().asSeconds());
+		m_currentVideoTime += static_cast<double>(m_videoTimer.restart().asSeconds());		
 	}
 
 	auto seconds = 0.0f;
@@ -192,29 +201,27 @@ void Video::decodeAudio()
 		return;
 	}
 
-	m_currentAudioTime += static_cast<double>(m_audioTimer.restart().asSeconds());
+	if (!m_audioStarted) {
+		m_lastAudioDts = m_audioStream->start_time * av_q2d(m_audioStream->time_base);
+		m_audioStarted = true;
+	}
 
 	const auto nextDts = m_lastAudioDts + m_lastAudioDelay;
-	if (m_currentAudioTime < nextDts) {
+	if (m_currentVideoTime < nextDts) {
 		return;
 	}
 
 	m_lastAudioDts = nextDts;
-	m_lastAudioDelay = frame->pkt_duration * av_q2d(m_videoStream->time_base);
-
-	printf("Delay: %f\n", m_lastAudioDelay);
-
-	int linesize;
-	uint8_t** samples;
-	av_samples_alloc(samples, &linesize, frame->channels,
-		frame->nb_samples, frame->format, 1);
+	m_lastAudioDelay = frame->pkt_duration * av_q2d(m_audioStream->time_base);
 
 	int dataSize = av_samples_get_buffer_size(nullptr,
-		m_audioDecoderContext->channels, m_audioDecoderContext->sample_rate,
-		m_audioDecoderContext->sample_fmt, 1);
-
+		m_audioDecoderContext->channels, frame->nb_samples,
+		AV_SAMPLE_FMT_S16, 1);
 	m_audioBuffer.resize(dataSize);
-	std::memcpy(&m_audioBuffer[0], &frame->data[0], 2);
+
+	auto dataPtr = m_audioBuffer.data();
+	swr_convert(m_swrContext, &dataPtr, dataSize,
+		const_cast<const uint8_t**>(frame->data), frame->nb_samples);
 
 	{
 		std::unique_lock<std::mutex> lock(m_audioQueueMutex);
@@ -231,12 +238,12 @@ glm::vec2 Video::getSize() const
 	return m_size;
 }
 
-bool Video::hasData() const
+bool Video::hasVideoData() const
 {
 	return m_hasVideoData;
 }
 
-bool Video::writeData(uint8_t* destination, size_t size)
+bool Video::writeVideoData(uint8_t* destination, size_t size)
 {
 	if (!m_hasVideoData) return false;
 
@@ -248,9 +255,17 @@ bool Video::writeData(uint8_t* destination, size_t size)
 	return true;
 }
 
-AudioStream& Video::getAudioStream()
+bool Video::writeAudioData(const int16_t** destination, size_t& size)
 {
-	return m_soundStream;
+	decodeAudio();
+
+	if (!m_hasAudioData) return false;
+
+	*destination = reinterpret_cast<int16_t*>(m_audioBuffer.data());
+	size = m_audioBuffer.size() / 2;
+
+	m_hasAudioData = false;
+	return true;
 }
 
 void Video::initVideoStream()
@@ -335,5 +350,18 @@ void Video::initAudioStream()
 
 	// Init sound
 
+	m_swrContext = swr_alloc();
+	av_opt_set_int(m_swrContext, "in_channel_count", m_audioDecoderContext->channels, 0);
+	av_opt_set_int(m_swrContext, "out_channel_count", m_audioDecoderContext->channels, 0);
+	av_opt_set_int(m_swrContext, "in_channel_layout", m_audioDecoderContext->channel_layout, 0);
+	av_opt_set_int(m_swrContext, "out_channel_layout", m_audioDecoderContext->channel_layout, 0);
+	av_opt_set_int(m_swrContext, "in_sample_rate", m_audioDecoderContext->sample_rate, 0);
+	av_opt_set_int(m_swrContext, "out_sample_rate", m_audioDecoderContext->sample_rate, 0);
+	av_opt_set_sample_fmt(m_swrContext, "in_sample_fmt", m_audioDecoderContext->sample_fmt, 0);
+	av_opt_set_sample_fmt(m_swrContext, "out_sample_fmt", AV_SAMPLE_FMT_S16, 0);
+	swr_init(m_swrContext);
+
 	m_soundStream.initialize(m_audioDecoderContext->channels, m_audioDecoderContext->sample_rate);
+
+	m_soundStream.play();
 }
