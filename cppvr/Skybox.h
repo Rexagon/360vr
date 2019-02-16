@@ -17,7 +17,9 @@ public:
 	void draw(const ej::Camera& camera, const ej::Transform& transform) const;
 
 	void setTexture(ej::Texture::ptr texture);
-	const ej::Texture* getTexture() const;
+	ej::Texture* getTexture() const;
+
+	ej::Shader* getShader() const;
 
 	bool isInitialized() const;
 

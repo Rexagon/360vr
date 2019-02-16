@@ -58,9 +58,14 @@ void Skybox::setTexture(ej::Texture::ptr texture)
 	m_texture = texture;
 }
 
-const ej::Texture* Skybox::getTexture() const
+ej::Texture* Skybox::getTexture() const
 {
 	return m_texture.get();
+}
+
+ej::Shader * Skybox::getShader() const
+{
+	return m_shader.get();
 }
 
 bool Skybox::isInitialized() const

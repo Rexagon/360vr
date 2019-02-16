@@ -11,6 +11,9 @@ void MainScene::onInit()
 	m_renderingManager->apply();
 
 	m_model = std::make_unique<Model>(getCore());
+	m_meshTransform.setPosition(0.0f, 1.0f, -2.0f);
+	m_meshTransform.setRotation(-90.0f, 180.0f, 0.0f);
+
 	m_skybox = std::make_unique<Skybox>(getCore());
 
 	m_debugCamera = std::make_unique<DebugCamera>(getCore());
@@ -22,6 +25,13 @@ void MainScene::onInit()
 	else {
 		m_windowManager->getWindow().setVerticalSyncEnabled(true);
 	}
+
+	m_video = std::make_unique<Video>("http://192.240.127.34:1935/live/cs14.stream/playlist.m3u8");
+	m_video->init();
+
+	m_videoManager->setCurrentVideo(m_video);
+
+	m_textureStreamer = std::make_unique<TextureStreamer>();
 }
 
 void MainScene::onClose()
@@ -30,6 +40,12 @@ void MainScene::onClose()
 
 void MainScene::onUpdate(const float dt)
 {
+	if (m_video->hasVideoData()) {
+		m_textureStreamer->write(m_model->getTexture(), m_video.get());
+	}
+
+	const auto& windowSize = m_windowManager->getWindow().getSize();
+
 	m_vrManager->update();
 	
 	if (m_vrManager->isHmdConnected()) {
@@ -47,14 +63,12 @@ void MainScene::onUpdate(const float dt)
 		m_headSet->submit();
 
 		m_renderingManager->setCurrentFrameBuffer(nullptr);
-		const auto& windowSize = m_windowManager->getWindow().getSize();
 		m_renderingManager->setViewport(0, 0, windowSize.x, windowSize.y);
-		
+
 		m_headSet->drawDebug();
 	}
 	else {
 		m_renderingManager->setCurrentFrameBuffer(nullptr);
-		const auto& windowSize = m_windowManager->getWindow().getSize();
 		m_renderingManager->setViewport(0, 0, windowSize.x, windowSize.y);
 
 		m_debugCamera->update(dt);
@@ -70,18 +84,21 @@ void MainScene::onUpdate(const float dt)
 void MainScene::initManagers()
 {
 	m_vrManager = getCore().get<ej::VRManager>();
+	m_videoManager = getCore().get<VideoManager>();
 	m_inputManager = getCore().get<ej::InputManager>();
 	m_windowManager = getCore().get<ej::WindowManager>();
 	m_renderingManager = getCore().get<ej::RenderingManager>();
 
 	try {
-		//if (m_vrManager->checkHmdPresent()) {
-		//	m_vrManager->connect();
-		//}
+		if (m_vrManager->checkHmdPresent()) {
+			m_vrManager->connect();
+		}
 	}
 	catch (const std::runtime_error& e) {
 		printf("ERROR: %s\n", e.what());
 	}
+
+	m_videoManager->init();
 }
 
 void MainScene::drawScene(const ej::Camera& camera, const ej::Transform& cameraTransform) const

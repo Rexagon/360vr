@@ -18,6 +18,7 @@ public:
 	void draw(const ej::Camera& camera, const ej::Transform& cameraTransform, const ej::Transform& transform) const;
 
 	void setTexture(ej::Texture::ptr texture);
+	ej::Texture* getTexture() const;
 
 private:
 	ej::RenderingManager::ptr m_renderingManager;

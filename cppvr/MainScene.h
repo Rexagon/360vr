@@ -6,6 +6,7 @@
 #include "VRManager.h"
 #include "InputManager.h"
 #include "SceneManager.h"
+#include "VideoManager.h"
 #include "WindowManager.h"
 #include "RenderingManager.h"
 
@@ -14,6 +15,7 @@
 #include "HeadSet.h"
 #include "DebugCamera.h"
 #include "SteamVRObject.h"
+#include "TextureStreamer.h"
 
 class MainScene : public ej::Scene
 {
@@ -27,10 +29,14 @@ private:
 	void initManagers();
 	void drawScene(const ej::Camera& camera, const ej::Transform& cameraTransform) const;
 
+	VideoManager::ptr m_videoManager;
 	ej::VRManager::ptr m_vrManager;
 	ej::InputManager::ptr m_inputManager;
 	ej::WindowManager::ptr m_windowManager;
 	ej::RenderingManager::ptr m_renderingManager;
+
+	Video::ptr m_video;
+	TextureStreamer::ptr m_textureStreamer;
 
 	ej::Transform m_meshTransform;
 
