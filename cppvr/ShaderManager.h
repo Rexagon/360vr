@@ -32,7 +32,7 @@ namespace ej
 		{
 			FactoryData(const std::string& name, const ShaderSource& vertexShaderSource,
 				const ShaderSource& geometryShaderSource, const ShaderSource& fragmentShaderSource) :
-				vertexShaderSource(vertexShaderSource), geometryShaderSource(geometryShaderSource), 
+				name(name),	vertexShaderSource(vertexShaderSource), geometryShaderSource(geometryShaderSource), 
 				fragmentShaderSource(fragmentShaderSource) 
 			{}
 

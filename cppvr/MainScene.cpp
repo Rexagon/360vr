@@ -3,32 +3,59 @@
 #include <GL/glew.h>
 
 #include "Core.h"
+#include "MeshManager.h"
+#include "SkyboxMaterial.h"
+#include "TextureManager.h"
 
 void MainScene::onInit()
 {
-	initManagers();
+	m_videoManager = getCore().get<VideoManager>();
+	m_inputManager = getCore().get<ej::InputManager>();
+	m_windowManager = getCore().get<ej::WindowManager>();
+	m_renderingManager = getCore().get<ej::RenderingManager>();
 
-	m_renderingManager->apply();
+	m_windowManager->getWindow().setVerticalSyncEnabled(true);
 
-	m_model = std::make_unique<Model>(getCore());
-	m_meshTransform.setPosition(0.0f, 1.0f, -2.0f);
-	m_meshTransform.setRotation(-90.0f, 180.0f, 0.0f);
+	m_videoManager->init();
+	m_renderingManager->init();
 
-	m_skybox = std::make_unique<Skybox>(getCore());
+	auto carpetMesh = getCore().get<ej::MeshManager>()->bind("carpet_mesh", []() {
+		return ej::MeshGeometry::createPlane(glm::vec2(1.1f, 1.0f), 1, 1);
+	})->get("carpet_mesh");
+
+	m_videoTarget = std::make_shared<SimpleMeshMaterial>(getCore());
+
+	m_videoTarget->setDiffuseTexture(getCore().get<ej::TextureManager>()->bind("carpet",
+		ej::TextureManager::FromFile("textures/carpet.jpg"))->get("carpet"));
+	m_videoTarget->setTextureFlipped(true);
+
+	auto tvCarpet = std::make_shared<ej::MeshEntity>(carpetMesh, m_videoTarget);
+	tvCarpet->getTransform().setPosition(0.0f, 1.0f, -2.0f);
+	tvCarpet->getTransform().setRotation(90.0f, 0.0f, 0.0f);
+	tvCarpet->getTransform().setScale(1.4f, 1.0f, 1.0f);
+
+	m_meshes.push_back(tvCarpet);
+
+	auto skyboxMesh = getCore().get<ej::MeshManager>()->bind("skybox_mesh", []() {
+		return ej::MeshGeometry::createCube(glm::vec3(1.0f, 1.0f, 1.0f),
+		ej::MeshGeometry::SIMPLE_VERTEX);
+	})->get("skybox_mesh");
+
+	auto skyboxMaterial = std::make_shared<SkyboxMaterial>(getCore());
+
+	skyboxMaterial->setSkyTexture(getCore().get<ej::TextureManager>()->bind("loading",
+		ej::TextureManager::FromFile("textures/loading.jpg"))->get("loading"));
+
+	auto skybox = std::make_shared<ej::MeshEntity>(skyboxMesh, skyboxMaterial);
+
+	m_meshes.push_back(skybox);
 
 	m_debugCamera = std::make_unique<DebugCamera>(getCore());
-	m_debugCamera->getTransform().setPosition(0.0f, 1.0f, 0.0f);
-
-	if (m_vrManager->isInitialized()) {
-		m_headSet = std::make_unique<HeadSet>(getCore());
-	}
-	else {
-		m_windowManager->getWindow().setVerticalSyncEnabled(true);
-	}
+	m_debugCamera->getCameraEntity()->getTransform().setPosition(0.0f, 1.0f, 0.0f);
+	m_renderingManager->getForwardRenderer()->setCameraEntity(m_debugCamera->getCameraEntity());
 
 	m_video = std::make_unique<Video>("http://192.240.127.34:1935/live/cs14.stream/playlist.m3u8");
 	m_video->init();
-
 	m_videoManager->setCurrentVideo(m_video);
 
 	m_textureStreamer = std::make_unique<TextureStreamer>();
@@ -40,99 +67,31 @@ void MainScene::onClose()
 
 void MainScene::onUpdate(const float dt)
 {
-	if (m_video->hasVideoData()) {
-		m_textureStreamer->write(m_model->getTexture(), m_video.get());
-	}
-
-	const auto& windowSize = m_windowManager->getWindow().getSize();
-
-	m_vrManager->update();
-	
-	if (m_vrManager->isHmdConnected()) {
-		m_headSet->update(dt);
-
-		for (const auto& index : m_vrManager->getControllerIndices()) {
-			const auto name = m_vrManager->getDeviceRenderModelName(index);
-			m_controllers.try_emplace(name, std::make_unique<SteamVRObject>(getCore(), name));
-		}
-
-		for (size_t i = 0; i < 2; ++i) {
-			const auto eye = static_cast<vr::EVREye>(i);
-			drawScene(m_headSet->bindEye(eye), m_headSet->getEyeTransform(eye));
-		}
-		m_headSet->submit();
-
-		m_renderingManager->setCurrentFrameBuffer(nullptr);
-		m_renderingManager->setViewport(0, 0, windowSize.x, windowSize.y);
-
-		m_headSet->drawDebug();
-	}
-	else {
-		m_renderingManager->setCurrentFrameBuffer(nullptr);
-		m_renderingManager->setViewport(0, 0, windowSize.x, windowSize.y);
-
-		m_debugCamera->update(dt);
-
-		drawScene(m_debugCamera->getCamera(), m_debugCamera->getTransform());
-	}
-
 	if (m_inputManager->getKeyDown(ej::Key::Escape)) {
 		getCore().get<ej::SceneManager>()->removeScene();
 	}
-}
 
-void MainScene::initManagers()
-{
-	m_vrManager = getCore().get<ej::VRManager>();
-	m_videoManager = getCore().get<VideoManager>();
-	m_inputManager = getCore().get<ej::InputManager>();
-	m_windowManager = getCore().get<ej::WindowManager>();
-	m_renderingManager = getCore().get<ej::RenderingManager>();
-
-	try {
-		if (m_vrManager->checkHmdPresent()) {
-			m_vrManager->connect();
-		}
-	}
-	catch (const std::runtime_error& e) {
-		printf("ERROR: %s\n", e.what());
+	if (m_video->hasVideoData()) {
+		m_textureStreamer->write(m_videoTarget->getDiffuseTexture(), m_video.get());
 	}
 
-	m_videoManager->init();
+	m_debugCamera->update(dt);
+
+	drawScene();
 }
 
-void MainScene::drawScene(const ej::Camera& camera, const ej::Transform& cameraTransform) const
+void MainScene::drawScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	m_skybox->getTexture()->bind(3);
+	m_renderingManager->getState()->setCurrentFrameBuffer(nullptr);
 
-	m_model->draw(camera, cameraTransform, m_meshTransform);
+	const auto& windowSize = m_windowManager->getWindow().getSize();
+	m_renderingManager->getState()->setViewport(0, 0, windowSize.x, windowSize.y);
 
-	if (m_vrManager->getControllerCount() > 0) {
-		for (const auto& index : m_vrManager->getControllerIndices()) {
-			if (m_vrManager->getControllerRole(index) == vr::TrackedControllerRole_Invalid) {
-				continue;
-			}
-
-			SteamVRObject* model = nullptr;
-
-			const auto name = m_vrManager->getDeviceRenderModelName(index);
-			const auto it = m_controllers.find(name);
-			if (it != m_controllers.end()) {
-				model = it->second.get();
-			}
-
-			if (model) {
-				model->draw(camera, cameraTransform, m_vrManager->getDeviceTransformation(index));
-			}
-		}
+	auto renderer = m_renderingManager->getForwardRenderer();
+	for (auto& mesh : m_meshes) {
+		renderer->push(mesh.get());
 	}
-
-	if (m_vrManager->isHmdConnected()) {
-		m_skybox->draw(camera, m_headSet->getTransform());
-	}
-	else {
-		m_skybox->draw(camera, cameraTransform);
-	}
+	renderer->draw();
 }

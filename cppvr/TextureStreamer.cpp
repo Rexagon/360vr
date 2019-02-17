@@ -23,8 +23,8 @@ void TextureStreamer::write(ej::Texture* texture, Video* video)
 		return;
 	}
 
-	const auto videoSize = video->getSize();
-	if (glm::vec2(texture->getSize()) != videoSize) {
+	const glm::ivec2 videoSize = video->getSize();
+	if (glm::ivec2(texture->getSize()) != videoSize) {
 		texture->resize(videoSize.x, videoSize.y);
 	}
 

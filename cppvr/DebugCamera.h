@@ -5,6 +5,7 @@
 
 #include "InputManager.h"
 #include "WindowManager.h"
+#include "CameraEntity.h"
 
 class DebugCamera : public ej::PointerDefs<DebugCamera>
 {
@@ -13,8 +14,7 @@ public:
 
 	void update(float dt);
 
-	ej::Camera& getCamera();
-	ej::Transform& getTransform();
+	ej::CameraEntity::ptr getCameraEntity();
 
 	void setMovementSpeed(float speed);
 	float getMovementSpeed() const;
@@ -29,8 +29,7 @@ private:
 	ej::InputManager::ptr m_inputManager;
 	ej::WindowManager::ptr m_windowManager;
 
-	ej::Camera m_camera;
-	ej::Transform m_transform;
+	ej::CameraEntity::ptr m_cameraEntity;
 
 	glm::vec2 m_lastMousePosition;
 };

@@ -13,27 +13,17 @@ HeadSet::HeadSet(const ej::Core & core)
 	for (size_t i = 0; i < 2; ++i) {
 		m_eyeBuffers[i].init(renderTargetSize.x, renderTargetSize.y, true);
 
-		m_eyeCameras[i] = std::make_unique<ej::Camera>(
+		auto camera = std::make_shared<ej::Camera>(
 			m_vrManager->getEyeProjectionMatrix(static_cast<vr::EVREye>(i), zRange));
 
-		m_eyeTransforms[i].setParent(&m_transform);
-		m_eyeTransforms[i].setTransformationMatrix(m_vrManager->getEyeToHeadTransform(static_cast<vr::EVREye>(i)));
+		auto cameraEntity = std::make_shared<ej::CameraEntity>(camera);
+		auto& transform = cameraEntity->getTransform();
+
+		transform.setParent(&m_transform);
+		transform.setTransformationMatrix(m_vrManager->getEyeToHeadTransform(static_cast<vr::EVREye>(i)));
+
+		m_cameraEntities[i] = cameraEntity;
 	}
-
-	m_screenQuad.init(ej::MeshGeometry::createQuad(glm::vec2(1.0f), 
-		ej::MeshGeometry::TEXTURED_VERTEX));
-
-	m_screenQuadShader = core.get<ej::ShaderManager>()->bind("quad",
-		ej::ShaderManager::FromFile("shaders/quad.vert"),
-		ej::ShaderManager::FromFile("shaders/quad.frag"))->get("quad");
-
-	m_screenQuadShader->setAttribute(0, "vPosition");
-	m_screenQuadShader->setAttribute(1, "vTexCoords");
-
-	m_renderingManager->setCurrentShader(m_screenQuadShader.get());
-	m_screenQuadShader->setUniform("uLeftEyeTexture", 0);
-	m_screenQuadShader->setUniform("uRightEyeTexture", 1);
-	m_renderingManager->setCurrentShader(nullptr);
 }
 
 void HeadSet::update(const float dt)
@@ -43,19 +33,19 @@ void HeadSet::update(const float dt)
 		m_transform.setRotation(m_vrManager->getHmdRotation());
 
 		for (size_t i = 0; i < 2; ++i) {
-			m_eyeCameras[i]->updateView(m_eyeTransforms[i].getGlobalTransformationMatrix());
+			m_cameraEntities[i]->synchronizeView();
 		}
 	}
 }
 
-const ej::Camera& HeadSet::bindEye(vr::EVREye eye)
+void HeadSet::bindEye(vr::EVREye eye)
 {
-	m_renderingManager->setCurrentFrameBuffer(&m_eyeBuffers[eye]);
+	auto state = m_renderingManager->getState();
+
+	state->setCurrentFrameBuffer(&m_eyeBuffers[eye]);
 
 	const auto& size = m_eyeBuffers[eye].getColorTexture().getSize();
-	m_renderingManager->setViewport(0, 0, size.x, size.y);
-
-	return *m_eyeCameras[eye];
+	state->setViewport(0, 0, size.x, size.y);
 }
 
 void HeadSet::submit()
@@ -77,27 +67,12 @@ void HeadSet::submit()
 	glFlush();
 }
 
-void HeadSet::drawDebug()
-{
-	for (unsigned int i = 0; i < 2; ++i) {
-		m_eyeBuffers[i].getColorTexture().bind(i);
-	}
-
-	m_renderingManager->setCurrentShader(m_screenQuadShader.get());
-
-	m_renderingManager->setClearColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-
-	m_renderingManager->setFaceCullingEnabled(false);
-	m_screenQuad.draw();
-}
-
 const ej::Transform& HeadSet::getTransform() const
 {
 	return m_transform;
 }
 
-const ej::Transform& HeadSet::getEyeTransform(vr::EVREye eye) const
+ej::CameraEntity::ptr HeadSet::getCameraEntity(vr::EVREye eye) const
 {
-	return m_eyeTransforms[eye];
+	return m_cameraEntities[static_cast<size_t>(eye)];
 }

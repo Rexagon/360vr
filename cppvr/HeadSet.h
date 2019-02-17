@@ -16,24 +16,19 @@ public:
 
 	void update(float dt);
 	   
-	const ej::Camera& bindEye(vr::EVREye eye);
+	void bindEye(vr::EVREye eye);
 	void submit();
-	void drawDebug();
 
 	const ej::Transform& getTransform() const;
-	const ej::Transform& getEyeTransform(vr::EVREye eye) const;
+	ej::CameraEntity::ptr getCameraEntity(vr::EVREye eye) const;
 
 private:
 	ej::VRManager::ptr m_vrManager;
 	ej::RenderingManager::ptr m_renderingManager;
 
-	ej::Camera::uptr m_eyeCameras[2];
-	ej::FrameBuffer m_eyeBuffers[2];
-
 	ej::Transform m_transform;
-	ej::Transform m_eyeTransforms[2];
 
-	// For desktop rendering
-	ej::Mesh m_screenQuad;
-	ej::Shader::ptr m_screenQuadShader;
+	ej::CameraEntity::ptr m_cameraEntities[2];
+
+	ej::FrameBuffer m_eyeBuffers[2];
 };

@@ -171,15 +171,14 @@ void Texture::generateMipmap() const
 	glGenerateMipmap(m_target);
 }
 
-void Texture::bind(unsigned int unit) const
-{
-	glActiveTexture(GL_TEXTURE0 + unit);
-	glBindTexture(m_target, m_id);
-}
-
 GLuint Texture::getHandle() const
 {
 	return m_id;
+}
+
+GLenum Texture::getTarget() const
+{
+	return m_target;
 }
 
 glm::ivec3 Texture::getSize() const

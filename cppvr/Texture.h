@@ -32,14 +32,13 @@ namespace ej
 
 		void generateMipmap() const;
 
-		void bind(unsigned int unit) const;
-
 		GLuint getHandle() const;
+		GLenum getTarget() const;
+
 		glm::ivec3 getSize() const;
 
 	private:
 		GLuint m_id;
-
 		GLenum m_target;
 
 		GLenum m_internalFormat;

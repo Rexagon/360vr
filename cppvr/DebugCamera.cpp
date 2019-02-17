@@ -7,13 +7,19 @@ DebugCamera::DebugCamera(const ej::Core & core) :
 {
 	m_inputManager = core.get<ej::InputManager>();
 	m_windowManager = core.get<ej::WindowManager>();
+
+	auto camera = std::make_shared<ej::Camera>();
+	m_cameraEntity = std::make_shared<ej::CameraEntity>(camera);
 }
 
 void DebugCamera::update(const float dt)
 {
+	auto camera = m_cameraEntity->getCamera();
+	auto& transform = m_cameraEntity->getTransform();
+
 	const auto windowSize = m_windowManager->getWindow().getSize();
-	m_camera.setAspect(static_cast<float>(windowSize.x) / windowSize.y);
-	m_camera.updateProjection();
+	m_cameraEntity->getCamera()->setAspect(static_cast<float>(windowSize.x) / windowSize.y);
+	m_cameraEntity->getCamera()->updateProjection();
 	
 	// Handle rotation
 	const auto windowCenter = glm::ivec2(windowSize.x / 2, windowSize.y / 2);
@@ -31,19 +37,18 @@ void DebugCamera::update(const float dt)
 	}
 
 	if (m_inputManager->getMouseButton(ej::MouseButton::Right)) {
-		glm::vec2 deltaMouse = m_inputManager->getMousePosition() - windowCenter;
+		const auto deltaMouse = m_inputManager->getMousePosition() - windowCenter;
 
-		const auto horizontalRotation = glm::angleAxis(-deltaMouse.x * dt * m_rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
-		m_transform.rotate(horizontalRotation);
+		const auto horizontalRotation = angleAxis(-deltaMouse.x * dt * m_rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
+		transform.rotate(horizontalRotation);
 
-		const auto verticalRotation = glm::angleAxis(-deltaMouse.y * dt * m_rotationSpeed, m_transform.getDirectionRight());
-		m_transform.rotate(verticalRotation);
+		const auto verticalRotation = angleAxis(-deltaMouse.y * dt * m_rotationSpeed, transform.getDirectionRight());
+		transform.rotate(verticalRotation);
 
 		m_inputManager->setMousePosition(windowCenter);
 	}
 
 	// Handle movement
-
 	glm::vec3 direction{ 0.0f, 0.0f, 0.0f };
 
 	if (m_inputManager->getKey(ej::Key::W)) {
@@ -67,21 +72,15 @@ void DebugCamera::update(const float dt)
 		direction.y += 1.0f;
 	}
 
-	m_transform.move(m_transform.getRotation() * direction * dt * m_movementSpeed);	
+	transform.move(transform.getRotation() * direction * dt * m_movementSpeed);
 
 	// Update view
-
-	m_camera.updateView(m_transform.getGlobalTransformationMatrix());
+	m_cameraEntity->synchronizeView();
 }
 
-ej::Camera & DebugCamera::getCamera()
+ej::CameraEntity::ptr DebugCamera::getCameraEntity()
 {
-	return m_camera;
-}
-
-ej::Transform & DebugCamera::getTransform()
-{
-	return m_transform;
+	return m_cameraEntity;
 }
 
 void DebugCamera::setMovementSpeed(float speed)

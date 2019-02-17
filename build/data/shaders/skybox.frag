@@ -5,9 +5,7 @@
 
 in vec3 fPosition;
 
-uniform sampler2D uDiffuseTexture;
-
-uniform int uEyeNum;
+uniform sampler2D uSkyTexture;
 
 out vec3 color;
 
@@ -29,5 +27,5 @@ void main()
   }
 
   vec2 texCoords = sampleSphericalMap(direction);
-  color = texture(uDiffuseTexture, texCoords).xyz * light;
+  color = texture(uSkyTexture, texCoords).xyz * light;
 }

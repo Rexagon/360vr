@@ -1,15 +1,13 @@
 #include "ShaderManager.h"
 #include "FileManager.h"
 
-using namespace ej;
-
-ShaderManager::ShaderManager(const Core & core) :
+ej::ShaderManager::ShaderManager(const Core & core) :
 	ResourceManager(core)
 {
 	m_fileManager = core.get<FileManager>();
 }
 
-ShaderManager* ShaderManager::bind(const std::string & name, const ShaderSource & vertexShaderSource, 
+ej::ShaderManager* ej::ShaderManager::bind(const std::string & name, const ShaderSource & vertexShaderSource,
 	const ShaderSource & fragmentShaderSource, const ShaderSource & geometryShaderSource)
 {
 	m_factoryData.emplace(name, FactoryData(name, vertexShaderSource, geometryShaderSource, fragmentShaderSource));
@@ -17,7 +15,7 @@ ShaderManager* ShaderManager::bind(const std::string & name, const ShaderSource 
 	return this;
 }
 
-std::shared_ptr<Shader> ej::ShaderManager::get(const std::string & name)
+std::shared_ptr<ej::Shader> ej::ShaderManager::get(const std::string & name)
 {
 	std::shared_ptr<Shader> result = find(name);
 	if (result == nullptr) {
@@ -31,7 +29,7 @@ std::shared_ptr<Shader> ej::ShaderManager::get(const std::string & name)
 	return result;
 }
 
-std::shared_ptr<Shader> ej::ShaderManager::load(const FactoryData & factoryData) const
+std::shared_ptr<ej::Shader> ej::ShaderManager::load(const FactoryData & factoryData) const
 {
 	std::unique_ptr<Shader> shader = std::make_unique<Shader>();
 

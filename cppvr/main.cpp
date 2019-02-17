@@ -3,14 +3,14 @@
 #include "Core.h"
 #include "MainScene.h"
 
-#include "SceneManager.h"
+#include "VRManager.h"
 #include "FileManager.h"
+#include "MeshManager.h"
+#include "SceneManager.h"
 #include "InputManager.h"
 #include "ShaderManager.h"
-#include "VRManager.h"
-
-#include "RenderingManager.h"
 #include "TextureManager.h"
+#include "RenderingManager.h"
 
 #include "VideoManager.h"
 
@@ -25,6 +25,7 @@ public:
 		provide<ej::RenderingManager>();
 		provide<ej::TextureManager>();
 		provide<ej::ShaderManager>();
+		provide<ej::MeshManager>();
 
 		provide<ej::VRManager>();
 

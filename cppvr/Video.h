@@ -49,7 +49,6 @@ private:
 	double m_currentVideoTime;
 	bool m_videoStarted = false;
 
-	sf::Clock m_audioTimer;
 	double m_lastAudioDts;
 	double m_lastAudioDelay;
 	bool m_audioStarted = false;
