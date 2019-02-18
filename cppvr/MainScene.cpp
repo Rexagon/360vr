@@ -1,11 +1,16 @@
 #include "MainScene.h"
 
+#include <fstream>
+
+#include <json.hpp>
 #include <GL/glew.h>
 
 #include "Core.h"
 #include "MeshManager.h"
 #include "SkyboxMaterial.h"
 #include "TextureManager.h"
+
+using json = nlohmann::json;
 
 void MainScene::onInit()
 {
@@ -54,11 +59,27 @@ void MainScene::onInit()
 	m_debugCamera->getCameraEntity()->getTransform().setPosition(0.0f, 1.0f, 0.0f);
 	m_renderingManager->getForwardRenderer()->setCameraEntity(m_debugCamera->getCameraEntity());
 
-	m_video = std::make_unique<Video>("http://192.240.127.34:1935/live/cs14.stream/playlist.m3u8");
-	m_video->init();
-	m_videoManager->setCurrentVideo(m_video);
+	json config;
+	try {
+		std::ifstream file("config.json");
+		file >> config;
 
-	m_textureStreamer = std::make_unique<TextureStreamer>();
+		const auto it = config.find("url");
+		if (it == config.end()) {
+			throw std::exception();
+		}
+
+		printf("%s\n", it.value().get<std::string>().data());
+
+		m_video = std::make_unique<Video>(it.value().get<std::string>());
+		m_video->init();
+		m_videoManager->setCurrentVideo(m_video);
+
+		m_textureStreamer = std::make_unique<TextureStreamer>();
+	}
+	catch (const std::exception& e) {
+		printf("Video source not provided\n");
+	}
 }
 
 void MainScene::onClose()
@@ -71,7 +92,7 @@ void MainScene::onUpdate(const float dt)
 		getCore().get<ej::SceneManager>()->removeScene();
 	}
 
-	if (m_video->hasVideoData()) {
+	if (m_video != nullptr && m_textureStreamer != nullptr && m_video->hasVideoData()) {
 		m_textureStreamer->write(m_videoTarget->getDiffuseTexture(), m_video.get());
 	}
 
