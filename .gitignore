@@ -10,12 +10,15 @@
 # Test video
 *.mp4
 
+build/
 temp/
 Debug/
 Thumbs.db
 
 # Visual Studio
 .vs/
+.vscode/
+CMakeSettings.json
 
 # Visual C++ cache files
 ipch/
