@@ -5,6 +5,7 @@ set(SOURCES
 	"${SOURCE_DIR}/Core/Core.cpp"
 
 	"${SOURCE_DIR}/Managers/FileManager.cpp"
+	"${SOURCE_DIR}/Managers/FontManager.cpp"
 	"${SOURCE_DIR}/Managers/InputManager.cpp"
 	"${SOURCE_DIR}/Managers/MeshManager.cpp"
 	"${SOURCE_DIR}/Managers/RenderingManager.cpp"

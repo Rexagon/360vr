@@ -23,13 +23,13 @@ namespace ej
 	};
 
 	template<typename T>
-	void ResourceManager<T>::insert(const std::string & name, std::shared_ptr<T> resource)
+	void ResourceManager<T>::insert(const std::string& name, std::shared_ptr<T> resource)
 	{
 		m_resources.insert_or_assign(name, resource);
 	}
 
 	template<typename T>
-	std::shared_ptr<T> ResourceManager<T>::find(const std::string & name)
+	std::shared_ptr<T> ResourceManager<T>::find(const std::string& name)
 	{
 		auto it = m_resources.find(name);
 

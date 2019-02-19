@@ -5,6 +5,7 @@ set(SOURCES
 	"${SOURCE_DIR}/main.cpp"
 
 	"${SOURCE_DIR}/Managers/VideoManager.cpp"
+	"${SOURCE_DIR}/Managers/UIManager.cpp"
 
 	"${SOURCE_DIR}/Rendering/SimpleMeshMaterial.cpp"
 	"${SOURCE_DIR}/Rendering/SkyboxMaterial.cpp"
@@ -14,6 +15,8 @@ set(SOURCES
 	"${SOURCE_DIR}/Scene/HeadSet.cpp"
 	"${SOURCE_DIR}/Scene/MainScene.cpp"
 	"${SOURCE_DIR}/Scene/SteamVRObject.cpp"
+
+	"${SOURCE_DIR}/UI/Widget.cpp"
 
 	"${SOURCE_DIR}/Video/AudioStream.cpp"
 	"${SOURCE_DIR}/Video/Video.cpp"
