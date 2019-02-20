@@ -17,6 +17,8 @@ public:
 	void setName(std::string_view name);
 	const std::string& getName() const;
 
+	ej::MeshEntity::ptr getMeshEntity() const;
+
 protected:
 	std::string m_name;
 	ej::MeshEntity::ptr m_meshEntity;

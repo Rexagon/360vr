@@ -1,5 +1,6 @@
 #include "Resources/MeshGeometry.h"
 
+#include <cmath>
 #include <glm/gtc/constants.hpp>
 
 using namespace ej;

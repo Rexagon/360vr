@@ -42,7 +42,7 @@ add_definitions(
  )
 
 add_library(engine STATIC ${SOURCES})
-target_include_directories(engine PUBLIC ${ENGINE_INCLUDE_DIR} PRIVATE ${SOURCE_DIR} ${THIRDPARTY_INCLUDE_DIR})
+target_include_directories(engine PUBLIC ${ENGINE_INCLUDE_DIR} ${THIRDPARTY_INCLUDE_DIR} PRIVATE ${SOURCE_DIR})
 
 target_compile_features(engine PUBLIC cxx_std_17)
 set_target_properties(engine PROPERTIES CXX_EXTENSIONS OFF)
