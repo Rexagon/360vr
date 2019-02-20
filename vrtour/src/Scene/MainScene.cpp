@@ -32,6 +32,7 @@ void MainScene::onInit()
 
 	// Create UI
 	m_rectangleWidget = std::make_shared<RectangleWidget>(getCore());
+	m_rectangleWidget->setSize(glm::vec2(100.0f, 50.0f));
 
 	// Load video config
 	json config;

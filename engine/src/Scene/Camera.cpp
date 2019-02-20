@@ -7,26 +7,26 @@
 using namespace ej;
 
 Camera::Camera() :
-	m_depthRange(0.1f, 100.0f), m_projectionType(PERSPECTIVE), m_fov(glm::half_pi<float>() * 0.77f),
+	m_depthRange(0.1f, 100.0f), m_projectionType(Perspective), m_fov(glm::half_pi<float>() * 0.77f),
 	m_aspect(1.0f), m_left(0.0f), m_right(0.0f), m_bottom(0.0f), m_top(0.0f), m_projectionChanged(true)
 {
 }
 
 Camera::Camera(float minDepth, float maxDepth) :
-	m_depthRange(minDepth, maxDepth), m_projectionType(PERSPECTIVE), m_fov(glm::half_pi<float>() * 0.77f),
+	m_depthRange(minDepth, maxDepth), m_projectionType(Perspective), m_fov(glm::half_pi<float>() * 0.77f),
 	m_aspect(1.0f), m_left(0.0f), m_right(0.0f), m_bottom(0.0f), m_top(0.0f), m_projectionChanged(true)
 {
 }
 
 Camera::Camera(const glm::vec2& zRange) :
-	m_depthRange(zRange), m_projectionType(PERSPECTIVE), m_fov(glm::half_pi<float>() * 0.77f),
+	m_depthRange(zRange), m_projectionType(Perspective), m_fov(glm::half_pi<float>() * 0.77f),
 	m_aspect(1.0f), m_left(0.0f), m_right(0.0f), m_bottom(0.0f), m_top(0.0f), m_projectionChanged(true)
 {
 }
 
 Camera::Camera(const glm::mat4& projection) :
 	m_depthRange(0.0f, 0.0f),
-	m_projectionType(CUSTOM), m_fov(0.0f), m_aspect(1.0f),
+	m_projectionType(Custom), m_fov(0.0f), m_aspect(1.0f),
 	m_left(0.0f), m_right(0.0f), m_bottom(0.0f), m_top(0.0f), m_projectionMatrix(projection), m_projectionChanged(false)
 {
 }
@@ -98,7 +98,7 @@ void Camera::updateProjection()
 {
 	if (m_projectionChanged) {
 		switch (m_projectionType) {
-		case PERSPECTIVE:
+		case Perspective:
 		{
 			float f = 1.0f / tan(m_fov / 2.0f);
 
@@ -113,14 +113,14 @@ void Camera::updateProjection()
 			break;
 		}
 
-		case ISOMETRIC:
+		case Isometric:
 		{
 			m_projectionMatrix = glm::ortho(m_left, m_right,
 				m_bottom, m_top, m_depthRange.x, m_depthRange.y);
 			break;
 		}
 
-		case CUSTOM:
+		case Custom:
 			break;
 		}
 
@@ -147,7 +147,7 @@ void Camera::setFieldOfView(float fov)
 	if (fov != m_fov) {
 		m_fov = fov;
 
-		if (m_projectionType == PERSPECTIVE) {
+		if (m_projectionType == Perspective) {
 			m_projectionChanged = true;
 		}
 	}
@@ -163,7 +163,7 @@ void Camera::setAspect(float aspect)
 	if (aspect != m_aspect) {
 		m_aspect = aspect;
 
-		if (m_projectionType == PERSPECTIVE) {
+		if (m_projectionType == Perspective) {
 			m_projectionChanged = true;
 		}
 	}
@@ -182,7 +182,7 @@ void Camera::setDimensions(float leftAndRight, float bottomAndTop)
 		m_top = bottomAndTop;
 		m_bottom = -bottomAndTop;
 
-		if (m_projectionType == ISOMETRIC) {
+		if (m_projectionType == Isometric) {
 			m_projectionChanged = true;
 		}
 	}
@@ -196,7 +196,7 @@ void Camera::setDimensions(float left, float right, float bottom, float top)
 		m_bottom = bottom;
 		m_top = top;
 
-		if (m_projectionType == ISOMETRIC) {
+		if (m_projectionType == Isometric) {
 			m_projectionChanged = true;
 		}
 	}

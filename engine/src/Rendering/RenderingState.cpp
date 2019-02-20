@@ -249,7 +249,7 @@ GLenum RenderingState::getPolygonMode() const
 	return m_polygonMode;
 }
 
-void RenderingState::setActiveTexture(size_t unit)
+void RenderingState::setActiveTexture(unsigned int unit)
 {
 	if (unit != m_activeTextureUnit) {
 		m_activeTextureUnit = unit;
@@ -257,7 +257,7 @@ void RenderingState::setActiveTexture(size_t unit)
 	}
 }
 
-void RenderingState::bindTexture(const Texture* texture, size_t unit)
+void RenderingState::bindTexture(const Texture* texture, unsigned int unit)
 {
 	if (texture != nullptr) {
 		setActiveTexture(unit);

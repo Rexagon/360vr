@@ -11,4 +11,7 @@ out vec3 color;
 void main()
 {
   color = uColor.rgb;
+  if (uHasTexture == 1) {
+    color *= texture(uTexure, fTexCoords).rgb;
+  }
 }

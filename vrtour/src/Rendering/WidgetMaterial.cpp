@@ -1,6 +1,7 @@
 #include "Rendering/WidgetMaterial.h"
 
 #include <Managers/RenderingManager.h>
+#include <Managers/TextureManager.h>
 
 WidgetMaterial::WidgetMaterial(const ej::Core& core) :
 	Material(core)
@@ -16,6 +17,8 @@ WidgetMaterial::WidgetMaterial(const ej::Core& core) :
 
 	m_shader->setAttribute(0, "vPosition");
 	m_shader->setAttribute(1, "vTexCoords");
+
+	m_texture = core.get<ej::TextureManager>()->get("carpet");
 
 	m_renderingManager->getState()->setCurrentShader(m_shader.get());
 	m_shader->setUniform("uTexture", 3);

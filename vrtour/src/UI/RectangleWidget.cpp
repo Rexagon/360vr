@@ -20,7 +20,6 @@ RectangleWidget::RectangleWidget(const ej::Core& core) :
 	auto material = std::make_shared<WidgetMaterial>(core);
 
 	m_meshEntity = std::make_shared<ej::MeshEntity>(mesh, material);
-	setSize(glm::vec2(100.0f, 100.0f));
 }
 
 void RectangleWidget::update(float dt)

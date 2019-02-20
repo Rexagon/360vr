@@ -9,7 +9,7 @@ ej::UIRenderer::UIRenderer(const Core& core) :
 	m_windowManager = core.get<WindowManager>();
 
 	auto camera = std::make_shared<Camera>();
-	camera->setProjectionType(Camera::ISOMETRIC);
+	camera->setProjectionType(Camera::Isometric);
 
 	m_cameraEntity = std::make_shared<CameraEntity>(camera);
 }
@@ -21,6 +21,7 @@ void ej::UIRenderer::draw()
 
 	const auto windowSize = sf::Vector2f(m_windowManager->getWindow().getSize());
 
+	camera->setDepthRange(glm::vec2(-100.0f, 100.0f));
 	camera->setDimensions(windowSize.x * 0.5f, windowSize.y * 0.5);
 	camera->updateProjection();
 
