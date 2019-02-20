@@ -19,6 +19,7 @@ ej::RenderingManager::RenderingManager(const Core& core) :
 void ej::RenderingManager::init()
 {
 	m_forwardRenderer = std::make_shared<ForwardRenderer>(m_core);
+	m_uiRenderer = std::make_shared<UIRenderer>(m_core);
 }
 
 ej::RenderingState* ej::RenderingManager::getState() const
@@ -29,4 +30,9 @@ ej::RenderingState* ej::RenderingManager::getState() const
 ej::ForwardRenderer* ej::RenderingManager::getForwardRenderer() const
 {
 	return m_forwardRenderer.get();
+}
+
+ej::UIRenderer* ej::RenderingManager::getUIRenderer() const
+{
+	return m_uiRenderer.get();
 }

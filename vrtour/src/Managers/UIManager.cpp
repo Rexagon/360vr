@@ -7,4 +7,5 @@ UIManager::UIManager(const ej::Core& core) :
 
 void UIManager::handleEvent(const sf::Event& event)
 {
+
 }

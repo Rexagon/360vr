@@ -30,6 +30,9 @@ void MainScene::onInit()
 	createSkybox();
 	createCamera();
 
+	// Create UI
+	m_rectangleWidget = std::make_shared<RectangleWidget>(getCore());
+
 	// Load video config
 	json config;
 	try {
@@ -85,6 +88,9 @@ void MainScene::drawScene()
 		renderer->push(mesh.get());
 	}
 	renderer->draw();
+
+	m_renderingManager->getUIRenderer()->push(m_rectangleWidget->getMeshEntity().get());
+	m_renderingManager->getUIRenderer()->draw();
 }
 
 void MainScene::createCarpet()

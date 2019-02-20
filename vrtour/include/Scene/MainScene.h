@@ -8,6 +8,8 @@
 #include <Managers/WindowManager.h>
 #include <Managers/RenderingManager.h>
 
+#include "UI/RectangleWidget.h"
+
 #include "Scene/HeadSet.h"
 #include "Scene/DebugCamera.h"
 #include "Managers/VideoManager.h"
@@ -37,6 +39,8 @@ private:
 	ej::Texture* m_videoTarget = nullptr;
 	
 	std::vector<ej::MeshEntity::ptr> m_meshes;
+
+	RectangleWidget::ptr m_rectangleWidget;
 
 	std::unique_ptr<HeadSet> m_headSet;
 	std::unique_ptr<DebugCamera> m_debugCamera;
