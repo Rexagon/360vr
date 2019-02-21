@@ -8,7 +8,7 @@
 class RectangleWidget : public Widget, public ej::PointerDefs<RectangleWidget>
 {
 public:
-	RectangleWidget(const ej::Core& core);
+	explicit RectangleWidget(const ej::Core& core);
 
 	void update(float dt) override;
 

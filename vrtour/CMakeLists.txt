@@ -9,6 +9,7 @@ set(SOURCES
 
 	"${SOURCE_DIR}/Rendering/SimpleMeshMaterial.cpp"
 	"${SOURCE_DIR}/Rendering/SkyboxMaterial.cpp"
+	"${SOURCE_DIR}/Rendering/TextMaterial.cpp"
 	"${SOURCE_DIR}/Rendering/TextureStreamer.cpp"
 	"${SOURCE_DIR}/Rendering/WidgetMaterial.cpp"
 
@@ -18,6 +19,7 @@ set(SOURCES
 	"${SOURCE_DIR}/Scene/SteamVRObject.cpp"
 
 	"${SOURCE_DIR}/UI/RectangleWidget.cpp"
+	"${SOURCE_DIR}/UI/TextWidget.cpp"
 	"${SOURCE_DIR}/UI/Widget.cpp"
 
 	"${SOURCE_DIR}/Video/AudioStream.cpp"

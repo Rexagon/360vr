@@ -1,9 +1,9 @@
-#include "Rendering/WidgetMaterial.h"
+#include "Rendering/TextMaterial.h"
 
 #include <Managers/RenderingManager.h>
 #include <Managers/TextureManager.h>
 
-WidgetMaterial::WidgetMaterial(const ej::Core& core) :
+TextMaterial::TextMaterial(const ej::Core& core) :
 	Material(core)
 {
 	const std::string shaderName = "widget";
@@ -18,17 +18,18 @@ WidgetMaterial::WidgetMaterial(const ej::Core& core) :
 	m_shader->setAttribute(0, "vPosition");
 	m_shader->setAttribute(1, "vTexCoords");
 
-	m_texture = core.get<ej::TextureManager>()->get("carpet");
-
 	m_renderingManager->getState()->setCurrentShader(m_shader.get());
 	m_shader->setUniform("uTexture", 3);
 }
 
-void WidgetMaterial::bind()
+void TextMaterial::bind()
 {
 	auto state = m_renderingManager->getState();
 
-	state->bindTexture(m_texture.get(), 3);
+	if (m_texture != nullptr) {
+		state->setActiveTexture(3);
+		glBindTexture(GL_TEXTURE_2D, m_texture->getNativeHandle());
+	}
 
 	state->setCurrentShader(m_shader.get());
 
@@ -36,12 +37,12 @@ void WidgetMaterial::bind()
 	m_shader->setUniform("uHasTexture", static_cast<int>(m_texture != nullptr));
 }
 
-void WidgetMaterial::setColor(float r, float g, float b, float a)
+void TextMaterial::setColor(float r, float g, float b, float a)
 {
 	m_color = glm::vec4(r, g, b, a);
 }
 
-void WidgetMaterial::setColor(const sf::Color& color)
+void TextMaterial::setColor(const sf::Color& color)
 {
 	m_color = glm::vec4(
 		static_cast<float>(color.r) / 255.0f,
@@ -51,12 +52,17 @@ void WidgetMaterial::setColor(const sf::Color& color)
 	);
 }
 
-void WidgetMaterial::setColor(const glm::vec4& color)
+void TextMaterial::setColor(const glm::vec4& color)
 {
 	m_color = color;
 }
 
-const glm::vec4& WidgetMaterial::getColor() const
+const glm::vec4& TextMaterial::getColor() const
 {
 	return m_color;
+}
+
+void TextMaterial::setTexture(const sf::Texture* texture)
+{
+	m_texture = texture;
 }

@@ -7,8 +7,6 @@
 
 namespace ej
 {
-	class FileManager;
-
 	class FontManager : public ResourceManager<sf::Font>, public PointerDefs<FontManager>
 	{
 	public:
@@ -22,6 +20,5 @@ namespace ej
 		std::shared_ptr<sf::Font> load(const std::string& factoryData) const;
 
 		std::unordered_map<std::string, std::string> m_factoryData;
-		std::shared_ptr<FileManager> m_fileManager;
 	};
 }

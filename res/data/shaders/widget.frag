@@ -2,16 +2,16 @@
 
 in vec2 fTexCoords;
 
-uniform sampler2D uTexure;
+uniform sampler2D uTexture;
 uniform vec4 uColor;
 uniform int uHasTexture;
 
-out vec3 color;
+out vec4 color;
 
 void main()
 {
-  color = uColor.rgb;
+  color = uColor;
   if (uHasTexture == 1) {
-    color *= texture(uTexure, fTexCoords).rgb;
+    color *= texture(uTexture, fTexCoords);
   }
 }

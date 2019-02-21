@@ -179,8 +179,8 @@ void Camera::setDimensions(float leftAndRight, float bottomAndTop)
 	if (m_right != -m_left || m_right != leftAndRight || m_top != -m_bottom || m_top != bottomAndTop) {
 		m_right = leftAndRight;
 		m_left = -leftAndRight;
-		m_top = bottomAndTop;
-		m_bottom = -bottomAndTop;
+		m_top = -bottomAndTop;
+		m_bottom = bottomAndTop;
 
 		if (m_projectionType == Isometric) {
 			m_projectionChanged = true;

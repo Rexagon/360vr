@@ -8,6 +8,7 @@
 #include <Managers/WindowManager.h>
 #include <Managers/RenderingManager.h>
 
+#include "UI/TextWidget.h"
 #include "UI/RectangleWidget.h"
 
 #include "Scene/HeadSet.h"
@@ -40,6 +41,7 @@ private:
 	
 	std::vector<ej::MeshEntity::ptr> m_meshes;
 
+	TextWidget::ptr m_textWidget;
 	RectangleWidget::ptr m_rectangleWidget;
 
 	std::unique_ptr<HeadSet> m_headSet;

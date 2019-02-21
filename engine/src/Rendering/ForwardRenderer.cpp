@@ -18,6 +18,7 @@ void ej::ForwardRenderer::draw()
 
 	state->setDepthTestEnabled(true);
 	state->setFaceCullingEnabled(true);
+	state->setBlendingEnabled(false);
 
 	const auto& camera = m_cameraEntity->getCamera();
 	const auto& cameraTransform = m_cameraEntity->getTransform();

@@ -1,11 +1,8 @@
 #include "Managers/FontManager.h"
 
-#include "Managers/FileManager.h"
-
 ej::FontManager::FontManager(const Core& core) :
 	ResourceManager(core)
 {
-	m_fileManager = core.get<FileManager>();
 }
 
 ej::FontManager* ej::FontManager::bind(const std::string& name, const std::string& path)
@@ -33,8 +30,7 @@ std::shared_ptr<sf::Font> ej::FontManager::load(const std::string& factoryData) 
 {
 	std::shared_ptr<sf::Font> font = std::make_shared<sf::Font>();
 
-	std::string data = m_fileManager->open(factoryData);
-	if (!font->loadFromMemory(data.data(), data.size())) {
+	if (!font->loadFromFile("data/" + factoryData)) {
 		throw std::runtime_error("Unable to load font: " + factoryData);
 	}
 

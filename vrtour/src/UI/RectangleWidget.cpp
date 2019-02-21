@@ -17,9 +17,9 @@ RectangleWidget::RectangleWidget(const ej::Core& core) :
 		})->get(meshName);
 	}
 
-	auto material = std::make_shared<WidgetMaterial>(core);
+	m_widgetMaterial = std::make_shared<WidgetMaterial>(core);
 
-	m_meshEntity = std::make_shared<ej::MeshEntity>(mesh, material);
+	m_meshEntity = std::make_shared<ej::MeshEntity>(mesh, m_widgetMaterial);
 }
 
 void RectangleWidget::update(float dt)

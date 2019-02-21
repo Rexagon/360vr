@@ -23,6 +23,8 @@ private:
 	float m_movementSpeed;
 	float m_rotationSpeed;
 
+	glm::vec2 m_rotation;
+
 	ej::InputManager::ptr m_inputManager;
 	ej::WindowManager::ptr m_windowManager;
 

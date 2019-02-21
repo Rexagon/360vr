@@ -5,6 +5,7 @@
 #include <json.hpp>
 
 #include <Managers/MeshManager.h>
+#include <Managers/FontManager.h>
 #include <Managers/TextureManager.h>
 
 #include "Rendering/SkyboxMaterial.h"
@@ -33,6 +34,11 @@ void MainScene::onInit()
 	// Create UI
 	m_rectangleWidget = std::make_shared<RectangleWidget>(getCore());
 	m_rectangleWidget->setSize(glm::vec2(100.0f, 50.0f));
+
+	auto font = getCore().get<ej::FontManager>()->bind("font", "fonts/segoeui.ttf")->get("font");
+
+	m_textWidget = std::make_shared<TextWidget>(getCore());
+	m_textWidget->setFont(font);
 
 	// Load video config
 	json config;
@@ -70,6 +76,9 @@ void MainScene::onUpdate(const float dt)
 		m_textureStreamer->write(m_videoTarget, m_video.get());
 	}
 
+	m_textWidget->setText("Current delta time: " + std::to_string(dt));
+	m_textWidget->update(dt);
+
 	m_debugCamera->update(dt);
 
 	drawScene();
@@ -91,6 +100,7 @@ void MainScene::drawScene()
 	renderer->draw();
 
 	m_renderingManager->getUIRenderer()->push(m_rectangleWidget->getMeshEntity().get());
+	m_renderingManager->getUIRenderer()->push(m_textWidget->getMeshEntity().get());
 	m_renderingManager->getUIRenderer()->draw();
 }
 
@@ -137,5 +147,6 @@ void MainScene::createCamera()
 {
 	m_debugCamera = std::make_unique<DebugCamera>(getCore());
 	m_debugCamera->getCameraEntity()->getTransform().setPosition(0.0f, 1.0f, 0.0f);
+	m_debugCamera->setRotationSpeed(-0.2f);
 	m_renderingManager->getForwardRenderer()->setCameraEntity(m_debugCamera->getCameraEntity());
 }
