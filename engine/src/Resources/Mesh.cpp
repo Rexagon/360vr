@@ -4,11 +4,14 @@ using namespace ej;
 
 Mesh::Mesh()
 {
-	glGenVertexArrays(1, &m_vao);
 }
 
 Mesh::~Mesh()
 {
+	if (!m_isInitialized) {
+		return;
+	}
+
 	glDeleteVertexArrays(1, &m_vao);
 	glDeleteBuffers(1, &m_vbo);
 	glDeleteBuffers(1, &m_ebo);
@@ -17,6 +20,21 @@ Mesh::~Mesh()
 void Mesh::init(const MeshGeometry& geometry)
 {
 	if (m_isInitialized) return;
+
+	glGenVertexArrays(1, &m_vao);
+	glGenBuffers(1, &m_vbo);
+	glGenBuffers(1, &m_ebo);
+
+	m_isInitialized = true;
+
+	update(geometry);
+}
+
+void Mesh::update(const MeshGeometry& geometry)
+{
+	if (!m_isInitialized) {
+		return;
+	}
 
 	// Calculating buffer layout
 	m_topology = geometry.topology;
@@ -65,7 +83,6 @@ void Mesh::init(const MeshGeometry& geometry)
 
 	glBindVertexArray(m_vao);
 
-	glGenBuffers(1, &m_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 
 	std::vector<char> data(bufferSize);
@@ -105,19 +122,16 @@ void Mesh::init(const MeshGeometry& geometry)
 
 		offset += bitangentsBufferSize;
 	}
-	
-	glBufferData(GL_ARRAY_BUFFER, bufferSize, data.data(), GL_STATIC_DRAW);
+
+	glBufferData(GL_ARRAY_BUFFER, bufferSize, data.data(), m_bufferUsage);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &m_ebo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * m_indexCount, &geometry.indices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * m_indexCount, &geometry.indices[0], m_bufferUsage);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
-
-	m_isInitialized = true;
 }
 
 void Mesh::draw() const
@@ -150,6 +164,16 @@ unsigned int Mesh::getVertexCount() const
 unsigned int Mesh::getAttributeCount() const
 {
 	return m_attributeCount;
+}
+
+void Mesh::setBufferUsage(GLenum usage)
+{
+	m_bufferUsage = usage;
+}
+
+GLenum Mesh::getBufferUsage() const
+{
+	return m_bufferUsage;
 }
 
 bool Mesh::isInitialized() const

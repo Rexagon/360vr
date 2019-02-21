@@ -14,11 +14,15 @@ namespace ej
 		~Mesh();
 
 		void init(const MeshGeometry& geometry);
+		void update(const MeshGeometry& geometry);
 		void draw() const;
 
 		unsigned int getIndexCount() const;
 		unsigned int getVertexCount() const;
 		unsigned int getAttributeCount() const;
+
+		void setBufferUsage(GLenum usage);
+		GLenum getBufferUsage() const;
 
 		bool isInitialized() const;
 
@@ -33,6 +37,7 @@ namespace ej
 
 		GLenum m_topology = 0;
 
+		GLenum m_bufferUsage = GL_STATIC_DRAW;
 		bool m_isInitialized = false;
 	};
 }
