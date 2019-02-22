@@ -91,7 +91,14 @@ sf::Font* TextWidget::getFont() const
 	return m_font.get();
 }
 
-void TextWidget::ensureGeometryUpdate()
+sf::FloatRect TextWidget::getBounds() const
+{
+	ensureGeometryUpdate();
+
+	return m_bounds;
+}
+
+void TextWidget::ensureGeometryUpdate() const
 {
 	if (m_font == nullptr || !m_geometryNeedUpdate) {
 		return;
@@ -121,40 +128,60 @@ void TextWidget::ensureGeometryUpdate()
 	auto x = 0.0f;
 	auto y = static_cast<float>(m_characterSize);
 
+	glm::vec2 boundsMin(m_characterSize, m_characterSize);
+	glm::vec2 boundsMax;
+
 	char prevChar = 0;
 	for (const auto& curChar : m_text) {
 		if (curChar == '\r') {
 			continue;
 		}
 
+		// Apply kerning offset
 		x += m_font->getKerning(prevChar, curChar, m_characterSize);
-
-		switch (curChar) {
-		case ' ':
-			x += whitespaceWidth;
-			continue;
-		case '\n':
-			y += lineSpacing;
-			x = 0.0f;
-			continue;
-		case '\t':
-			x += whitespaceWidth * 4.0f;
-			continue;
-		default:
-			break;
-		}
-
 		prevChar = curChar;
 
+		// Handle special characters
+		if (curChar == ' ' || curChar == '\n' || curChar == '\t') {
+			boundsMin.x = std::min(boundsMin.x, x);
+			boundsMin.y = std::min(boundsMin.y, y);
+
+			switch (curChar) {
+			case ' ':
+				x += whitespaceWidth;
+				break;
+			case '\n':
+				y += lineSpacing;
+				x = 0.0f;
+				break;
+			case '\t':
+				x += whitespaceWidth * 4.0f;
+				break;
+			default:
+				break;
+			}
+
+			boundsMax.x = std::max(boundsMax.x, x);
+			boundsMax.y = std::max(boundsMax.y, y);
+
+			continue;
+		}
+
+		// Extract glyph description
 		const auto& glyph = m_font->getGlyph(curChar, m_characterSize, m_isBold);
 
 		// Append glyph vertices
-		const auto padding = 1.0;
+		const auto padding = 1.0f;
 
 		const auto left = glyph.bounds.left - padding;
 		const auto top = glyph.bounds.top - padding;
 		const auto right = glyph.bounds.left + glyph.bounds.width + padding;
 		const auto bottom = glyph.bounds.top + glyph.bounds.height + padding;
+
+		boundsMin.x = std::min(boundsMin.x, x + left);
+		boundsMin.y = std::min(boundsMin.y, y + top);
+		boundsMax.x = std::max(boundsMax.x, x + right);
+		boundsMax.y = std::max(boundsMax.y, y + bottom);
 
 		const auto textureSize = sf::Vector2f(m_font->getTexture(m_characterSize).getSize());
 
@@ -192,5 +219,16 @@ void TextWidget::ensureGeometryUpdate()
 		x += glyph.advance + letterSpacing;
 	}
 
+	const auto size = boundsMax - boundsMin;
+
+	const glm::vec3 offset(-boundsMin - size * 0.5f, 0.0f);
+	for (auto& position : meshGeometry.positions) {
+		position += offset;
+	}
+
+	m_bounds.left = boundsMin.x;
+	m_bounds.top = boundsMin.y;
+	m_bounds.width = size.x;
+	m_bounds.height = size.y;
 	m_meshEntity->getMesh()->update(meshGeometry);
 }

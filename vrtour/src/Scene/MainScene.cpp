@@ -76,7 +76,7 @@ void MainScene::onUpdate(const float dt)
 		m_textureStreamer->write(m_videoTarget, m_video.get());
 	}
 
-	m_textWidget->setText("Current delta time: " + std::to_string(dt));
+	m_textWidget->setText("current delta time: " + std::to_string(dt));
 	m_textWidget->update(dt);
 
 	m_debugCamera->update(dt);

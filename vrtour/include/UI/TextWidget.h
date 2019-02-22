@@ -28,8 +28,10 @@ public:
 	void setFont(std::shared_ptr<sf::Font> font);
 	sf::Font* getFont() const;
 
+	sf::FloatRect getBounds() const;
+
 private:
-	void ensureGeometryUpdate();
+	void ensureGeometryUpdate() const;
 
 	TextMaterial::ptr m_material;
 
@@ -38,7 +40,9 @@ private:
 	unsigned int m_characterSize = 36;
 	float m_letterSpacingFactor = 1.0f;
 
-	bool m_geometryNeedUpdate = false;
-
 	std::shared_ptr<sf::Font> m_font;
+
+	mutable sf::FloatRect m_bounds;
+	mutable bool m_geometryNeedUpdate = false;
+
 };
