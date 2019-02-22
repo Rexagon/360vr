@@ -33,6 +33,8 @@ set(SOURCES
 	"${SOURCE_DIR}/Scene/Entity.cpp"
 	"${SOURCE_DIR}/Scene/MeshEntity.cpp"
 	"${SOURCE_DIR}/Scene/Transform.cpp"
+
+	"${SOURCE_DIR}/UI/Widget.cpp"
 )
 
 add_definitions(

@@ -14,5 +14,5 @@ public:
 	void handleEvent(const sf::Event& event);
 
 private:
-	std::shared_ptr<Widget> m_rootWidget;
+	std::shared_ptr<ej::Widget> m_rootWidget;
 };

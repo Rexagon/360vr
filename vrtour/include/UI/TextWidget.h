@@ -2,12 +2,11 @@
 
 #include <SFML/Graphics/Font.hpp>
 
-#include <Managers/RenderingManager.h>
+#include <UI/Widget.h>
 
-#include "Widget.h"
 #include "Rendering/TextMaterial.h"
 
-class TextWidget : public Widget, public ej::PointerDefs<TextWidget>
+class TextWidget : public ej::Widget, public ej::PointerDefs<TextWidget>
 {
 public:
 	explicit TextWidget(const ej::Core& core);
@@ -32,7 +31,6 @@ public:
 private:
 	void ensureGeometryUpdate();
 
-	ej::RenderingManager::ptr m_renderingManager;
 	TextMaterial::ptr m_material;
 
 	std::string m_text;

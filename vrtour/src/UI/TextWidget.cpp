@@ -4,9 +4,7 @@
 
 TextWidget::TextWidget(const ej::Core& core) :
 	Widget(core)
-{	
-	m_renderingManager = core.get<ej::RenderingManager>();
-
+{
 	const auto meshName = "text_mesh_" + std::to_string(reinterpret_cast<intptr_t>(this));
 
 	auto mesh = core.get<ej::MeshManager>()->get(meshName);
@@ -20,7 +18,7 @@ TextWidget::TextWidget(const ej::Core& core) :
 
 	m_material = std::make_shared<TextMaterial>(core);
 
-	m_meshEntity = std::make_shared<ej::MeshEntity>(mesh, m_material);
+	initMesh(mesh, m_material);
 }
 
 void TextWidget::update(float dt)

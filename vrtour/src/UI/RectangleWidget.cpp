@@ -2,11 +2,11 @@
 
 #include <Managers/MeshManager.h>
 
+#include "Rendering/WidgetMaterial.h"
+
 RectangleWidget::RectangleWidget(const ej::Core& core) :
 	Widget(core)
 {
-	m_renderingManager = core.get<ej::RenderingManager>();
-
 	const auto meshName = "rectangle_mesh";
 
 	auto mesh = core.get<ej::MeshManager>()->get(meshName);
@@ -17,22 +17,12 @@ RectangleWidget::RectangleWidget(const ej::Core& core) :
 		})->get(meshName);
 	}
 
-	m_widgetMaterial = std::make_shared<WidgetMaterial>(core);
+	const auto material = std::make_shared<WidgetMaterial>(core);
 
-	m_meshEntity = std::make_shared<ej::MeshEntity>(mesh, m_widgetMaterial);
+	initMesh(mesh, material);
 }
 
 void RectangleWidget::update(float dt)
 {
-	m_renderingManager->getForwardRenderer()->push(m_meshEntity.get());
-}
-
-void RectangleWidget::setSize(const glm::vec2& size)
-{
-	m_meshEntity->getTransform().setScale(size.x, size.y, 1.0f);
-}
-
-glm::vec2 RectangleWidget::getSize() const
-{
-	return glm::vec2(m_meshEntity->getTransform().getScale());
+	//TODO: call draw method here
 }
