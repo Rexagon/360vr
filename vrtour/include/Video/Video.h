@@ -27,13 +27,11 @@ public:
 	~Video();
 
 	void init();
-
-	void receive();
 	bool shouldReceive() const;
 	void flush() const;
 
-	void decodeVideo();
 	void decodeAudio();
+	void decodeVideo();
 
 	glm::vec2 getSize() const;
 	bool hasVideoData() const;
@@ -43,10 +41,20 @@ public:
 
 private:
 	void initializationTask();
+	void receivingTask();
+	void decodingTask();
+
 	void initVideoStream();
 	void initAudioStream();
+	void receive();
+
+	void clear();
 
 	VideoManager::ptr m_videoManager;
+
+	std::mutex m_receiverMutex;
+	std::mutex m_videoDecoderMutex;
+	std::mutex m_audioDecoderMutex;
 
 	std::string m_file;
 	bool m_isInitialized = false;

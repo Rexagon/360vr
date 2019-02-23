@@ -18,25 +18,7 @@ Video::Video(const ej::Core& core, const std::string& file):
 
 Video::~Video()
 {
-	if (!m_isInitialized) {
-		return;
-	}
-
-	while (!m_videoQueue.empty()) {
-		av_frame_free(&m_videoQueue.back());
-		m_videoQueue.pop_back();
-	}
-
-	av_frame_free(&m_videoBuffer);
-	av_free(m_videoBufferFrameData);
-
-	avformat_close_input(&m_formatContext);
-
-	avcodec_free_context(&m_videoDecoderContext);
-	avcodec_free_context(&m_audioDecoderContext);
-
-	avformat_network_deinit();
-	sws_freeContext(m_swsContext);
+	clear();
 }
 
 void Video::init()
@@ -49,63 +31,6 @@ void Video::init()
 	post(*m_videoManager->getService(), std::bind(&Video::initializationTask, this));
 }
 
-void Video::receive()
-{
-	if (!m_isInitialized) {
-		return;
-	}
-
-	if (av_read_frame(m_formatContext, &m_packet) < 0) {
-		printf("Error: Unable to read frame\n");
-		return;
-	}
-
-	if (m_packet.stream_index == m_videoStream->index) {
-		if (avcodec_send_packet(m_videoDecoderContext, &m_packet) < 0) {
-			throw std::runtime_error("Unable to send video packet for decoding");
-		}
-
-		AVFrame* frame = av_frame_alloc();
-
-		if (avcodec_receive_frame(m_videoDecoderContext, frame) < 0) {
-			av_frame_free(&frame);
-		}
-		else {
-			//printf("Received video frame: %lld\n", frame->pts);
-
-			std::lock_guard<std::mutex> lock(m_videoQueueMutex);
-			m_videoQueue.push_back(frame);
-		}
-	}
-	else if (m_packet.stream_index == m_audioStream->index) {
-		if (avcodec_send_packet(m_audioDecoderContext, &m_packet) < 0) {
-			printf("Unable to send audio packet for decoding\n");
-			return;
-			//throw std::runtime_error("Unable to send audio packet for decoding");
-		}
-
-		AVFrame* frame = av_frame_alloc();
-
-		if (avcodec_receive_frame(m_audioDecoderContext, frame) < 0) {
-			av_frame_free(&frame);
-		}
-		else {
-			//printf("Received audio frame: %lld\n", frame->pts);
-
-			{
-				std::lock_guard<std::mutex> lock(m_audioQueueMutex);
-				m_audioQueue.push_back(frame);
-			}
-
-			if (m_soundStream.getStatus() != sf::SoundStream::Status::Playing) {
-				m_soundStream.play();
-			}
-		}
-	}
-
-	av_packet_unref(&m_packet);
-}
-
 bool Video::shouldReceive() const
 {
 	return m_videoQueue.size() < 256;
@@ -113,12 +38,22 @@ bool Video::shouldReceive() const
 
 void Video::flush() const
 {
+	if (!m_isInitialized) {
+		return;
+	}
+
 	avcodec_send_packet(m_videoDecoderContext, nullptr);
 	avcodec_send_packet(m_audioDecoderContext, nullptr);
 }
 
 void Video::decodeVideo()
 {
+	std::unique_lock<std::mutex> lock(m_videoDecoderMutex);
+
+	if (!m_isInitialized) {
+		return;
+	}
+
 	if (m_videoQueue.empty()) {
 		return;
 	}
@@ -129,7 +64,7 @@ void Video::decodeVideo()
 		return;
 	}
 
-	if (m_videoStarted == false) {
+	if (!m_videoStarted) {
 		m_currentVideoTime = m_videoStream->start_time * av_q2d(m_videoStream->time_base);
 		m_videoTimer.restart();
 		m_videoStarted = true;
@@ -165,6 +100,12 @@ void Video::decodeVideo()
 
 void Video::decodeAudio()
 {
+	std::unique_lock<std::mutex> lock(m_audioDecoderMutex);
+
+	if (!m_isInitialized) {
+		return;
+	}
+
 	if (m_audioQueue.empty()) {
 		return;
 	}
@@ -246,10 +187,15 @@ void Video::initializationTask()
 {
 	// Connect to data stream
 
-	if (avformat_open_input(&m_formatContext, m_file.data(), nullptr, nullptr) < 0) {
+	AVDictionary* formatOptions = nullptr;
+	av_dict_set(&formatOptions, "timeout", "60", 0);
+
+	if (avformat_open_input(&m_formatContext, m_file.data(), nullptr, &formatOptions) < 0) {
 		throw std::runtime_error("Could not open input file\n");
 	}
+
 	if (avformat_find_stream_info(m_formatContext, nullptr) < 0) {
+		clear();
 		throw std::runtime_error("Failed to retrieve input stream information\n");
 	}
 
@@ -270,11 +216,37 @@ void Video::initializationTask()
 	initAudioStream();
 
 	m_isInitialized = true;
+
+	post(*m_videoManager->getService(), std::bind(&Video::receivingTask, this));
+	post(*m_videoManager->getService(), std::bind(&Video::decodingTask, this));
+}
+
+void Video::receivingTask()
+{
+	if (!m_isInitialized) {
+		return;
+	}
+
+	receive();
+
+	post(*m_videoManager->getService(), std::bind(&Video::receivingTask, this));
+}
+
+void Video::decodingTask()
+{
+	if (!m_isInitialized) {
+		return;
+	}
+
+	decodeVideo();
+
+	post(*m_videoManager->getService(), std::bind(&Video::decodingTask, this));
 }
 
 void Video::initVideoStream()
 {
 	if (m_videoStream == nullptr) {
+		clear();
 		throw std::runtime_error("Stream doesn't contain video\n");
 	}
 
@@ -282,16 +254,19 @@ void Video::initVideoStream()
 
 	m_videoDecoder = avcodec_find_decoder(m_videoStream->codecpar->codec_id);
 	if (!m_videoDecoder) {
+		clear();
 		throw std::runtime_error("Can't find video decoder!\n");
 	}
 
 	m_videoDecoderContext = avcodec_alloc_context3(m_videoDecoder);
 
 	if (avcodec_parameters_to_context(m_videoDecoderContext, m_videoStream->codecpar) < 0) {
+		clear();
 		throw std::runtime_error("Failed to provide parameters\n");
 	}
 
 	if (avcodec_open2(m_videoDecoderContext, m_videoDecoder, nullptr) < 0) {
+		clear();
 		throw std::runtime_error("Unable to open decoder\n");
 	}
 
@@ -332,6 +307,7 @@ void Video::initVideoStream()
 void Video::initAudioStream()
 {
 	if (m_audioStream == nullptr) {
+		clear();
 		throw std::runtime_error("Stream doesn't contain audio\n");
 	}
 
@@ -339,16 +315,19 @@ void Video::initAudioStream()
 
 	m_audioDecoder = avcodec_find_decoder(m_audioStream->codecpar->codec_id);
 	if (!m_audioDecoder) {
+		clear();
 		throw std::runtime_error("Can't find audio decoder!\n");
 	}
 
 	m_audioDecoderContext = avcodec_alloc_context3(m_audioDecoder);
 
 	if (avcodec_parameters_to_context(m_audioDecoderContext, m_audioStream->codecpar) < 0) {
+		clear();
 		throw std::runtime_error("Failed to provide parameters\n");
 	}
 
 	if (avcodec_open2(m_audioDecoderContext, m_audioDecoder, nullptr) < 0) {
+		clear();
 		throw std::runtime_error("Unable to open audio decoder\n");
 	}
 
@@ -368,4 +347,101 @@ void Video::initAudioStream()
 	m_soundStream.initialize(m_audioDecoderContext->channels, m_audioDecoderContext->sample_rate);
 
 	m_soundStream.play();
+}
+
+void Video::receive()
+{
+	std::unique_lock<std::mutex> lock(m_receiverMutex);
+
+	if (!m_isInitialized) {
+		return;
+	}
+
+	if (av_read_frame(m_formatContext, &m_packet) < 0) {
+		printf("Error: Unable to read frame\n");
+		return;
+	}
+
+	if (m_packet.stream_index == m_videoStream->index) {
+		if (avcodec_send_packet(m_videoDecoderContext, &m_packet) < 0) {
+			throw std::runtime_error("Unable to send video packet for decoding");
+		}
+
+		AVFrame* frame = av_frame_alloc();
+
+		if (avcodec_receive_frame(m_videoDecoderContext, frame) < 0) {
+			av_frame_free(&frame);
+		}
+		else {
+			//printf("Received video frame: %lld\n", frame->pts);
+
+			std::lock_guard<std::mutex> lock(m_videoQueueMutex);
+			m_videoQueue.push_back(frame);
+		}
+	}
+	else if (m_packet.stream_index == m_audioStream->index) {
+		if (avcodec_send_packet(m_audioDecoderContext, &m_packet) < 0) {
+			printf("Unable to send audio packet for decoding\n");
+			return;
+			//throw std::runtime_error("Unable to send audio packet for decoding");
+		}
+
+		AVFrame* frame = av_frame_alloc();
+
+		if (avcodec_receive_frame(m_audioDecoderContext, frame) < 0) {
+			av_frame_free(&frame);
+		}
+		else {
+			//printf("Received audio frame: %lld\n", frame->pts);
+
+			{
+				std::lock_guard<std::mutex> lock(m_audioQueueMutex);
+				m_audioQueue.push_back(frame);
+			}
+
+			if (m_soundStream.getStatus() != sf::SoundStream::Status::Playing) {
+				m_soundStream.play();
+			}
+		}
+	}
+
+	av_packet_unref(&m_packet);
+}
+
+void Video::clear()
+{
+	std::unique_lock<std::mutex> lockReceiver(m_receiverMutex);
+	std::unique_lock<std::mutex> lockVideoDecoder(m_videoDecoderMutex);
+	std::unique_lock<std::mutex> lockAudioDecoder(m_audioDecoderMutex);
+
+	m_isInitialized = false;
+
+	while (!m_videoQueue.empty()) {
+		av_frame_free(&m_videoQueue.back());
+		m_videoQueue.pop_back();
+	}
+
+	if (m_videoBuffer != nullptr) {
+		av_frame_free(&m_videoBuffer);
+	}
+
+	if (m_videoBufferFrameData != nullptr) {
+		av_free(m_videoBufferFrameData);
+	}
+
+	if (m_formatContext != nullptr) {
+		avformat_close_input(&m_formatContext);
+	}
+
+	if (m_videoDecoderContext != nullptr) {
+		avcodec_free_context(&m_videoDecoderContext);
+	}
+
+	if (m_audioDecoderContext != nullptr) {
+		avcodec_free_context(&m_audioDecoderContext);
+	}
+
+	if (m_swsContext != nullptr) {
+		sws_freeContext(m_swsContext);
+	}
 }

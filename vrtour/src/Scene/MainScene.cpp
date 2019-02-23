@@ -39,7 +39,7 @@ void MainScene::onInit()
 		file >> config;
 
 		const auto it = config.find("urls");
-		if (it == config.end() || !it.value().is_object() || it.value().size() == 0) {
+		if (it == config.end() || !it.value().is_object() || it.value().empty()) {
 			throw std::exception();
 		}
 
@@ -105,14 +105,18 @@ void MainScene::drawScene()
 
 ej::Texture* MainScene::createVideoTarget(const glm::vec3& position)
 {
+	static size_t targetCount = 0;
+
 	auto mesh = getCore().get<ej::MeshManager>()->bind("carpet_mesh", []() {
 		return ej::MeshGeometry::createPlane(glm::vec2(1.1f, 1.0f), 1, 1);
 	})->get("carpet_mesh");
 
 	auto material = std::make_shared<SimpleMeshMaterial>(getCore());
 
-	material->setDiffuseTexture(getCore().get<ej::TextureManager>()->bind("carpet",
-		ej::TextureManager::FromFile("textures/carpet.jpg"))->get("carpet"));
+	const auto textureName = "carpet_" + std::to_string(targetCount++);
+
+	material->setDiffuseTexture(getCore().get<ej::TextureManager>()->bind(textureName,
+		ej::TextureManager::FromFile("textures/carpet.jpg"))->get(textureName));
 	material->setTextureFlipped(true);
 
 	auto entity = std::make_shared<ej::MeshEntity>(mesh, material);
