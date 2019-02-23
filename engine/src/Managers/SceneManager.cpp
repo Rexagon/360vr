@@ -1,5 +1,7 @@
 #include "Managers/SceneManager.h"
 
+#include <stdexcept>
+
 using namespace ej;
 
 SceneManager::SceneManager(const Core& core, std::unique_ptr<Scene> entryScene) :

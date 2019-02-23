@@ -11,9 +11,9 @@ namespace ej {
 	public:
 		enum ProjectionType
 		{
-			PERSPECTIVE,
-			ISOMETRIC,
-			CUSTOM
+			Perspective,
+			Isometric,
+			Custom
 		};
 
 		Camera();
@@ -80,6 +80,5 @@ namespace ej {
 
 		mutable glm::mat4 m_viewProjectionMatrix;
 		mutable bool m_viewProjectionChanged;
-
 	};
 }

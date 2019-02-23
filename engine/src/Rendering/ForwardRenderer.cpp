@@ -14,6 +14,12 @@ void ej::ForwardRenderer::draw()
 		return;
 	}
 
+	auto state = m_renderingManager->getState();
+
+	state->setDepthTestEnabled(true);
+	state->setFaceCullingEnabled(true);
+	state->setBlendingEnabled(false);
+
 	const auto& camera = m_cameraEntity->getCamera();
 	const auto& cameraTransform = m_cameraEntity->getTransform();
 
@@ -29,7 +35,7 @@ void ej::ForwardRenderer::draw()
 		entity->getMaterial()->bind();
 
 		auto shader = entity->getMaterial()->getShader();
-		m_renderingManager->getState()->setCurrentShader(shader);
+		state->setCurrentShader(shader);
 
 		shader->setUniform("uCameraViewMatrix", camera->getViewMatrix());
 		shader->setUniform("uCameraProjectionMatrix", camera->getProjectionMatrix());

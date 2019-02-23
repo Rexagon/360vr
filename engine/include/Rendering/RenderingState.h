@@ -55,8 +55,8 @@ namespace ej
 		void setPolygonMode(GLenum mode);
 		GLenum getPolygonMode() const;
 
-		void setActiveTexture(size_t unit);
-		void bindTexture(const Texture* texture, size_t unit);
+		void setActiveTexture(unsigned int unit);
+		void bindTexture(const Texture* texture, unsigned int unit);
 
 		void setCurrentShader(Shader* shader);
 		const Shader* getCurrentShader() const;

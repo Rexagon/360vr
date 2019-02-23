@@ -3,6 +3,7 @@
 #include <Core/Core.h>
 #include <Managers/VRManager.h>
 #include <Managers/FileManager.h>
+#include <Managers/FontManager.h>
 #include <Managers/MeshManager.h>
 #include <Managers/SceneManager.h>
 #include <Managers/InputManager.h>
@@ -11,6 +12,7 @@
 #include <Managers/RenderingManager.h>
 
 #include "Scene/MainScene.h"
+#include "Managers/UIManager.h"
 #include "Managers/VideoManager.h"
 
 class MyCore : public ej::Core	
@@ -24,13 +26,17 @@ public:
 		provide<ej::RenderingManager>();
 		provide<ej::TextureManager>();
 		provide<ej::ShaderManager>();
+		provide<ej::FontManager>();
 		provide<ej::MeshManager>();
 
 		provide<ej::VRManager>();
 
 		provide<VideoManager>();
+		provide<UIManager>();
 
 		m_inputManager = provide<ej::InputManager>();
+		m_uiManager = provide<UIManager>();
+
 		m_sceneManager = provide<ej::SceneManager>(std::make_unique<MainScene>());
 	}
 
@@ -55,8 +61,10 @@ public:
 	}
 
 private:
-	std::shared_ptr<ej::SceneManager> m_sceneManager;
-	std::shared_ptr<ej::InputManager> m_inputManager;
+	ej::SceneManager::ptr m_sceneManager;
+	UIManager::ptr m_uiManager;
+
+	ej::InputManager::ptr m_inputManager;
 };
 
 EJ_MAIN(MyCore);

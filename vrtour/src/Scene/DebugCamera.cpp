@@ -1,5 +1,6 @@
 #include "Scene/DebugCamera.h"
 
+#include <cmath>
 #include <Core/Core.h>
 
 DebugCamera::DebugCamera(const ej::Core & core) :
@@ -22,30 +23,16 @@ void DebugCamera::update(const float dt)
 	m_cameraEntity->getCamera()->updateProjection();
 	
 	// Handle rotation
-	const auto windowCenter = glm::ivec2(windowSize.x / 2, windowSize.y / 2);
-
-	if (m_inputManager->getMouseButtonDown(ej::MouseButton::Right)) {
-		m_lastMousePosition = m_inputManager->getMousePosition();
-		m_inputManager->setMousePosition(windowCenter);
-		m_inputManager->setMouseCursorVisible(false);
-	}
-
-	if (m_inputManager->getMouseButtonUp(ej::MouseButton::Right)) {
-		m_inputManager->setMousePosition(m_lastMousePosition);
-
-		m_inputManager->setMouseCursorVisible(true);
-	}
 
 	if (m_inputManager->getMouseButton(ej::MouseButton::Right)) {
-		const auto deltaMouse = m_inputManager->getMousePosition() - windowCenter;
+		const auto deltaMouse = glm::vec2(m_inputManager->getMousePositionDelta());
 
-		const auto horizontalRotation = angleAxis(-deltaMouse.x * dt * m_rotationSpeed, glm::vec3(0.0f, 1.0f, 0.0f));
-		transform.rotate(horizontalRotation);
+		m_rotation -= deltaMouse * m_rotationSpeed;
+		m_rotation.x = std::fmod(m_rotation.x, 360.0f);
+		m_rotation.y = glm::clamp(m_rotation.y, -80.0f, 80.0f);
 
-		const auto verticalRotation = angleAxis(-deltaMouse.y * dt * m_rotationSpeed, transform.getDirectionRight());
-		transform.rotate(verticalRotation);
-
-		m_inputManager->setMousePosition(windowCenter);
+		transform.setRotation(0.0f, m_rotation.x, 0.0f);
+		transform.rotate(angleAxis(glm::radians(m_rotation.y), transform.getDirectionRight()));
 	}
 
 	// Handle movement

@@ -3,6 +3,7 @@
 #include <list>
 #include <mutex>
 #include <string>
+#include <vector>
 
 #include <glm/vec2.hpp>
 #include <SFML/System/Clock.hpp>

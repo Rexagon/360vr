@@ -5,15 +5,21 @@ set(SOURCES
 	"${SOURCE_DIR}/main.cpp"
 
 	"${SOURCE_DIR}/Managers/VideoManager.cpp"
+	"${SOURCE_DIR}/Managers/UIManager.cpp"
 
 	"${SOURCE_DIR}/Rendering/SimpleMeshMaterial.cpp"
 	"${SOURCE_DIR}/Rendering/SkyboxMaterial.cpp"
+	"${SOURCE_DIR}/Rendering/TextMaterial.cpp"
 	"${SOURCE_DIR}/Rendering/TextureStreamer.cpp"
+	"${SOURCE_DIR}/Rendering/WidgetMaterial.cpp"
 
 	"${SOURCE_DIR}/Scene/DebugCamera.cpp"
 	"${SOURCE_DIR}/Scene/HeadSet.cpp"
 	"${SOURCE_DIR}/Scene/MainScene.cpp"
 	"${SOURCE_DIR}/Scene/SteamVRObject.cpp"
+
+	"${SOURCE_DIR}/UI/RectangleWidget.cpp"
+	"${SOURCE_DIR}/UI/TextWidget.cpp"
 
 	"${SOURCE_DIR}/Video/AudioStream.cpp"
 	"${SOURCE_DIR}/Video/Video.cpp"
@@ -31,8 +37,8 @@ link_directories(${THIRDPARTY_LIB_DIR})
 add_executable(vrtour ${SOURCES})
 target_include_directories(vrtour PRIVATE 
 	${INCLUDE_DIR} 
-	${SOURCE_DIR} 
-	${ENGINE_INCLUDE_DIR} 
+	${SOURCE_DIR}
+	${ENGINE_INCLUDE_DIR}
 	${THIRDPARTY_INCLUDE_DIR}
 )
 

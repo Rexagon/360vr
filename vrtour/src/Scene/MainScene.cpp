@@ -3,17 +3,19 @@
 #include <fstream>
 
 #include <json.hpp>
-#include <GL/glew.h>
 
-#include <Core/Core.h>
 #include <Managers/MeshManager.h>
+#include <Managers/FontManager.h>
 #include <Managers/TextureManager.h>
-#include <Rendering/SkyboxMaterial.h>
+
+#include "Rendering/SkyboxMaterial.h"
+#include "Rendering/SimpleMeshMaterial.h"
 
 using json = nlohmann::json;
 
 void MainScene::onInit()
 {
+	// Initialize managers
 	m_videoManager = getCore().get<VideoManager>();
 	m_inputManager = getCore().get<ej::InputManager>();
 	m_windowManager = getCore().get<ej::WindowManager>();
@@ -24,41 +26,21 @@ void MainScene::onInit()
 	m_videoManager->init();
 	m_renderingManager->init();
 
-	auto carpetMesh = getCore().get<ej::MeshManager>()->bind("carpet_mesh", []() {
-		return ej::MeshGeometry::createPlane(glm::vec2(1.1f, 1.0f), 1, 1);
-	})->get("carpet_mesh");
+	// Create scene structure
+	createCarpet();
+	createSkybox();
+	createCamera();
 
-	m_videoTarget = std::make_shared<SimpleMeshMaterial>(getCore());
+	// Create UI
+	m_rectangleWidget = std::make_shared<RectangleWidget>(getCore());
+	m_rectangleWidget->setSize(glm::vec2(100.0f, 50.0f));
 
-	m_videoTarget->setDiffuseTexture(getCore().get<ej::TextureManager>()->bind("carpet",
-		ej::TextureManager::FromFile("textures/carpet.jpg"))->get("carpet"));
-	m_videoTarget->setTextureFlipped(true);
+	auto font = getCore().get<ej::FontManager>()->bind("font", "fonts/segoeui.ttf")->get("font");
 
-	auto tvCarpet = std::make_shared<ej::MeshEntity>(carpetMesh, m_videoTarget);
-	tvCarpet->getTransform().setPosition(0.0f, 1.0f, -2.0f);
-	tvCarpet->getTransform().setRotation(90.0f, 0.0f, 0.0f);
-	tvCarpet->getTransform().setScale(1.4f, 1.0f, 1.0f);
+	m_textWidget = std::make_shared<TextWidget>(getCore());
+	m_textWidget->setFont(font);
 
-	m_meshes.push_back(tvCarpet);
-
-	auto skyboxMesh = getCore().get<ej::MeshManager>()->bind("skybox_mesh", []() {
-		return ej::MeshGeometry::createCube(glm::vec3(1.0f, 1.0f, 1.0f),
-		ej::MeshGeometry::SIMPLE_VERTEX);
-	})->get("skybox_mesh");
-
-	auto skyboxMaterial = std::make_shared<SkyboxMaterial>(getCore());
-
-	skyboxMaterial->setSkyTexture(getCore().get<ej::TextureManager>()->bind("loading",
-		ej::TextureManager::FromFile("textures/loading.jpg"))->get("loading"));
-
-	auto skybox = std::make_shared<ej::MeshEntity>(skyboxMesh, skyboxMaterial);
-
-	m_meshes.push_back(skybox);
-
-	m_debugCamera = std::make_unique<DebugCamera>(getCore());
-	m_debugCamera->getCameraEntity()->getTransform().setPosition(0.0f, 1.0f, 0.0f);
-	m_renderingManager->getForwardRenderer()->setCameraEntity(m_debugCamera->getCameraEntity());
-
+	// Load video config
 	json config;
 	try {
 		std::ifstream file("config.json");
@@ -82,19 +64,20 @@ void MainScene::onInit()
 	}
 }
 
-void MainScene::onClose()
-{
-}
-
 void MainScene::onUpdate(const float dt)
 {
 	if (m_inputManager->getKeyDown(ej::Key::Escape)) {
 		getCore().get<ej::SceneManager>()->removeScene();
 	}
 
-	if (m_video != nullptr && m_textureStreamer != nullptr && m_video->hasVideoData()) {
-		m_textureStreamer->write(m_videoTarget->getDiffuseTexture(), m_video.get());
+	if (m_videoTarget != nullptr && m_textureStreamer != nullptr && 
+		m_video != nullptr && m_video->hasVideoData()) 
+	{
+		m_textureStreamer->write(m_videoTarget, m_video.get());
 	}
+
+	m_textWidget->setText("current delta time: " + std::to_string(dt));
+	m_textWidget->update(dt);
 
 	m_debugCamera->update(dt);
 
@@ -115,4 +98,55 @@ void MainScene::drawScene()
 		renderer->push(mesh.get());
 	}
 	renderer->draw();
+
+	m_renderingManager->getUIRenderer()->push(m_rectangleWidget->getMeshEntity().get());
+	m_renderingManager->getUIRenderer()->push(m_textWidget->getMeshEntity().get());
+	m_renderingManager->getUIRenderer()->draw();
+}
+
+void MainScene::createCarpet()
+{
+	auto mesh = getCore().get<ej::MeshManager>()->bind("carpet_mesh", []() {
+		return ej::MeshGeometry::createPlane(glm::vec2(1.1f, 1.0f), 1, 1);
+	})->get("carpet_mesh");
+
+	auto material = std::make_shared<SimpleMeshMaterial>(getCore());
+
+	material->setDiffuseTexture(getCore().get<ej::TextureManager>()->bind("carpet",
+		ej::TextureManager::FromFile("textures/carpet.jpg"))->get("carpet"));
+	material->setTextureFlipped(true);
+
+	auto entity = std::make_shared<ej::MeshEntity>(mesh, material);
+	entity->getTransform().setPosition(0.0f, 1.0f, -2.0f);
+	entity->getTransform().setRotation(90.0f, 0.0f, 0.0f);
+	entity->getTransform().setScale(1.4f, 1.0f, 1.0f);
+
+	m_videoTarget = material->getDiffuseTexture();
+
+	m_meshes.push_back(entity);
+}
+
+void MainScene::createSkybox()
+{
+	auto mesh = getCore().get<ej::MeshManager>()->bind("skybox_mesh", []() {
+		return ej::MeshGeometry::createCube(glm::vec3(1.0f, 1.0f, 1.0f),
+			ej::MeshGeometry::SIMPLE_VERTEX);
+	})->get("skybox_mesh");
+
+	auto material = std::make_shared<SkyboxMaterial>(getCore());
+
+	material->setSkyTexture(getCore().get<ej::TextureManager>()->bind("loading",
+		ej::TextureManager::FromFile("textures/loading.jpg"))->get("loading"));
+
+	auto entity = std::make_shared<ej::MeshEntity>(mesh, material);
+
+	m_meshes.push_back(entity);
+}
+
+void MainScene::createCamera()
+{
+	m_debugCamera = std::make_unique<DebugCamera>(getCore());
+	m_debugCamera->getCameraEntity()->getTransform().setPosition(0.0f, 1.0f, 0.0f);
+	m_debugCamera->setRotationSpeed(-0.2f);
+	m_renderingManager->getForwardRenderer()->setCameraEntity(m_debugCamera->getCameraEntity());
 }
