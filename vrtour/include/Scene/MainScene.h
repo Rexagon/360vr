@@ -13,11 +13,21 @@
 
 #include "Scene/HeadSet.h"
 #include "Scene/DebugCamera.h"
-#include "Managers/VideoManager.h"
 #include "Rendering/TextureStreamer.h"
 
 class MainScene : public ej::Scene
 {
+	struct VideoData
+	{
+		VideoData(Video::ptr video, ej::Texture* target, TextureStreamer::ptr streamer) :
+			video(video), target(target), streamer(streamer)
+		{}
+
+		Video::ptr video;
+		ej::Texture* target;
+		TextureStreamer::ptr streamer;
+	};
+
 public:
 	void onInit() override;
 
@@ -26,23 +36,17 @@ public:
 private:
 	void drawScene();
 
-	void createCarpet();
-	void createSkybox();
+	ej::Texture* createVideoTarget(const glm::vec3& position);
+	void createSkyBox();
 	void createCamera();
 
-	VideoManager::ptr m_videoManager;
 	ej::InputManager::ptr m_inputManager;
 	ej::WindowManager::ptr m_windowManager;
 	ej::RenderingManager::ptr m_renderingManager;
 
-	Video::ptr m_video;
-	TextureStreamer::ptr m_textureStreamer;
-	ej::Texture* m_videoTarget = nullptr;
+	std::vector<VideoData> m_videos;
 	
 	std::vector<ej::MeshEntity::ptr> m_meshes;
-
-	TextWidget::ptr m_textWidget;
-	RectangleWidget::ptr m_rectangleWidget;
 
 	std::unique_ptr<HeadSet> m_headSet;
 	std::unique_ptr<DebugCamera> m_debugCamera;

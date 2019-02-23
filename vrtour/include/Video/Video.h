@@ -18,11 +18,12 @@ extern "C" {
 #include <Core/PointerDefs.h>
 
 #include "AudioStream.h"
+#include "Managers/VideoManager.h"
 
 class Video : public ej::PointerDefs<Video>
 {
 public:
-	explicit Video(const std::string& file);
+	explicit Video(const ej::Core& core, const std::string& file);
 	~Video();
 
 	void init();
@@ -41,42 +42,45 @@ public:
 	bool writeAudioData(const int16_t** destination, size_t& size);
 
 private:
+	void initializationTask();
 	void initVideoStream();
 	void initAudioStream();
 
-	bool m_isInitialized;
+	VideoManager::ptr m_videoManager;
+
 	std::string m_file;
+	bool m_isInitialized = false;
 
 	sf::Clock m_videoTimer;
-	double m_currentVideoTime;
+	double m_currentVideoTime = 0.0;
 	bool m_videoStarted = false;
 
-	double m_lastAudioDts;
-	double m_lastAudioDelay;
+	double m_lastAudioDts = 0.0;
+	double m_lastAudioDelay = 0.0;
 	bool m_audioStarted = false;
 
-	glm::vec2 m_size;
+	glm::vec2 m_size{};
 
-	AVFormatContext* m_formatContext;
-	AVPacket m_packet;
+	AVFormatContext* m_formatContext = nullptr;
+	AVPacket m_packet{};
 
-	AVCodec* m_videoDecoder;
-	AVCodecContext* m_videoDecoderContext;
-	SwsContext* m_swsContext;
+	AVCodec* m_videoDecoder = nullptr;
+	AVCodecContext* m_videoDecoderContext = nullptr;
+	SwsContext* m_swsContext = nullptr;
 
-	AVCodec* m_audioDecoder;
-	AVCodecContext* m_audioDecoderContext;
-	SwrContext* m_swrContext;
+	AVCodec* m_audioDecoder = nullptr;
+	AVCodecContext* m_audioDecoderContext = nullptr;
+	SwrContext* m_swrContext = nullptr;
 
-	AVStream* m_videoStream;
-	AVStream* m_audioStream;
+	AVStream* m_videoStream = nullptr;
+	AVStream* m_audioStream = nullptr;
 
 	std::mutex m_videoBufferMutex;
-	bool m_hasVideoData;
-	AVFrame* m_videoBuffer;
-	uint8_t* m_videoBufferFrameData;
+	bool m_hasVideoData = false;
+	AVFrame* m_videoBuffer = nullptr;
+	uint8_t* m_videoBufferFrameData = nullptr;
 
-	bool m_hasAudioData;
+	bool m_hasAudioData = false;
 	std::vector<uint8_t> m_audioBuffer;
 
 	std::mutex m_videoQueueMutex;
@@ -85,5 +89,5 @@ private:
 	std::mutex m_audioQueueMutex;
 	std::list<AVFrame*> m_audioQueue;
 
-	AudioStream m_soundStream;
+	AudioStream m_soundStream{this};
 };

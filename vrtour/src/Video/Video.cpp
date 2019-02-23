@@ -1,21 +1,19 @@
 #include "Video/Video.h"
 
+#include <asio/post.hpp>
+
 extern "C" {
 #include <libavutil/opt.h>
 #include <libavutil/time.h>
 #include <libavutil/imgutils.h>
 }
 
-Video::Video(const std::string& file): 
-	m_isInitialized(false), m_file(file), m_currentVideoTime(0),
-	m_lastAudioDts(0), m_lastAudioDelay(0), m_size(),
-	m_formatContext(nullptr), m_packet(),
-	m_videoDecoder(nullptr), m_videoDecoderContext(nullptr), m_swsContext(nullptr),
-	m_audioDecoder(nullptr), m_audioDecoderContext(nullptr), m_swrContext(nullptr),
-	m_videoStream(nullptr), m_audioStream(nullptr),	
-	m_hasVideoData(false), m_videoBuffer(nullptr), m_videoBufferFrameData(nullptr),
-	m_hasAudioData(false), m_soundStream(this)
+#include <Core/Core.h>
+
+Video::Video(const ej::Core& core, const std::string& file):
+	m_file(file)
 {
+	m_videoManager = core.get<VideoManager>();
 }
 
 Video::~Video()
@@ -47,32 +45,8 @@ void Video::init()
 		return;
 	}
 
-	// Connect to data stream
-
-	if (avformat_open_input(&m_formatContext, m_file.data(), nullptr, nullptr) < 0) {
-		throw std::runtime_error("Could not open input file\n");
-	}
-	if (avformat_find_stream_info(m_formatContext, nullptr) < 0) {
-		throw std::runtime_error("Failed to retrieve input stream information\n");
-	}
-
-	printf("Successfully opened data stream %s\n", m_file.data());
-
-	for (unsigned int i = 0; i < m_formatContext->nb_streams; i++) {
-		const auto codecType = m_formatContext->streams[i]->codecpar->codec_type;
-		printf("Stream: %d, Codec: %d\n", i, codecType);
-		if (codecType == AVMEDIA_TYPE_VIDEO) {
-			m_videoStream = m_formatContext->streams[i];
-		}
-		else if (codecType == AVMEDIA_TYPE_AUDIO) {
-			m_audioStream = m_formatContext->streams[i];
-		}
-	}
-
-	initVideoStream();
-	initAudioStream();
-
-	m_isInitialized = true;
+	// Post initialization to video manager
+	post(*m_videoManager->getService(), std::bind(&Video::initializationTask, this));
 }
 
 void Video::receive()
@@ -266,6 +240,36 @@ bool Video::writeAudioData(const int16_t** destination, size_t& size)
 
 	m_hasAudioData = false;
 	return true;
+}
+
+void Video::initializationTask()
+{
+	// Connect to data stream
+
+	if (avformat_open_input(&m_formatContext, m_file.data(), nullptr, nullptr) < 0) {
+		throw std::runtime_error("Could not open input file\n");
+	}
+	if (avformat_find_stream_info(m_formatContext, nullptr) < 0) {
+		throw std::runtime_error("Failed to retrieve input stream information\n");
+	}
+
+	printf("Successfully opened data stream %s\n", m_file.data());
+
+	for (unsigned int i = 0; i < m_formatContext->nb_streams; i++) {
+		const auto codecType = m_formatContext->streams[i]->codecpar->codec_type;
+		printf("Stream: %d, Codec: %d\n", i, codecType);
+		if (codecType == AVMEDIA_TYPE_VIDEO) {
+			m_videoStream = m_formatContext->streams[i];
+		}
+		else if (codecType == AVMEDIA_TYPE_AUDIO) {
+			m_audioStream = m_formatContext->streams[i];
+		}
+	}
+
+	initVideoStream();
+	initAudioStream();
+
+	m_isInitialized = true;
 }
 
 void Video::initVideoStream()

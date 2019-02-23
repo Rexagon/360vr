@@ -3,7 +3,6 @@
 #include <fstream>
 
 #include <json.hpp>
-
 #include <Managers/MeshManager.h>
 #include <Managers/FontManager.h>
 #include <Managers/TextureManager.h>
@@ -11,34 +10,27 @@
 #include "Rendering/SkyboxMaterial.h"
 #include "Rendering/SimpleMeshMaterial.h"
 
+#include "Managers/VideoManager.h"
+
 using json = nlohmann::json;
 
 void MainScene::onInit()
 {
+	const auto& core = getCore();
+
 	// Initialize managers
-	m_videoManager = getCore().get<VideoManager>();
-	m_inputManager = getCore().get<ej::InputManager>();
-	m_windowManager = getCore().get<ej::WindowManager>();
-	m_renderingManager = getCore().get<ej::RenderingManager>();
+	m_inputManager = core.get<ej::InputManager>();
+	m_windowManager = core.get<ej::WindowManager>();
+	m_renderingManager = core.get<ej::RenderingManager>();
 
 	m_windowManager->getWindow().setVerticalSyncEnabled(true);
 
-	m_videoManager->init();
+	core.get<VideoManager>()->init();
 	m_renderingManager->init();
 
 	// Create scene structure
-	createCarpet();
-	createSkybox();
+	createSkyBox();
 	createCamera();
-
-	// Create UI
-	m_rectangleWidget = std::make_shared<RectangleWidget>(getCore());
-	m_rectangleWidget->setSize(glm::vec2(100.0f, 50.0f));
-
-	auto font = getCore().get<ej::FontManager>()->bind("font", "fonts/segoeui.ttf")->get("font");
-
-	m_textWidget = std::make_shared<TextWidget>(getCore());
-	m_textWidget->setFont(font);
 
 	// Load video config
 	json config;
@@ -46,18 +38,29 @@ void MainScene::onInit()
 		std::ifstream file("config.json");
 		file >> config;
 
-		const auto it = config.find("url");
-		if (it == config.end()) {
+		const auto it = config.find("urls");
+		if (it == config.end() || !it.value().is_object() || it.value().size() == 0) {
 			throw std::exception();
 		}
 
-		printf("%s\n", it.value().get<std::string>().data());
+		const auto videoCount = static_cast<float>(it.value().size() - 1);
 
-		m_video = std::make_unique<Video>(it.value().get<std::string>());
-		m_video->init();
-		m_videoManager->setCurrentVideo(m_video);
+		const glm::vec3 step(0.0f, 2.2f, 0.0);
+		const auto offset = -step * videoCount * 0.5f + glm::vec3(0.0f, 0.0f, -2.0f);
+		glm::vec3 position = offset;
 
-		m_textureStreamer = std::make_unique<TextureStreamer>();
+		for (const auto& url : it.value()) {
+			printf("Found video url: %s\n", url.get<std::string>().data());
+
+			auto video = std::make_shared<Video>(core, url.get<std::string>());
+			video->init();
+
+			m_videos.emplace_back(video, 
+				createVideoTarget(position), 
+				std::make_shared<TextureStreamer>());
+
+			position += step;
+		}
 	}
 	catch (const std::exception& e) {
 		printf("Video source not provided\n");
@@ -68,16 +71,16 @@ void MainScene::onUpdate(const float dt)
 {
 	if (m_inputManager->getKeyDown(ej::Key::Escape)) {
 		getCore().get<ej::SceneManager>()->removeScene();
+		return;
 	}
 
-	if (m_videoTarget != nullptr && m_textureStreamer != nullptr && 
-		m_video != nullptr && m_video->hasVideoData()) 
-	{
-		m_textureStreamer->write(m_videoTarget, m_video.get());
-	}
+	for (auto& data : m_videos) {
+		if (!data.video->hasVideoData()) {
+			continue;
+		}
 
-	m_textWidget->setText("current delta time: " + std::to_string(dt));
-	m_textWidget->update(dt);
+		data.streamer->write(data.target, data.video.get());
+	}
 
 	m_debugCamera->update(dt);
 
@@ -98,13 +101,9 @@ void MainScene::drawScene()
 		renderer->push(mesh.get());
 	}
 	renderer->draw();
-
-	m_renderingManager->getUIRenderer()->push(m_rectangleWidget->getMeshEntity().get());
-	m_renderingManager->getUIRenderer()->push(m_textWidget->getMeshEntity().get());
-	m_renderingManager->getUIRenderer()->draw();
 }
 
-void MainScene::createCarpet()
+ej::Texture* MainScene::createVideoTarget(const glm::vec3& position)
 {
 	auto mesh = getCore().get<ej::MeshManager>()->bind("carpet_mesh", []() {
 		return ej::MeshGeometry::createPlane(glm::vec2(1.1f, 1.0f), 1, 1);
@@ -117,16 +116,16 @@ void MainScene::createCarpet()
 	material->setTextureFlipped(true);
 
 	auto entity = std::make_shared<ej::MeshEntity>(mesh, material);
-	entity->getTransform().setPosition(0.0f, 1.0f, -2.0f);
+	entity->getTransform().setPosition(position);
 	entity->getTransform().setRotation(90.0f, 0.0f, 0.0f);
 	entity->getTransform().setScale(1.4f, 1.0f, 1.0f);
 
-	m_videoTarget = material->getDiffuseTexture();
-
 	m_meshes.push_back(entity);
+
+	return material->getDiffuseTexture();
 }
 
-void MainScene::createSkybox()
+void MainScene::createSkyBox()
 {
 	auto mesh = getCore().get<ej::MeshManager>()->bind("skybox_mesh", []() {
 		return ej::MeshGeometry::createCube(glm::vec3(1.0f, 1.0f, 1.0f),

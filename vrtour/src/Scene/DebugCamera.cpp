@@ -52,7 +52,7 @@ void DebugCamera::update(const float dt)
 		direction.x += 1.0f;
 	}
 
-	if (m_inputManager->getKey(ej::Key::LControl)) {
+	if (m_inputManager->getKey(ej::Key::C)) {
 		direction.y -= 1.0f;
 	}
 	else if (m_inputManager->getKey(ej::Key::Space)) {
