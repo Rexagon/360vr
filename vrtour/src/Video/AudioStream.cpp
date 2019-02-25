@@ -46,18 +46,27 @@ void AudioStream::init()
 
 	// Init sound
 
+	auto channelCount = m_decoderContext->channels;
+	auto channelLayout = m_decoderContext->channel_layout;
+	if (channelCount > 2) {
+		channelCount = 2;
+		channelLayout = AV_CH_LAYOUT_STEREO;
+	}	
+
 	m_swrContext = swr_alloc();
 	av_opt_set_int(m_swrContext, "in_channel_count", m_decoderContext->channels, 0);
-	av_opt_set_int(m_swrContext, "out_channel_count", m_decoderContext->channels, 0);
+	av_opt_set_int(m_swrContext, "out_channel_count", channelCount, 0);
 	av_opt_set_int(m_swrContext, "in_channel_layout", m_decoderContext->channel_layout, 0);
-	av_opt_set_int(m_swrContext, "out_channel_layout", m_decoderContext->channel_layout, 0);
+	av_opt_set_int(m_swrContext, "out_channel_layout", channelLayout, 0);
 	av_opt_set_int(m_swrContext, "in_sample_rate", m_decoderContext->sample_rate, 0);
 	av_opt_set_int(m_swrContext, "out_sample_rate", m_decoderContext->sample_rate, 0);
 	av_opt_set_sample_fmt(m_swrContext, "in_sample_fmt", m_decoderContext->sample_fmt, 0);
 	av_opt_set_sample_fmt(m_swrContext, "out_sample_fmt", AV_SAMPLE_FMT_S16, 0);
 	swr_init(m_swrContext);
 
-	const auto provider = [this](int16_t const** samples, size_t& sampleCount) {
+	printf("Channel count: %d\n", channelCount);
+
+	const auto provider = [this, channelCount](int16_t const** samples, size_t& sampleCount) {
 		m_hasData = false;
 
 		decode();
@@ -67,15 +76,14 @@ void AudioStream::init()
 		}
 
 		*samples = reinterpret_cast<int16_t*>(m_buffer.data());
-		sampleCount = m_buffer.size() / m_decoderContext->channel_layout;
+		sampleCount = m_buffer.size() / channelCount;
 
 		return true;
 	};
 
-	m_audioPlayer = std::make_unique<AudioPlayer>(
-		m_decoderContext->channels, m_decoderContext->sample_rate, provider);
+	m_audioPlayer = std::make_unique<AudioPlayer>(channelCount, m_decoderContext->sample_rate, provider);
 
-	m_audioPlayer->setVolume(50.0f);
+	m_audioPlayer->setVolume(100.0f);
 
 	m_isInitialized = true;
 }
@@ -174,7 +182,7 @@ void AudioStream::decode()
 		frame->pkt_duration * av_q2d(m_stream->time_base));
 
 	const auto dataSize = av_samples_get_buffer_size(nullptr,
-		m_decoderContext->channels, frame->nb_samples,
+		m_audioPlayer->getChannelCount(), frame->nb_samples,
 		AV_SAMPLE_FMT_S16, 1);
 
 	{
