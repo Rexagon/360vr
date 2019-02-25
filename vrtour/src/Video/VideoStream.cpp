@@ -4,8 +4,8 @@ extern "C" {
 #include <libavutil/imgutils.h>
 }
 
-VideoStream::VideoStream(AVStream * stream) :
-	m_stream(stream)
+VideoStream::VideoStream(VideoState& state, AVStream * stream) :
+	m_state(state), m_stream(stream)
 {
 }
 
@@ -51,7 +51,7 @@ void VideoStream::init()
 
 	const auto format = AV_PIX_FMT_RGB24;
 	m_size = glm::uvec2(m_decoderContext->width, m_decoderContext->height);
-	m_bufferSize = 3u * sizeof(float) * m_size.x * m_size.y;
+	m_bufferSize = 3u * m_size.x * m_size.y;
 
 	m_swsContext = sws_getContext(
 		m_decoderContext->width, m_decoderContext->height, m_decoderContext->pix_fmt,
@@ -63,7 +63,14 @@ void VideoStream::init()
 	m_buffer->height = m_size.y;
 	m_buffer->format = format;
 
-	av_image_fill_arrays(m_buffer->data, m_buffer->linesize, nullptr,
+	const auto size = av_image_get_buffer_size(format,
+		m_buffer->width,
+		m_buffer->height,
+		1);
+
+	m_bufferData.resize(size);
+
+	av_image_fill_arrays(m_buffer->data, m_buffer->linesize, m_bufferData.data(),
 		format, m_buffer->width, m_buffer->height, 1);
 
 	m_isInitialized = true;
@@ -78,6 +85,7 @@ void VideoStream::clear()
 	m_isInitialized = false;
 
 	std::unique_lock<std::mutex> lockDecoder(m_decoderMutex);
+	std::unique_lock<std::mutex> lockReceiver(m_receiverMutex);
 
 	while (!m_frameQueue.empty()) {
 		av_frame_free(&m_frameQueue.back());
@@ -97,9 +105,34 @@ void VideoStream::clear()
 	m_swsContext = nullptr;
 
 	m_stream = nullptr;
+	m_hasData = false;
 	m_decodingId = 0;
-	m_time = 0;
 	m_hasStarted = false;
+}
+
+void VideoStream::receive(AVPacket* packet)
+{
+	std::unique_lock<std::mutex> receiverLock(m_receiverMutex);
+
+	if (!m_isInitialized) {
+		return;
+	}
+
+	if (avcodec_send_packet(m_decoderContext, packet) < 0) {
+		throw std::runtime_error("Unable to send video packet for decoding");
+	}
+
+	AVFrame* frame = av_frame_alloc();
+
+	if (avcodec_receive_frame(m_decoderContext, frame) < 0) {
+		av_frame_free(&frame);
+	}
+	else {
+		//printf("Received video frame: %lld\n", frame->pts);
+
+		std::lock_guard<std::mutex> queueLock(m_queueMutex);
+		m_frameQueue.push_back(frame);
+	}
 }
 
 void VideoStream::decode()
@@ -117,12 +150,8 @@ void VideoStream::decode()
 	}
 
 	if (!m_hasStarted) {
-		m_time = m_stream->start_time * av_q2d(m_stream->time_base);
-		m_clock.restart();
+		m_state.restart(m_stream->start_time * av_q2d(m_stream->time_base));
 		m_hasStarted = true;
-	}
-	else {
-		m_time += static_cast<double>(m_clock.restart().asSeconds());
 	}
 
 	auto seconds = 0.0;
@@ -130,7 +159,7 @@ void VideoStream::decode()
 		seconds = frame->best_effort_timestamp * av_q2d(m_stream->time_base);
 	}
 
-	if (m_time < seconds) {
+	if (m_state.getCurrentTime() < seconds) {
 		return;
 	}
 
@@ -143,10 +172,33 @@ void VideoStream::decode()
 		std::unique_lock<std::mutex> bufferLock(m_bufferMutex);
 		sws_scale(m_swsContext, frame->data, frame->linesize, 0, m_decoderContext->height,
 			m_buffer->data, m_buffer->linesize);
+
+		m_hasData = true;
 		m_decodingId++;
 	}
 
 	av_frame_free(&frame);
+}
+
+void VideoStream::flush()
+{
+	if (m_isInitialized) {
+		avcodec_send_packet(m_decoderContext, nullptr);		
+	}
+}
+
+int VideoStream::getIndex() const
+{
+	if (!m_isInitialized) {
+		return -1;
+	}
+
+	return m_stream->index;
+}
+
+size_t VideoStream::shouldReceive() const
+{
+	return m_frameQueue.size() < 256;
 }
 
 glm::uvec2 VideoStream::getSize() const
@@ -168,18 +220,13 @@ bool VideoStream::writeVideoData(uint8_t* destination, size_t size, size_t decod
 {
 	std::lock_guard<std::mutex> lock(m_bufferMutex);
 
-	if (m_decodingId == decodingId) {
+	if (!m_hasData || m_decodingId == decodingId) {
 		return false;
 	}
 
 	std::memcpy(destination, m_buffer->data[0], size);
 
 	return true;
-}
-
-double VideoStream::getCurrentTime() const
-{
-	return m_time;
 }
 
 bool VideoStream::isInitialized() const

@@ -22,7 +22,7 @@ void ej::UIRenderer::draw()
 	const auto windowSize = sf::Vector2f(m_windowManager->getWindow().getSize());
 
 	camera->setDepthRange(glm::vec2(-100.0f, 100.0f));
-	camera->setDimensions(windowSize.x * 0.5f, windowSize.y * 0.5);
+	camera->setDimensions(windowSize.x * 0.5f, windowSize.y * 0.5f);
 	camera->updateProjection();
 
 	m_cameraEntity->synchronizeView();

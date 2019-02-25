@@ -9,26 +9,37 @@ extern "C" {
 }
 
 #include "AudioPlayer.h"
+#include "VideoState.h"
 
 class AudioStream
 {
 public:
-	AudioStream(AVStream* stream);
+	AudioStream(VideoState& state, AVStream* stream);
 	~AudioStream();
 
 	void init();
 	void clear();
 
+	void receive(AVPacket* packet);
 	void decode();
+
+	void flush();
+
+	int getIndex() const;
+
+	size_t shouldReceive() const;
 
 	void setVolume(float volume);
 
 	uint64_t getCurrentDecodingId() const;
 
-	bool isInitialized();
+	bool isInitialized() const;
 
 private:
+	VideoState& m_state;
 	AVStream* m_stream;
+
+	std::mutex m_receiverMutex;
 
 	std::mutex m_decoderMutex;
 	AVCodec* m_decoder = nullptr;
@@ -38,14 +49,13 @@ private:
 
 	std::mutex m_bufferMutex;
 	std::vector<uint8_t> m_buffer;
+	bool m_hasData = false;
 
 	std::shared_ptr<AudioPlayer> m_audioPlayer;
 
 	std::mutex m_queueMutex;
 	std::list<AVFrame*> m_frameQueue;
 
-	double m_lastAudioDts = 0.0;
-	double m_lastAudioDelay = 0.0;
 	bool m_hasStarted = false;
 
 	bool m_isInitialized = false;

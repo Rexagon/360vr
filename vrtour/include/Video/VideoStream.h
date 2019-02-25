@@ -11,16 +11,25 @@ extern "C" {
 #include <libavformat/avformat.h>
 }
 
+#include "VideoState.h"
+
 class VideoStream
 {
 public:
-	VideoStream(AVStream* stream);
+	VideoStream(VideoState& state, AVStream* stream);
 	~VideoStream();
 
 	void init();
 	void clear();
 
+	void receive(AVPacket* packet);
 	void decode();
+
+	void flush();
+
+	int getIndex() const;
+
+	size_t shouldReceive() const;
 
 	glm::uvec2 getSize() const;
 	size_t getBufferSize() const;
@@ -28,12 +37,13 @@ public:
 	uint64_t getCurrentDecodingId() const;
 	bool writeVideoData(uint8_t* destination, size_t size, uint64_t decodingId);
 
-	double getCurrentTime() const;
-
 	bool isInitialized() const;
 
 private:
+	VideoState& m_state;
 	AVStream* m_stream;
+
+	std::mutex m_receiverMutex;
 
 	std::mutex m_decoderMutex;
 	AVCodec* m_decoder = nullptr;
@@ -43,15 +53,15 @@ private:
 
 	std::mutex m_bufferMutex;
 	AVFrame* m_buffer = nullptr;
+	std::vector<uint8_t> m_bufferData;
 
 	glm::uvec2 m_size{};
 	size_t m_bufferSize = 0;
+	bool m_hasData = false;
 
 	std::mutex m_queueMutex;
 	std::list<AVFrame*> m_frameQueue;
 
-	sf::Clock m_clock;
-	double m_time = 0.0;
 	bool m_hasStarted = false;
 
 	bool m_isInitialized = false;

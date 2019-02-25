@@ -8,9 +8,7 @@
 #include <Managers/WindowManager.h>
 #include <Managers/RenderingManager.h>
 
-#include "UI/TextWidget.h"
-#include "UI/RectangleWidget.h"
-
+#include "Video/Video.h"
 #include "Scene/HeadSet.h"
 #include "Scene/DebugCamera.h"
 #include "Rendering/TextureStreamer.h"

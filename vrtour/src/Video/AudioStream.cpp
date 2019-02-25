@@ -4,8 +4,8 @@ extern "C" {
 #include <libavutil/opt.h>
 }
 
-AudioStream::AudioStream(AVStream * stream) :
-	m_stream(stream)
+AudioStream::AudioStream(VideoState& state, AVStream * stream) :
+	m_state(state), m_stream(stream)
 {
 }
 
@@ -58,14 +58,26 @@ void AudioStream::init()
 	swr_init(m_swrContext);
 
 	const auto provider = [this](int16_t const** samples, size_t& sampleCount) {
-		//TODO: call decoder and fill samples
-		return false;
+		m_hasData = false;
+
+		decode();
+
+		if (!m_hasData || m_buffer.empty()) {
+			return false;
+		}
+
+		*samples = reinterpret_cast<int16_t*>(m_buffer.data());
+		sampleCount = m_buffer.size() / m_decoderContext->channel_layout;
+
+		return true;
 	};
 
 	m_audioPlayer = std::make_unique<AudioPlayer>(
 		m_decoderContext->channels, m_decoderContext->sample_rate, provider);
 
-	m_audioPlayer->play();
+	m_audioPlayer->setVolume(50.0f);
+
+	m_isInitialized = true;
 }
 
 void AudioStream::clear()
@@ -77,6 +89,7 @@ void AudioStream::clear()
 	m_isInitialized = false;
 
 	std::unique_lock<std::mutex> lockDecoder(m_decoderMutex);
+	std::unique_lock<std::mutex> lockReceiver(m_receiverMutex);
 
 	m_audioPlayer.reset();
 
@@ -97,10 +110,40 @@ void AudioStream::clear()
 	}
 
 	m_stream = nullptr;
+	m_hasData = false;
 	m_decodingId = 0;
-	m_lastAudioDts = 0.0;
-	m_lastAudioDelay = 0.0;
 	m_hasStarted = false;
+}
+
+void AudioStream::receive(AVPacket* packet)
+{
+	std::unique_lock<std::mutex> lockReceiver(m_receiverMutex);
+
+	if (!m_isInitialized) {
+		return;
+	}
+
+	if (avcodec_send_packet(m_decoderContext, packet) < 0) {
+		throw std::runtime_error("Unable to send audio packet for decoding");
+	}
+
+	AVFrame* frame = av_frame_alloc();
+
+	if (avcodec_receive_frame(m_decoderContext, frame) < 0) {
+		av_frame_free(&frame);
+	}
+	else {
+		//printf("Received audio frame: %lld\n", frame->pts);
+
+		{
+			std::lock_guard<std::mutex> queueLock(m_queueMutex);
+			m_frameQueue.push_back(frame);
+		}
+
+		if (m_audioPlayer->getStatus() != sf::SoundStream::Playing) {
+			m_audioPlayer->play();
+		}
+	}
 }
 
 void AudioStream::decode()
@@ -118,12 +161,62 @@ void AudioStream::decode()
 	}
 
 	if (!m_hasStarted) {
-		m_lastAudioDts = m_stream->start_time * av_q2d(m_stream->time_base);
+		m_state.updateAudioTimings(m_stream->start_time * av_q2d(m_stream->time_base), 0.0);
 		m_hasStarted = true;
 	}
 
-	const auto nextDts = m_lastAudioDts + m_lastAudioDelay;
-	
+	const auto nextDts = m_state.getNextAudioDts();
+	if (m_state.getCurrentTime() < nextDts) {
+		return;
+	}
+
+	m_state.updateAudioTimings(nextDts,
+		frame->pkt_duration * av_q2d(m_stream->time_base));
+
+	const auto dataSize = av_samples_get_buffer_size(nullptr,
+		m_decoderContext->channels, frame->nb_samples,
+		AV_SAMPLE_FMT_S16, 1);
+
+	{
+		std::unique_lock<std::mutex> queueLock(m_queueMutex);
+		m_frameQueue.pop_front();
+	}
+
+	{
+		std::unique_lock<std::mutex> bufferLock(m_bufferMutex);
+
+		m_buffer.resize(dataSize);
+
+		auto dataPtr = m_buffer.data();
+		swr_convert(m_swrContext, &dataPtr, dataSize,
+			const_cast<const uint8_t**>(frame->data), frame->nb_samples);
+
+		m_hasData = true;
+		m_decodingId++;
+	}
+
+	av_frame_free(&frame);
+}
+
+void AudioStream::flush()
+{
+	if (m_isInitialized) {
+		avcodec_send_packet(m_decoderContext, nullptr);
+	}
+}
+
+int AudioStream::getIndex() const
+{
+	if (!m_isInitialized) {
+		return -1;
+	}
+
+	return m_stream->index;
+}
+
+size_t AudioStream::shouldReceive() const
+{
+	return m_frameQueue.size() < 256;
 }
 
 void AudioStream::setVolume(float volume)
@@ -135,8 +228,10 @@ void AudioStream::setVolume(float volume)
 
 uint64_t AudioStream::getCurrentDecodingId() const
 {
+	return m_decodingId;
 }
 
-bool AudioStream::isInitialized()
+bool AudioStream::isInitialized() const
 {
+	return m_isInitialized;
 }

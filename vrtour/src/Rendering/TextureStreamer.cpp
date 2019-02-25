@@ -17,23 +17,25 @@ TextureStreamer::~TextureStreamer()
 	glDeleteBuffers(2, m_buffers);
 }
 
-void TextureStreamer::write(ej::Texture* texture, Video* video)
+void TextureStreamer::write(ej::Texture* texture, VideoStream* stream)
 {
-	if (texture == nullptr || video == nullptr) {
+	if (texture == nullptr || stream == nullptr || 
+		stream->getCurrentDecodingId() == m_decodingId) 
+	{
 		return;
 	}
 
-	const glm::ivec2 videoSize = video->getSize();
+	const glm::ivec2 videoSize = stream->getSize();
 	if (glm::ivec2(texture->getSize()) != videoSize) {
 		texture->resize(videoSize.x, videoSize.y);
 	}
-
-	size_t dataSize = videoSize.x * videoSize.y * 3;
 
 	m_currentBufferIndex = (m_currentBufferIndex + 1) % 2;
 	const auto nextBufferIndex = (m_currentBufferIndex + 1) % 2;
 
 	glBindTexture(GL_TEXTURE_2D, texture->getHandle());
+
+	const auto size = stream->getBufferSize();
 
 	// Nth PBO
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_buffers[m_currentBufferIndex]);
@@ -41,12 +43,13 @@ void TextureStreamer::write(ej::Texture* texture, Video* video)
 
 	// N+1 PBO
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_buffers[nextBufferIndex]);
-	glBufferData(GL_PIXEL_UNPACK_BUFFER, dataSize, nullptr, GL_STREAM_DRAW);
+	glBufferData(GL_PIXEL_UNPACK_BUFFER, size, nullptr, GL_STREAM_DRAW);
 
 	// Write data
 	const auto ptr = static_cast<GLubyte*>(glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY));
 	if (ptr) {
-		video->writeVideoData(ptr, dataSize);
+		stream->writeVideoData(ptr, size, m_decodingId);
+		m_decodingId = stream->getCurrentDecodingId();
 		//std::memset(ptr, rand() % 255, m_dataSize);
 		glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
 	}

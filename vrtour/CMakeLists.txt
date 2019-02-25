@@ -24,6 +24,7 @@ set(SOURCES
 	"${SOURCE_DIR}/Video/AudioPlayer.cpp"
 	"${SOURCE_DIR}/Video/AudioStream.cpp"
 	"${SOURCE_DIR}/Video/Video.cpp"
+	"${SOURCE_DIR}/Video/VideoState.cpp"
 	"${SOURCE_DIR}/Video/VideoStream.cpp"
 )
 

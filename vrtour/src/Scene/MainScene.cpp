@@ -75,11 +75,7 @@ void MainScene::onUpdate(const float dt)
 	}
 
 	for (auto& data : m_videos) {
-		if (!data.video->hasVideoData()) {
-			continue;
-		}
-
-		data.streamer->write(data.target, data.video.get());
+		data.streamer->write(data.target, data.video->getVideoStream());
 	}
 
 	m_debugCamera->update(dt);
