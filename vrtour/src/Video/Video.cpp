@@ -10,6 +10,13 @@ extern "C" {
 
 #include <Core/Core.h>
 
+namespace details {
+	int interruptCallback(void* video)
+	{
+		return static_cast<int>(video == nullptr || !reinterpret_cast<Video*>(video)->isInitialized());
+	}
+}
+
 Video::Video(const ej::Core& core, const std::string& file):
 	m_file(file)
 {
@@ -183,6 +190,11 @@ bool Video::writeAudioData(const int16_t** destination, size_t& size)
 	return true;
 }
 
+bool Video::isInitialized() const
+{
+	return m_isInitialized;
+}
+
 void Video::initializationTask()
 {
 	// Connect to data stream
@@ -211,6 +223,9 @@ void Video::initializationTask()
 			m_audioStream = m_formatContext->streams[i];
 		}
 	}
+
+	m_formatContext->interrupt_callback.opaque = static_cast<void*>(this);
+	m_formatContext->interrupt_callback.callback = details::interruptCallback;
 
 	initVideoStream();
 	initAudioStream();
@@ -288,16 +303,9 @@ void Video::initVideoStream()
 	m_videoBuffer->height = m_videoDecoderContext->height;
 	m_videoBuffer->format = AV_PIX_FMT_RGB24;
 
-	const auto size = av_image_get_buffer_size(static_cast<AVPixelFormat>(m_videoBuffer->format),
-		m_videoBuffer->width,
-		m_videoBuffer->height,
-		1);
-
-	m_videoBufferFrameData = static_cast<uint8_t*>(av_malloc(size));
-
 	av_image_fill_arrays(m_videoBuffer->data,
 		m_videoBuffer->linesize,
-		m_videoBufferFrameData,
+		nullptr,
 		static_cast<AVPixelFormat>(m_videoBuffer->format),
 		m_videoBuffer->width,
 		m_videoBuffer->height,
@@ -345,6 +353,8 @@ void Video::initAudioStream()
 	swr_init(m_swrContext);
 
 	m_soundStream.initialize(m_audioDecoderContext->channels, m_audioDecoderContext->sample_rate);
+
+	m_soundStream.setVolume(5.0f);
 
 	m_soundStream.play();
 }
@@ -410,11 +420,11 @@ void Video::receive()
 
 void Video::clear()
 {
+	m_isInitialized = false;
+
 	std::unique_lock<std::mutex> lockReceiver(m_receiverMutex);
 	std::unique_lock<std::mutex> lockVideoDecoder(m_videoDecoderMutex);
 	std::unique_lock<std::mutex> lockAudioDecoder(m_audioDecoderMutex);
-
-	m_isInitialized = false;
 
 	while (!m_videoQueue.empty()) {
 		av_frame_free(&m_videoQueue.back());
@@ -423,10 +433,6 @@ void Video::clear()
 
 	if (m_videoBuffer != nullptr) {
 		av_frame_free(&m_videoBuffer);
-	}
-
-	if (m_videoBufferFrameData != nullptr) {
-		av_free(m_videoBufferFrameData);
 	}
 
 	if (m_formatContext != nullptr) {

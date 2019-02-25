@@ -49,34 +49,6 @@ void VideoManager::init()
 	m_threadGroup = std::make_shared<asio::detail::thread_group>();
 	m_threadGroup->create_threads(std::bind(&VideoManager::worker, this), m_threadCount);
 
-/*
-	m_receiverThread = std::make_unique<std::thread>([this]() {
-		m_isReceiving = true;
-		while (m_isReceiving) {
-			auto now = std::chrono::high_resolution_clock::now();
-
-			if (m_currentVideo != nullptr && m_currentVideo->shouldReceive()) {
-				m_currentVideo->receive();
-			}
-			
-			std::this_thread::sleep_until(now + std::chrono::milliseconds(1));
-		}
-	});
-
-	m_videoDecoderThread = std::make_unique<std::thread>([this]() {
-		m_isDecodingVideo = true;
-		while (m_isDecodingVideo) {
-			auto now = std::chrono::high_resolution_clock::now();
-
-			if (m_currentVideo != nullptr) {
-				m_currentVideo->decodeVideo();
-			}
-
-			std::this_thread::sleep_until(now + std::chrono::milliseconds(1));
-		}
-	});
-*/
-
 	m_isInitialized = true;
 }
 

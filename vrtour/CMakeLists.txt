@@ -21,8 +21,10 @@ set(SOURCES
 	"${SOURCE_DIR}/UI/RectangleWidget.cpp"
 	"${SOURCE_DIR}/UI/TextWidget.cpp"
 
+	"${SOURCE_DIR}/Video/AudioPlayer.cpp"
 	"${SOURCE_DIR}/Video/AudioStream.cpp"
 	"${SOURCE_DIR}/Video/Video.cpp"
+	"${SOURCE_DIR}/Video/VideoStream.cpp"
 )
 
 add_definitions(

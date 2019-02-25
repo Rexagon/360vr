@@ -17,7 +17,7 @@ extern "C" {
 
 #include <Core/PointerDefs.h>
 
-#include "AudioStream.h"
+#include "AudioPlayer.h"
 #include "Managers/VideoManager.h"
 
 class Video : public ej::PointerDefs<Video>
@@ -38,6 +38,8 @@ public:
 
 	bool writeVideoData(uint8_t* destination, size_t size);
 	bool writeAudioData(const int16_t** destination, size_t& size);
+
+	bool isInitialized() const;
 
 private:
 	void initializationTask();
@@ -86,7 +88,6 @@ private:
 	std::mutex m_videoBufferMutex;
 	bool m_hasVideoData = false;
 	AVFrame* m_videoBuffer = nullptr;
-	uint8_t* m_videoBufferFrameData = nullptr;
 
 	bool m_hasAudioData = false;
 	std::vector<uint8_t> m_audioBuffer;
@@ -97,5 +98,5 @@ private:
 	std::mutex m_audioQueueMutex;
 	std::list<AVFrame*> m_audioQueue;
 
-	AudioStream m_soundStream{this};
+	AudioPlayer m_soundStream{this};
 };
