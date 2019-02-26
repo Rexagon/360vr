@@ -159,7 +159,7 @@ void VideoStream::decode()
 		seconds = frame->best_effort_timestamp * av_q2d(m_stream->time_base);
 	}
 
-	if (m_state.getCurrentTime() < seconds) {
+	if (m_state.getCurrentTime() + m_state.getVideoOffset() < seconds) {
 		return;
 	}
 

@@ -46,12 +46,8 @@ void AudioStream::init()
 
 	// Init sound
 
-	auto channelCount = m_decoderContext->channels;
-	auto channelLayout = m_decoderContext->channel_layout;
-	if (channelCount > 2) {
-		channelCount = 2;
-		channelLayout = AV_CH_LAYOUT_STEREO;
-	}	
+	const auto channelCount = 1;
+	const auto channelLayout = AV_CH_LAYOUT_MONO;
 
 	m_swrContext = swr_alloc();
 	av_opt_set_int(m_swrContext, "in_channel_count", m_decoderContext->channels, 0);
@@ -66,7 +62,7 @@ void AudioStream::init()
 
 	printf("Channel count: %d\n", channelCount);
 
-	const auto provider = [this, channelCount](int16_t const** samples, size_t& sampleCount) {
+	const auto provider = [this](int16_t const** samples, size_t& sampleCount) {
 		m_hasData = false;
 
 		decode();
@@ -76,7 +72,7 @@ void AudioStream::init()
 		}
 
 		*samples = reinterpret_cast<int16_t*>(m_buffer.data());
-		sampleCount = m_buffer.size() / channelCount;
+		sampleCount = m_sampleCount;
 
 		return true;
 	};
@@ -174,12 +170,15 @@ void AudioStream::decode()
 	}
 
 	const auto nextDts = m_state.getNextAudioDts();
+	const auto delta = nextDts - m_state.getCurrentTime();
+
+	//printf("TME: %f\tDTS: %f\tDT: %f\n", m_state.getCurrentTime(), nextDts, delta);
+
 	if (m_state.getCurrentTime() < nextDts) {
 		return;
 	}
 
-	m_state.updateAudioTimings(nextDts,
-		frame->pkt_duration * av_q2d(m_stream->time_base));
+	m_state.setVideoOffset(delta);
 
 	const auto dataSize = av_samples_get_buffer_size(nullptr,
 		m_audioPlayer->getChannelCount(), frame->nb_samples,
@@ -196,8 +195,18 @@ void AudioStream::decode()
 		m_buffer.resize(dataSize);
 
 		auto dataPtr = m_buffer.data();
-		swr_convert(m_swrContext, &dataPtr, dataSize,
+		const auto result = swr_convert(m_swrContext, &dataPtr, dataSize,
 			const_cast<const uint8_t**>(frame->data), frame->nb_samples);
+
+		if (result < 0) {
+			m_sampleCount = 0;
+		}
+		else {
+			m_sampleCount = result;
+		}
+
+		const auto duration = static_cast<double>(m_sampleCount) / m_audioPlayer->getSampleRate();
+		m_state.updateAudioTimings(nextDts, duration);
 
 		m_hasData = true;
 		m_decodingId++;

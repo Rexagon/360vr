@@ -6,6 +6,7 @@ void VideoState::restart(double offset)
 
 	m_clock.restart();
 	m_timeOffset = offset;
+	m_videoOffset = 0.0;
 }
 
 void VideoState::updateAudioTimings(double dts, double delay)
@@ -18,6 +19,16 @@ double VideoState::getCurrentTime() const
 {
 	const auto dt = static_cast<double>(m_clock.getElapsedTime().asSeconds());
 	return m_timeOffset + dt;
+}
+
+void VideoState::setVideoOffset(double offset)
+{
+	m_videoOffset = offset;
+}
+
+double VideoState::getVideoOffset() const
+{
+	return m_videoOffset;
 }
 
 double VideoState::getNextAudioDts() const

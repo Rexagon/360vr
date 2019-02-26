@@ -49,6 +49,7 @@ private:
 
 	std::mutex m_bufferMutex;
 	std::vector<uint8_t> m_buffer;
+	size_t m_sampleCount = 0;
 	bool m_hasData = false;
 
 	std::shared_ptr<AudioPlayer> m_audioPlayer;

@@ -13,6 +13,9 @@ public:
 
 	double getCurrentTime() const;
 
+	void setVideoOffset(double offset);
+	double getVideoOffset() const;
+
 	double getNextAudioDts() const;
 	double getLastAudioDts() const;
 	double getLastAudioDelay() const;
@@ -22,6 +25,7 @@ private:
 
 	sf::Clock m_clock;
 	double m_timeOffset = 0.0;
+	double m_videoOffset = 0.0;
 
 	double m_lastAudioDts = 0.0;
 	double m_lastAudioDelay = 0.0;
