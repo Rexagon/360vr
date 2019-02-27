@@ -16,16 +16,34 @@ namespace ej
 
 	namespace details
 	{
+		/**
+		 * \brief Check if key is in valid range
+		 * \param key Keyboard key
+		 * \return true if is valid
+		 */
 		bool isKeyValid(Key key);
+		
+		/**
+		 * \brief Check if button is in valid range
+		 * \param button Mouse button
+		 * \return true if is valid
+		 */
 		bool isMouseButtonValid(MouseButton button);
 	}
 
+	/**
+	 * \brief Give access to the read-time state of input
+	 */
 	class InputManager : public BaseManager, public PointerDefs<InputManager>
 	{
 		using KeysState = std::bitset<Key::KeyCount>;
 		using MouseButtonsState = std::bitset<MouseButton::ButtonCount>;
 
 	public:
+		/**
+		 * \brief Default constructor
+		 * \param core Owner of this manager
+		 */
 		explicit InputManager(const Core& core);
 
 		void updateState();

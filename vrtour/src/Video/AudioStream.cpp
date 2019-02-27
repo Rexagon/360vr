@@ -172,7 +172,7 @@ void AudioStream::decode()
 	const auto nextDts = m_state.getNextAudioDts();
 	const auto delta = nextDts - m_state.getCurrentTime();
 
-	//printf("TME: %f\tDTS: %f\tDT: %f\n", m_state.getCurrentTime(), nextDts, delta);
+	printf("TME: %f\tDTS: %f\tDT: %f\n", m_state.getCurrentTime(), nextDts, delta);
 
 	if (m_state.getCurrentTime() < nextDts) {
 		return;

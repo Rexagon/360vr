@@ -9,11 +9,6 @@ FileManager::FileManager(const Core & core, std::unique_ptr<BaseFileSystem> file
 {
 }
 
-void FileManager::close()
-{
-	m_fileSystem.reset(nullptr);
-}
-
 std::string FileManager::open(const std::string & filename) const
 {
 	if (m_fileSystem == nullptr) {
