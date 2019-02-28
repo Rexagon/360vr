@@ -12,6 +12,7 @@
 
 doc/html/
 build/
+html/
 temp/
 Debug/
 Thumbs.db

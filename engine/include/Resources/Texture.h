@@ -9,7 +9,7 @@
 
 namespace ej 
 {
-	class Texture : public PointerDefs<Texture>
+	class Texture final : public PointerDefs<Texture>
 	{
 	public:
 		Texture(GLenum target = GL_TEXTURE_2D);

@@ -14,17 +14,57 @@
 
 namespace ej
 {
+	/**
+	 * \brief Set of programs for GPU
+	 */
 	class Shader final : public PointerDefs<Shader>
 	{
 	public:
-		using ptr = std::shared_ptr<Shader>;
-
+		/**
+		 * \brief Constructor. Generates native program object
+		 * 
+		 * Must not be constructed before any OpenGL context is
+		 * created.
+		 */
 		Shader();
+
+		/**
+		 * \brief Destructor. Destroys native program object
+		 */
 		~Shader();
 
+		/**
+		 * \brief Attach program part
+		 * 
+		 * All needed parts must be attached before calling Shader::link().
+		 * Calling this function after linking is undefined.
+		 * 
+		 * \param source Program source
+		 * \param type Program type. Must be one of GL_COMPUTE_SHADER, 
+		 * GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, 
+		 * GL_TESS_EVALUATION_SHADER, GL_GEOMETRY_SHADER, or 
+		 * GL_FRAGMENT_SHADER
+		 * \param[out] infoLog String object for error messages 
+		 * (if there are any)
+		 * \return true if successfully attached
+		 */
 		bool attachPart(const std::string& source, GLenum type, std::string& infoLog);
+
+		/**
+		 * \brief Link all parts together
+		 * \param[out] infoLog String object for error messages (if there are any)
+		 * \return true if successfully linked
+		 */
 		bool link(std::string& infoLog) const;
 
+		/**
+		 * \brief Set vertex attribute information
+		 * 
+		 * \a name must be the same as in shader program.
+		 * 
+		 * \param index Attribute layout index
+		 * \param name Attribute name
+		 */
 		void setAttribute(unsigned int index, const std::string& name) const;
 
 		void setUniform(const std::string& name, int data);
@@ -47,8 +87,16 @@ namespace ej
 		void setUniformArray(const std::string& name, glm::ivec4* data, int size);
 		void setUniformArray(const std::string& name, glm::mat4* data, int size);
 
+		/**
+		 * \param name Uniform name
+		 * \return Uniform location information
+		 */
 		unsigned int getUniformLocation(const std::string& name);
 
+		/**
+		 * \brief Get native OpenGL handle
+		 * \return Handle
+		 */
 		GLuint getHandle() const;
 
 	private:
