@@ -16,7 +16,6 @@ namespace ej
 	{
 	public:
 		/**
-		 * \brief Default constructor
 		 * \param core Owner of this manager
 		 */
 		explicit ResourceManager(const Core& core) : BaseManager(core) {}
@@ -67,8 +66,3 @@ namespace ej
 		return it->second;
 	}
 }
-
-/**
- * \class ej::ResourceManager
- * \ingroup Core
- */

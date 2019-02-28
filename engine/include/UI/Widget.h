@@ -6,11 +6,27 @@
 
 namespace ej
 {
+	/**
+	 * \brief User interface primitive. Base class for all UI elements.
+	 */
 	class Widget
 	{
 	public:
-		Widget(const Core& core);
+		/**
+		 * \param core Main core object
+		 */
+		explicit Widget(const Core& core);
+
+		/**
+		 * \brief Construct named widget
+		 * \param core Main core object
+		 * \param name Widget name. Should be unique
+		 */
 		Widget(const Core& core, const std::string& name);
+
+		/**
+		 * \brief Default destructor
+		 */
 		virtual ~Widget() = default;
 
 		virtual void update(float dt) = 0;

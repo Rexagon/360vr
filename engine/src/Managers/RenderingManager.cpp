@@ -12,7 +12,7 @@ ej::RenderingManager::RenderingManager(const Core& core) :
 		throw std::runtime_error("Unable to initialize GLEW");
 	}
 
-	m_renderingState = std::make_shared<RenderingState>(core);
+	m_renderingState = std::make_shared<RenderingState>();
 	m_renderingState->apply();
 }
 

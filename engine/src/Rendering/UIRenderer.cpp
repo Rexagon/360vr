@@ -32,7 +32,7 @@ void ej::UIRenderer::draw()
 	state->setDepthTestEnabled(false);
 	state->setFaceCullingEnabled(false);
 	state->setBlendingEnabled(true);
-	state->setBlendingFunction(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	state->setBlendingFunctions(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	for (auto& entity : m_entities) {
 		if (entity->getMesh() == nullptr || entity->getMaterial() == nullptr ||

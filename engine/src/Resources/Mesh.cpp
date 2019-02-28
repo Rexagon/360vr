@@ -1,12 +1,6 @@
 #include "Resources/Mesh.h"
 
-using namespace ej;
-
-Mesh::Mesh()
-{
-}
-
-Mesh::~Mesh()
+ej::Mesh::~Mesh()
 {
 	if (!m_isInitialized) {
 		return;
@@ -17,7 +11,7 @@ Mesh::~Mesh()
 	glDeleteBuffers(1, &m_ebo);
 }
 
-void Mesh::init(const MeshGeometry& geometry)
+void ej::Mesh::init(const MeshGeometry& geometry)
 {
 	if (m_isInitialized) return;
 
@@ -30,7 +24,7 @@ void Mesh::init(const MeshGeometry& geometry)
 	update(geometry);
 }
 
-void Mesh::update(const MeshGeometry& geometry)
+void ej::Mesh::update(const MeshGeometry& geometry)
 {
 	if (!m_isInitialized) {
 		return;
@@ -134,7 +128,7 @@ void Mesh::update(const MeshGeometry& geometry)
 	glBindVertexArray(0);
 }
 
-void Mesh::draw() const
+void ej::Mesh::draw() const
 {
 	glBindVertexArray(m_vao);
 	for (unsigned int i = 0; i < m_attributeCount; ++i) {
@@ -151,32 +145,32 @@ void Mesh::draw() const
 	glBindVertexArray(0);
 }
 
-unsigned int Mesh::getIndexCount() const
+unsigned int ej::Mesh::getIndexCount() const
 {
 	return m_indexCount;
 }
 
-unsigned int Mesh::getVertexCount() const
+unsigned int ej::Mesh::getVertexCount() const
 {
 	return m_vertexCount;
 }
 
-unsigned int Mesh::getAttributeCount() const
+unsigned int ej::Mesh::getAttributeCount() const
 {
 	return m_attributeCount;
 }
 
-void Mesh::setBufferUsage(GLenum usage)
+void ej::Mesh::setBufferUsage(GLenum usage)
 {
 	m_bufferUsage = usage;
 }
 
-GLenum Mesh::getBufferUsage() const
+GLenum ej::Mesh::getBufferUsage() const
 {
 	return m_bufferUsage;
 }
 
-bool Mesh::isInitialized() const
+bool ej::Mesh::isInitialized() const
 {
 	return m_isInitialized;
 }

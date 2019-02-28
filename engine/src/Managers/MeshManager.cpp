@@ -14,7 +14,7 @@ ej::MeshManager* ej::MeshManager::bind(const std::string& name, const Loader& lo
 
 ej::PointerDefs<ej::Mesh>::ptr ej::MeshManager::get(const std::string& name)
 {
-	Mesh::ptr result = find(name);
+	auto result = find(name);
 	if (result == nullptr) {
 		const auto it = m_factoryData.find(name);
 		if (it != m_factoryData.end()) {

@@ -10,11 +10,10 @@ namespace ej
 	/**
 	 * \brief Manage fonts
 	 */
-	class FontManager : public ResourceManager<sf::Font>, public PointerDefs<FontManager>
+	class FontManager final : public ResourceManager<sf::Font>, public PointerDefs<FontManager>
 	{
 	public:
 		/**
-		 * \brief Default constructor
 		 * \param core Owner of this manager
 		 */
 		explicit FontManager(const Core& core);
@@ -29,8 +28,11 @@ namespace ej
 
 		/**
 		 * \brief Get font by name
+		 *
+		 * \throw std::runtime_error if unable to load
+		 * 
 		 * \param name Resource name
-		 * \return Font or nullptr if it is
+		 * \return Font or nullptr if it was not registered
 		 */
 		std::shared_ptr<sf::Font> get(const std::string& name);
 

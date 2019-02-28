@@ -32,60 +32,150 @@ namespace ej
 	}
 
 	/**
-	 * \brief Give access to the read-time state of input
+	 * \brief Give access to the real-time state of input
 	 */
-	class InputManager : public BaseManager, public PointerDefs<InputManager>
+	class InputManager final : public BaseManager, public PointerDefs<InputManager>
 	{
 		using KeysState = std::bitset<Key::KeyCount>;
 		using MouseButtonsState = std::bitset<MouseButton::ButtonCount>;
 
 	public:
 		/**
-		 * \brief Default constructor
 		 * \param core Owner of this manager
 		 */
 		explicit InputManager(const Core& core);
 
+		/**
+		 * \brief Update input state
+		 * 
+		 * Mark current state as previous. Reset some values.
+		 * Must be called every frame before InputManager::handleEvent() 
+		 * is called.
+		 */
 		void updateState();
+
+		/**
+		 * \brief Handle window event
+		 * 
+		 * Handles key/button press, mouse movement and mouse scroll.
+		 * Should be used only after InputManager::updateState() on
+		 * same frame.
+		 * 
+		 * \param event Window event
+		 */
 		void handleEvent(const sf::Event& event);
 
+		/**
+		 * \brief Get key state
+		 * \param key Key code
+		 * \return true if pressed
+		 */
 		bool getKey(Key key) const;
+
+		/**
+		 * \brief Check if key was pressed since last frame
+		 * \param key Key code
+		 * \return true if pressed
+		 */
 		bool getKeyDown(Key key) const;
+
+		/**
+		 * \brief Check if key was released since last frame
+		 * \param key Key code
+		 * \return true if released
+		 */
 		bool getKeyUp(Key key) const;
 
+		/**
+		 * \brief Check if any key is pressed
+		 * \return true if any key is pressed
+		 */
 		bool getAnyKey() const;
+
+		/**
+		 * \brief Check if any key was pressed since last frame
+		 * \return true if pressed
+		 */
 		bool getAnyKeyDown() const;
+
+		/**
+		 * \brief Check if any key was released since last frame
+		 * \return true if released
+		 */
 		bool getAnyKeyUp() const;
 
+		/**
+		 * \brief Check mouse button state
+		 * \param button Mouse button code
+		 * \return true if pressed
+		 */
 		bool getMouseButton(MouseButton button) const;
+
+		/**
+		 * \brief Check if mouse button was pressed since last frame
+		 * \param button Mouse button code
+		 * \return true if pressed
+		 */
 		bool getMouseButtonDown(MouseButton button) const;
+
+		/**
+		 * \brief Check if mouse button was released since last frame
+		 * \param button Mouse button code
+		 * \return true if released
+		 */
 		bool getMouseButtonUp(MouseButton button) const;
 
+		/**
+		 * \brief Get axis value
+		 * 
+		 * SHOULD NOT BE USED NOW!!!
+		 * 
+		 * \param name Axis name
+		 * \return axis value if found, 0 otherwise
+		 */
 		float getAxis(const std::string& name);
 
+		/**
+		 * \brief Set cursor visibility
+		 * \param visible Cursor visibility. Show on true, hide otherwise
+		 */
 		void setMouseCursorVisible(bool visible);
 
+		/**
+		 * \brief Set mouse position
+		 * \param position Mouse position relative to current window
+		 */
 		void setMousePosition(const glm::ivec2& position);
+
+		/**
+		 * \brief Get mouse delta position
+		 * \return mouse delta position since last frame
+		 */
 		glm::ivec2 getMousePositionDelta() const;
+
+		/**
+		 * \brief Get mouse position
+		 * \return mouse position relative to current window
+		 */
 		glm::ivec2 getMousePosition() const;
 
 	private:
-		ej::WindowManager::ptr m_windowManager;
+		WindowManager::ptr m_windowManager;
 
-		bool m_anyKeyUp;
-		bool m_anyKeyDown;
+		bool m_anyKeyUp = false;
+		bool m_anyKeyDown = false;
 		KeysState m_currentKeysState;
 		KeysState m_lastKeysState;
 
-		bool m_anyMouseButtonUp;
-		bool m_anyMouseButtonDown;
+		bool m_anyMouseButtonUp = false;
+		bool m_anyMouseButtonDown = false;
 		MouseButtonsState m_currentMouseButtonsState;
 		MouseButtonsState m_lastMouseButtonsState;
 
-		glm::ivec2 m_lastMousePosition;
-		glm::ivec2 m_currentMousePosition;
+		glm::ivec2 m_lastMousePosition{};
+		glm::ivec2 m_currentMousePosition{};
 
-		float m_mouseWheelDelta;
+		float m_mouseWheelDelta = 0.0f;
 
 		std::map<std::string, std::shared_ptr<BaseInputAxis>> m_axes;
 	};

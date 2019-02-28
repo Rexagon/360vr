@@ -8,14 +8,11 @@ namespace ej
 
 	/**
 	 * \brief Base manager
-	 * 
-	 * 
 	 */
 	class BaseManager
 	{
 	public:
 		/**
-		 * \brief Default constructor
 		 * \param core Owner of this manager
 		 */
 		explicit BaseManager(const Core& core) : m_core(core) {}
@@ -29,8 +26,3 @@ namespace ej
 		const Core& m_core;
 	};
 }
-
-/**
- * \class ej::BaseManager
- * \ingroup Core
- */

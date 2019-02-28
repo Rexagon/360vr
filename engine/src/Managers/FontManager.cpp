@@ -14,9 +14,9 @@ ej::FontManager* ej::FontManager::bind(const std::string& name, const std::strin
 
 std::shared_ptr<sf::Font> ej::FontManager::get(const std::string& name)
 {
-	std::shared_ptr<sf::Font> result = find(name);
+	auto result = find(name);
 	if (result == nullptr) {
-		auto it = m_factoryData.find(name);
+		const auto it = m_factoryData.find(name);
 		if (it != m_factoryData.end()) {
 			result = load(it->second);
 			insert(name, result);
@@ -28,7 +28,7 @@ std::shared_ptr<sf::Font> ej::FontManager::get(const std::string& name)
 
 std::shared_ptr<sf::Font> ej::FontManager::load(const std::string& factoryData) const
 {
-	std::shared_ptr<sf::Font> font = std::make_shared<sf::Font>();
+	auto font = std::make_shared<sf::Font>();
 
 	if (!font->loadFromFile("data/" + factoryData)) {
 		throw std::runtime_error("Unable to load font: " + factoryData);

@@ -16,8 +16,3 @@ namespace ej
 		using uptr = std::unique_ptr<T>;
 	};
 }
-
-/**
- * \class ej::PointerDefs
- * \ingroup Core
- */

@@ -2,25 +2,18 @@
 
 #include <stdexcept>
 
-using namespace ej;
-
-FrameBuffer::FrameBuffer() :
-	m_isInitialized(false)
-{
-}
-
-FrameBuffer::~FrameBuffer()
+ej::FrameBuffer::~FrameBuffer()
 {
 	glDeleteFramebuffers(1, &m_id);
 	glDeleteRenderbuffers(1, &m_depthBuffer);
 }
 
-Texture & FrameBuffer::getColorTexture()
+ej::Texture & ej::FrameBuffer::getColorTexture()
 {
 	return m_colorTexture;
 }
 
-void FrameBuffer::init(unsigned int width, unsigned int height, bool depthEnabled)
+void ej::FrameBuffer::init(const unsigned int width, const unsigned int height, const bool depthEnabled)
 {
 	if (m_isInitialized) {
 		return;

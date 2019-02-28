@@ -18,9 +18,9 @@ ej::ShaderManager* ej::ShaderManager::bind(const std::string & name, const Shade
 
 std::shared_ptr<ej::Shader> ej::ShaderManager::get(const std::string & name)
 {
-	std::shared_ptr<Shader> result = find(name);
+	auto result = find(name);
 	if (result == nullptr) {
-		auto it = m_factoryData.find(name);
+		const auto it = m_factoryData.find(name);
 		if (it != m_factoryData.end()) {
 			result = load(it->second);
 			insert(name, result);
@@ -32,7 +32,7 @@ std::shared_ptr<ej::Shader> ej::ShaderManager::get(const std::string & name)
 
 std::shared_ptr<ej::Shader> ej::ShaderManager::load(const FactoryData & factoryData) const
 {
-	std::unique_ptr<Shader> shader = std::make_unique<Shader>();
+	auto shader = std::make_unique<Shader>();
 
 	std::string infoLog;
 

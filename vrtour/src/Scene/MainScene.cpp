@@ -104,15 +104,17 @@ ej::Texture* MainScene::createVideoTarget(const glm::vec3& position)
 	static size_t targetCount = 0;
 
 	auto mesh = getCore().get<ej::MeshManager>()->bind("carpet_mesh", []() {
-		return ej::MeshGeometry::createPlane(glm::vec2(1.1f, 1.0f), 1, 1);
+		return ej::MeshGeometry::createPlane(glm::vec2(1.1f, 1.0f));
 	})->get("carpet_mesh");
 
 	auto material = std::make_shared<SimpleMeshMaterial>(getCore());
 
 	const auto textureName = "carpet_" + std::to_string(targetCount++);
 
-	material->setDiffuseTexture(getCore().get<ej::TextureManager>()->bind(textureName,
-		ej::TextureManager::FromFile("textures/carpet.jpg"))->get(textureName));
+	const auto texture = getCore().get<ej::TextureManager>()
+		->bind(textureName, "textures/carpet.jpg")->get(textureName);
+
+	material->setDiffuseTexture(texture);
 	material->setTextureFlipped(true);
 
 	auto entity = std::make_shared<ej::MeshEntity>(mesh, material);
@@ -134,10 +136,12 @@ void MainScene::createSkyBox()
 
 	auto material = std::make_shared<SkyboxMaterial>(getCore());
 
-	material->setSkyTexture(getCore().get<ej::TextureManager>()->bind("loading",
-		ej::TextureManager::FromFile("textures/loading.jpg"))->get("loading"));
+	const auto texture = getCore().get<ej::TextureManager>()
+		->bind("loading", "textures/loading.jpg")->get("loading");
 
-	auto entity = std::make_shared<ej::MeshEntity>(mesh, material);
+	material->setSkyTexture(texture);
+
+	const auto entity = std::make_shared<ej::MeshEntity>(mesh, material);
 
 	m_meshes.push_back(entity);
 }

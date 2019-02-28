@@ -12,7 +12,7 @@ namespace ej
 	/**
 	 * \brief Manage access to filesystem
 	 */
-	class FileManager : public BaseManager, public PointerDefs<FileManager>
+	class FileManager final : public BaseManager, public PointerDefs<FileManager>
 	{
 		/**
 		 * \brief Base file provider
@@ -85,8 +85,3 @@ namespace ej
 		std::unique_ptr<BaseFileSystem> m_fileSystem;
 	};
 }
-
-/**
- * \class ej::FileManager
- * \ingroup Managers
- */

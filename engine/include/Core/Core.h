@@ -20,11 +20,6 @@ namespace ej
 	{
 	public:
 		/**
-		 * \brief Default constructor
-		 */
-		Core();
-
-		/**
 		 * \brief Default destructor
 		 * 
 		 * All provided managers will be destroyed.
@@ -35,9 +30,9 @@ namespace ej
 		 * \brief Start main application loop
 		 * 
 		 * Function blocks current thread until application is
-		 * closed using \ref stop.
+		 * closed using Core::stop().
 		 * 
-		 * Warning: \ref WindowManager must be provided before
+		 * Warning: ej::WindowManager must be provided before
 		 * calling this function.
 		 * 
 		 * If application is already running, this function does
@@ -64,7 +59,7 @@ namespace ej
 		 * If manager of same type was already provided, new manager
 		 * will be assigned to old.
 		 * 
-		 * \tparam T Manager type. Must be child of \ref BaseManager
+		 * \tparam T Manager type. Must be child of ej::BaseManager
 		 * \tparam Args Manager constructor arguments types
 		 * \param args Manager constructor arguments
 		 * \return Created manager
@@ -79,7 +74,7 @@ namespace ej
 		 * Manager of type \a T must be provided before calling this
 		 * function.
 		 * 
-		 * \tparam T Manager type. Must be child of \ref BaseManager
+		 * \tparam T Manager type. Must be child of ej::BaseManager
 		 * \return Manager object
 		 */
 		template<typename T>
@@ -87,7 +82,7 @@ namespace ej
 
 		/**
 		 * \brief Check if manager of type \a T has been provided
-		 * \tparam T Manager type. Must be child of \ref BaseManager
+		 * \tparam T Manager type. Must be child of ej::BaseManager
 		 * \return true if found
 		 */
 		template<typename T>
@@ -137,7 +132,7 @@ namespace ej
 		virtual void onUpdate(float dt) = 0;
 
 	private:
-		bool m_isRunning;
+		bool m_isRunning = false;
 		std::unordered_map<std::type_index, std::shared_ptr<BaseManager>> m_managers;
 	};
 
@@ -181,8 +176,3 @@ namespace ej
 	} \
 	return 0; \
 }
-
-/**
- * \class ej::Core
- * \ingroup Core
- */

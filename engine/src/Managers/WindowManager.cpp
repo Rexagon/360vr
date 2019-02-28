@@ -2,9 +2,7 @@
 
 #include <cassert>
 
-using namespace ej;
-
-WindowManager::WindowManager(const Core& core, const std::string & title, uint32_t width, uint32_t height) :
+ej::WindowManager::WindowManager(const Core& core, const std::string & title, const uint32_t width, const uint32_t height) :
 	BaseManager(core)
 {
 	auto videoMode = sf::VideoMode(width, height);
@@ -21,8 +19,15 @@ WindowManager::WindowManager(const Core& core, const std::string & title, uint32
 	m_window->setVerticalSyncEnabled(false);
 }
 
-sf::RenderWindow & WindowManager::getWindow() const
+sf::RenderWindow & ej::WindowManager::getWindow() const
 {
 	assert(m_window != nullptr);
 	return *m_window;
+}
+
+glm::uvec2 ej::WindowManager::getWindowSize() const
+{
+	assert(m_window != nullptr);
+	const auto size = m_window->getSize();
+	return glm::uvec2(size.x, size.y);
 }
