@@ -56,12 +56,12 @@ void ej::RenderingState::apply()
 
 	for (size_t i = 0; i < TEXTURE_COUNT; ++i) {
 		const auto& texture = m_currentTextures[i];
-		glActiveTexture(GL_TEXTURE0 + i);
+		glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(i));
 		glBindTexture(texture.first, texture.second);
 	}
 
 	// set active texture unit
-	glActiveTexture(GL_TEXTURE0 + m_activeTextureUnit);
+	glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(m_activeTextureUnit));
 }
 
 void ej::RenderingState::setViewport(const glm::ivec2& size, const glm::ivec2& offset)
@@ -301,7 +301,7 @@ void ej::RenderingState::bindTexture(const Texture* texture, const unsigned int 
 	bindTexture(textureTarget, textureId, unit);
 }
 
-void ej::RenderingState::bindTexture(const GLenum textureTarget, const GLuint textureId, const unsigned unit)
+void ej::RenderingState::bindTexture(const GLenum textureTarget, const GLuint textureId, const unsigned int unit)
 {
 	if (unit < TEXTURE_COUNT && 
 		textureTarget == m_currentTextures[unit].first &&

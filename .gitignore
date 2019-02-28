@@ -10,6 +10,7 @@
 # Test video
 *.mp4
 
+doc/html/
 build/
 temp/
 Debug/

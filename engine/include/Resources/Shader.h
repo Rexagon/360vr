@@ -14,7 +14,7 @@
 
 namespace ej
 {
-	class Shader : public PointerDefs<Shader>
+	class Shader final : public PointerDefs<Shader>
 	{
 	public:
 		using ptr = std::shared_ptr<Shader>;
