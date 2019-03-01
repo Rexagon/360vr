@@ -27,7 +27,7 @@ ej::PointerDefs<ej::Mesh>::ptr ej::MeshManager::get(const std::string& name)
 
 ej::PointerDefs<ej::Mesh>::ptr ej::MeshManager::load(const Loader& loader) const
 {
-	auto mesh = std::make_shared<Mesh>();
+	auto mesh = std::make_shared<Mesh>(m_core);
 	mesh->init(loader());
 
 	return mesh;

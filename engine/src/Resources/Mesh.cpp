@@ -1,5 +1,9 @@
 #include "Resources/Mesh.h"
 
+ej::Mesh::Mesh(const Core& core)
+{
+}
+
 ej::Mesh::~Mesh()
 {
 	if (!m_isInitialized) {
@@ -160,7 +164,7 @@ unsigned int ej::Mesh::getAttributeCount() const
 	return m_attributeCount;
 }
 
-void ej::Mesh::setBufferUsage(GLenum usage)
+void ej::Mesh::setBufferUsage(const GLenum usage)
 {
 	m_bufferUsage = usage;
 }

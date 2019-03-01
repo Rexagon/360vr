@@ -1,8 +1,7 @@
 #include "Scene/HeadSet.h"
 
-#include <Managers/ShaderManager.h>
-
-HeadSet::HeadSet(const ej::Core & core)
+HeadSet::HeadSet(const ej::Core & core) :
+	m_eyeBuffers{ ej::FrameBuffer(core), ej::FrameBuffer(core) }
 {
 	m_vrManager = core.get<ej::VRManager>();
 	m_renderingManager = core.get<ej::RenderingManager>();
@@ -32,13 +31,13 @@ void HeadSet::update(const float dt)
 		m_transform.setPosition(m_vrManager->getHmdPosition());
 		m_transform.setRotation(m_vrManager->getHmdRotation());
 
-		for (size_t i = 0; i < 2; ++i) {
-			m_cameraEntities[i]->synchronizeView();
+		for (auto& cameraEntity : m_cameraEntities) {
+			cameraEntity->synchronizeView();
 		}
 	}
 }
 
-void HeadSet::bindEye(vr::EVREye eye)
+void HeadSet::bindEye(const vr::EVREye eye)
 {
 	auto state = m_renderingManager->getState();
 
@@ -72,7 +71,7 @@ const ej::Transform& HeadSet::getTransform() const
 	return m_transform;
 }
 
-ej::CameraEntity::ptr HeadSet::getCameraEntity(vr::EVREye eye) const
+ej::CameraEntity::ptr HeadSet::getCameraEntity(const vr::EVREye eye) const
 {
 	return m_cameraEntities[static_cast<size_t>(eye)];
 }

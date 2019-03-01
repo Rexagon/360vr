@@ -1,13 +1,11 @@
 #include "Resources/Shader.h"
 
-using namespace ej;
-
-Shader::Shader()
+ej::Shader::Shader(const Core& core)
 {
 	m_program = glCreateProgram();
 }
 
-Shader::~Shader()
+ej::Shader::~Shader()
 {
 	glDeleteProgram(m_program);
 
@@ -16,7 +14,7 @@ Shader::~Shader()
 	}
 }
 
-bool Shader::attachPart(const std::string & source, const GLenum type, std::string& infoLog)
+bool ej::Shader::attachPart(const std::string & source, const GLenum type, std::string& infoLog)
 {
 	const GLint shader = glCreateShader(type);
 
@@ -48,7 +46,7 @@ bool Shader::attachPart(const std::string & source, const GLenum type, std::stri
 	return true;
 }
 
-bool Shader::link(std::string& infoLog) const
+bool ej::Shader::link(std::string& infoLog) const
 {
 	glLinkProgram(m_program);
 
@@ -67,102 +65,102 @@ bool Shader::link(std::string& infoLog) const
 	return true;
 }
 
-void Shader::setAttribute(const unsigned int index, const std::string & name) const
+void ej::Shader::setAttribute(const unsigned int index, const std::string & name) const
 {
 	glBindAttribLocation(m_program, index, name.c_str());
 }
 
-void Shader::setUniform(const std::string & name, const int data)
+void ej::Shader::setUniform(const std::string & name, const int data)
 {
 	glUniform1i(getUniformLocation(name), data);
 }
 
-void Shader::setUniform(const std::string & name, const float data)
+void ej::Shader::setUniform(const std::string & name, const float data)
 {
 	glUniform1f(getUniformLocation(name), data);
 }
 
-void Shader::setUniform(const std::string & name, const glm::vec2 & data)
+void ej::Shader::setUniform(const std::string & name, const glm::vec2 & data)
 {
 	glUniform2f(getUniformLocation(name), data.x, data.y);
 }
 
-void Shader::setUniform(const std::string & name, const glm::ivec2 & data)
+void ej::Shader::setUniform(const std::string & name, const glm::ivec2 & data)
 {
 	glUniform2i(getUniformLocation(name), data.x, data.y);
 }
 
-void Shader::setUniform(const std::string & name, const glm::vec3 & data)
+void ej::Shader::setUniform(const std::string & name, const glm::vec3 & data)
 {
 	glUniform3f(getUniformLocation(name), data.x, data.y, data.z);
 }
 
-void Shader::setUniform(const std::string & name, const glm::ivec3 & data)
+void ej::Shader::setUniform(const std::string & name, const glm::ivec3 & data)
 {
 	glUniform3i(getUniformLocation(name), data.x, data.y, data.z);
 }
 
-void Shader::setUniform(const std::string & name, const glm::vec4 & data)
+void ej::Shader::setUniform(const std::string & name, const glm::vec4 & data)
 {
 	glUniform4f(getUniformLocation(name), data.x, data.y, data.z, data.w);
 }
 
-void Shader::setUniform(const std::string & name, const glm::ivec4 & data)
+void ej::Shader::setUniform(const std::string & name, const glm::ivec4 & data)
 {
 	glUniform4i(getUniformLocation(name), data.x, data.y, data.z, data.w);
 }
 
-void Shader::setUniform(const std::string & name, const glm::mat4 & data)
+void ej::Shader::setUniform(const std::string & name, const glm::mat4 & data)
 {
 	glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, &data[0][0]);
 }
 
-void Shader::setUniformArray(const std::string & name, int * data, const int size)
+void ej::Shader::setUniformArray(const std::string & name, int * data, const int size)
 {
 	glUniform1iv(getUniformLocation(name), size, data);
 }
 
-void Shader::setUniformArray(const std::string & name, float * data, const int size)
+void ej::Shader::setUniformArray(const std::string & name, float * data, const int size)
 {
 	glUniform1fv(getUniformLocation(name), size, data);
 }
 
-void Shader::setUniformArray(const std::string & name, glm::vec2 * data, const int size)
+void ej::Shader::setUniformArray(const std::string & name, glm::vec2 * data, const int size)
 {
 	glUniform2fv(getUniformLocation(name), size, &data[0][0]);
 }
 
-void Shader::setUniformArray(const std::string & name, glm::ivec2 * data, const int size)
+void ej::Shader::setUniformArray(const std::string & name, glm::ivec2 * data, const int size)
 {
 	glUniform2iv(getUniformLocation(name), size, &data[0][0]);
 }
 
-void Shader::setUniformArray(const std::string & name, glm::vec3 * data, const int size)
+void ej::Shader::setUniformArray(const std::string & name, glm::vec3 * data, const int size)
 {
 	glUniform3fv(getUniformLocation(name), size, &data[0][0]);
 }
 
-void Shader::setUniformArray(const std::string & name, glm::ivec3 * data, const int size)
+void ej::Shader::setUniformArray(const std::string & name, glm::ivec3 * data, const int size)
 {
 	glUniform3iv(getUniformLocation(name), size, &data[0][0]);
 }
 
-void Shader::setUniformArray(const std::string & name, glm::vec4 * data, const int size)
+void ej::Shader::setUniformArray(const std::string & name, glm::vec4 * data, const int size)
 {
 	glUniform4fv(getUniformLocation(name), size, &data[0][0]);
 }
 
-void Shader::setUniformArray(const std::string & name, glm::ivec4 * data, const int size)
+void ej::Shader::setUniformArray(const std::string & name, glm::ivec4 * data, const int size)
 {
 	glUniform4iv(getUniformLocation(name), size, &data[0][0]);
 }
 
-void Shader::setUniformArray(const std::string & name, glm::mat4 * data, const int size)
+void ej::Shader::setUniformArray(const std::string & name, glm::mat4 * data, const int size)
 {
 	glUniformMatrix4fv(getUniformLocation(name), size, GL_FALSE, &data[0][0][0]);
 }
 
-unsigned int Shader::getUniformLocation(const std::string & name)
+unsigned int ej::Shader::getUniformLocation(const std::string & name)
 {
 	const auto it = m_uniformLocations.find(name);
 	if (it == m_uniformLocations.end()) {
@@ -174,7 +172,7 @@ unsigned int Shader::getUniformLocation(const std::string & name)
 	return it->second;
 }
 
-GLuint Shader::getHandle() const
+GLuint ej::Shader::getHandle() const
 {
 	return m_program;
 }

@@ -14,6 +14,11 @@ namespace ej
 	{
 	public:
 		/**
+		 * \param core Main core object
+		 */
+		explicit FrameBuffer(const Core& core);
+
+		/**
 		 * \brief Destructor. Destroys all buffers
 		 */
 		~FrameBuffer();

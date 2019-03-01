@@ -1,18 +1,16 @@
 #pragma once
 
-#include <Scene/Camera.h>
 #include <Resources/Mesh.h>
-#include <Resources/Shader.h>
 #include <Scene/Transform.h>
 #include <Rendering/FrameBuffer.h>
 
 #include <Managers/VRManager.h>
 #include <Managers/RenderingManager.h>
 
-class HeadSet : public ej::PointerDefs<HeadSet>
+class HeadSet final : public ej::PointerDefs<HeadSet>
 {
 public:
-	HeadSet(const ej::Core& core);
+	explicit HeadSet(const ej::Core& core);
 
 	void update(float dt);
 	   

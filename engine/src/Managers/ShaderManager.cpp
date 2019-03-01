@@ -32,7 +32,7 @@ std::shared_ptr<ej::Shader> ej::ShaderManager::get(const std::string & name)
 
 std::shared_ptr<ej::Shader> ej::ShaderManager::load(const FactoryData & factoryData) const
 {
-	auto shader = std::make_unique<Shader>();
+	auto shader = std::make_unique<Shader>(m_core);
 
 	std::string infoLog;
 
@@ -85,5 +85,5 @@ std::shared_ptr<ej::Shader> ej::ShaderManager::load(const FactoryData & factoryD
 		throw std::runtime_error("Unable to link shader: " + factoryData.name + ". " + infoLog);
 	}
 
-	return std::move(shader);
+	return shader;
 }

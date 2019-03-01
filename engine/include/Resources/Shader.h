@@ -1,8 +1,8 @@
 #pragma once
 
-#include <unordered_map>
 #include <vector>
 #include <string>
+#include <unordered_map>
 
 #include <GL/glew.h>
 #include <glm/vec2.hpp>
@@ -10,6 +10,7 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 
+#include "Core/Core.h"
 #include "Core/PointerDefs.h"
 
 namespace ej
@@ -26,7 +27,7 @@ namespace ej
 		 * Must not be constructed before any OpenGL context is
 		 * created.
 		 */
-		Shader();
+		explicit Shader(const Core& core);
 
 		/**
 		 * \brief Destructor. Destroys native program object

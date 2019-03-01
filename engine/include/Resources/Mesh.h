@@ -2,6 +2,7 @@
 
 #include <GL/glew.h>
 
+#include "Core/Core.h"
 #include "MeshGeometry.h"
 #include "Core/PointerDefs.h"
 
@@ -13,6 +14,11 @@ namespace ej
 	class Mesh final : public PointerDefs<Mesh>
 	{
 	public:
+		/**
+		 * \param core Main core object
+		 */
+		explicit Mesh(const Core& core);
+
 		/**
 		 * \brief Destructor. Destroys all buffers
 		 */

@@ -32,7 +32,7 @@ std::shared_ptr<ej::Texture> ej::TextureManager::get(const std::string& name)
 
 std::shared_ptr<ej::Texture> ej::TextureManager::load(const std::string& path) const
 {
-	auto result = std::make_shared<Texture>();
+	auto result = std::make_shared<Texture>(m_core);
 
 	const auto data = m_fileManager->open(path);
 

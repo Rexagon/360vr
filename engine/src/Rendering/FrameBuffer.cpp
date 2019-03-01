@@ -2,6 +2,11 @@
 
 #include <stdexcept>
 
+ej::FrameBuffer::FrameBuffer(const Core& core) :
+	m_colorTexture(core)
+{
+}
+
 ej::FrameBuffer::~FrameBuffer()
 {
 	glDeleteFramebuffers(1, &m_id);

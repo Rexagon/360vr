@@ -8,11 +8,9 @@ extern "C" {
 
 #include <Core/Core.h>
 
-namespace details {
-	int interruptCallback(void* video)
-	{
-		return static_cast<int>(video == nullptr || !reinterpret_cast<Video*>(video)->isInitialized());
-	}
+static int interruptCallback(void* video)
+{
+	return static_cast<int>(video == nullptr || !reinterpret_cast<Video*>(video)->isInitialized());
 }
 
 Video::Video(const ej::Core& core, const std::string& file):
@@ -83,7 +81,7 @@ void Video::initializationTask()
 	}
 
 	m_formatContext->interrupt_callback.opaque = static_cast<void*>(this);
-	m_formatContext->interrupt_callback.callback = details::interruptCallback;
+	m_formatContext->interrupt_callback.callback = interruptCallback;
 
 	m_videoStream = std::make_shared<VideoStream>(m_state, video);
 	m_videoStream->init();
