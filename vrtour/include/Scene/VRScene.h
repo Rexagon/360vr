@@ -9,10 +9,10 @@
 #include <Managers/RenderingManager.h>
 
 #include "Video/Video.h"
-#include "Scene/DebugCamera.h"
+#include "Scene/HeadSet.h"
 #include "Rendering/TextureStreamer.h"
 
-class MainScene : public ej::Scene
+class VRScene final : public ej::Scene
 {
 	struct VideoData
 	{
@@ -37,13 +37,14 @@ private:
 	void createSkyBox();
 	void createCamera();
 
+	ej::VRManager::ptr m_vrManager;
 	ej::InputManager::ptr m_inputManager;
 	ej::WindowManager::ptr m_windowManager;
 	ej::RenderingManager::ptr m_renderingManager;
 
 	std::vector<VideoData> m_videos;
-	
+
 	std::vector<ej::MeshEntity::ptr> m_meshes;
 
-	std::unique_ptr<DebugCamera> m_debugCamera;
+	std::shared_ptr<HeadSet> m_headSet;
 };

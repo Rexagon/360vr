@@ -11,9 +11,11 @@
 #include <Managers/TextureManager.h>
 #include <Managers/RenderingManager.h>
 
-#include "Scene/MainScene.h"
 #include "Managers/UIManager.h"
 #include "Managers/VideoManager.h"
+
+#include "Scene/VRScene.h"
+#include "Scene/MainScene.h"
 
 class MyCore : public ej::Core	
 {
@@ -37,7 +39,8 @@ public:
 		m_inputManager = provide<ej::InputManager>();
 		m_uiManager = provide<UIManager>();
 
-		m_sceneManager = provide<ej::SceneManager>(std::make_unique<MainScene>());
+		//m_sceneManager = provide<ej::SceneManager>(std::make_unique<MainScene>());
+		m_sceneManager = provide<ej::SceneManager>(std::make_unique<VRScene>());
 	}
 
 	void onHandleEvent(const sf::Event& event) override

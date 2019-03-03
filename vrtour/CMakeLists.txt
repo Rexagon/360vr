@@ -17,6 +17,7 @@ set(SOURCES
 	"${SOURCE_DIR}/Scene/HeadSet.cpp"
 	"${SOURCE_DIR}/Scene/MainScene.cpp"
 	"${SOURCE_DIR}/Scene/SteamVRObject.cpp"
+	"${SOURCE_DIR}/Scene/VRScene.cpp"
 
 	"${SOURCE_DIR}/UI/RectangleWidget.cpp"
 	"${SOURCE_DIR}/UI/TextWidget.cpp"
