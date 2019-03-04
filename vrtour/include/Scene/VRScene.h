@@ -34,8 +34,7 @@ private:
 	void drawScene();
 
 	ej::Texture* createVideoTarget(const glm::vec3& position);
-	void createSkyBox();
-	void createCamera();
+	ej::Texture* createSkyBox();
 
 	ej::VRManager::ptr m_vrManager;
 	ej::InputManager::ptr m_inputManager;

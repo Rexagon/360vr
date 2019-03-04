@@ -29,7 +29,7 @@ void MainScene::onInit()
 	m_renderingManager->init();
 
 	// Create scene structure
-	createSkyBox();
+	auto skyBoxTarget = createSkyBox();
 	createCamera();
 
 	// Load video config
@@ -45,9 +45,11 @@ void MainScene::onInit()
 
 		const auto videoCount = static_cast<float>(it.value().size() - 1);
 
-		const glm::vec3 step(0.0f, 2.2f, 0.0);
+		const glm::vec3 step{ 0.0f, 2.2f, 0.0 };
 		const auto offset = -step * videoCount * 0.5f + glm::vec3(0.0f, 0.0f, -2.0f);
-		glm::vec3 position = offset;
+		auto position = offset;
+
+		auto first = true;
 
 		for (const auto& url : it.value()) {
 			printf("Found video url: %s\n", url.get<std::string>().data());
@@ -55,14 +57,21 @@ void MainScene::onInit()
 			auto video = std::make_shared<Video>(core, url.get<std::string>());
 			video->init();
 
-			m_videos.emplace_back(video, 
-				createVideoTarget(position), 
-				std::make_shared<TextureStreamer>());
+			if (first) {
+				m_videos.emplace_back(video, skyBoxTarget,
+					std::make_shared<TextureStreamer>());
 
-			position += step;
+				first = false;
+			}
+			else {
+				m_videos.emplace_back(video, createVideoTarget(position),
+					std::make_shared<TextureStreamer>());
+
+				position += step;
+			}
 		}
 	}
-	catch (const std::exception& e) {
+	catch (const std::exception & e) {
 		printf("Video source not provided\n");
 	}
 }
@@ -127,7 +136,7 @@ ej::Texture* MainScene::createVideoTarget(const glm::vec3& position)
 	return material->getDiffuseTexture();
 }
 
-void MainScene::createSkyBox()
+ej::Texture* MainScene::createSkyBox()
 {
 	auto mesh = getCore().get<ej::MeshManager>()->bind("skybox_mesh", []() {
 		return ej::MeshGeometry::createCube(glm::vec3(1.0f, 1.0f, 1.0f),
@@ -144,6 +153,8 @@ void MainScene::createSkyBox()
 	const auto entity = std::make_shared<ej::MeshEntity>(mesh, material);
 
 	m_meshes.push_back(entity);
+
+	return material->getTexture();
 }
 
 void MainScene::createCamera()

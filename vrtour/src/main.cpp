@@ -17,7 +17,7 @@
 #include "Scene/VRScene.h"
 #include "Scene/MainScene.h"
 
-class MyCore : public ej::Core	
+class MyCore final : public ej::Core	
 {
 public:
 	MyCore()
@@ -39,8 +39,12 @@ public:
 		m_inputManager = provide<ej::InputManager>();
 		m_uiManager = provide<UIManager>();
 
-		//m_sceneManager = provide<ej::SceneManager>(std::make_unique<MainScene>());
-		m_sceneManager = provide<ej::SceneManager>(std::make_unique<VRScene>());
+		if (ej::VRManager::checkHmdPresent()) {
+			m_sceneManager = provide<ej::SceneManager>(std::make_unique<VRScene>());
+		}
+		else {
+			m_sceneManager = provide<ej::SceneManager>(std::make_unique<MainScene>());
+		}
 	}
 
 	void onHandleEvent(const sf::Event& event) override
@@ -53,7 +57,7 @@ public:
 		m_inputManager->updateState();
 	}
 
-	void onUpdate(float dt) override
+	void onUpdate(const float dt) override
 	{
 		if (!m_sceneManager->hasScenes()) {
 			stop();

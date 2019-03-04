@@ -1,6 +1,8 @@
 #pragma once
 
+#include <list>
 #include <mutex>
+#include <vector>
 
 #include <glm/vec2.hpp>
 #include <SFML/System/Clock.hpp>

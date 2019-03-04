@@ -33,8 +33,7 @@ void VRScene::onInit()
 	m_headSet = std::make_shared<HeadSet>(core);
 
 	// Create scene structure
-	createSkyBox();
-	createCamera();
+	auto skyBoxTarget = createSkyBox();
 
 	// Load video config
 	json config;
@@ -49,9 +48,11 @@ void VRScene::onInit()
 
 		const auto videoCount = static_cast<float>(it.value().size() - 1);
 
-		const glm::vec3 step(0.0f, 2.2f, 0.0);
+		const glm::vec3 step{ 0.0f, 2.2f, 0.0 };
 		const auto offset = -step * videoCount * 0.5f + glm::vec3(0.0f, 0.0f, -2.0f);
-		glm::vec3 position = offset;
+		auto position = offset;
+
+		auto first = true;
 
 		for (const auto& url : it.value()) {
 			printf("Found video url: %s\n", url.get<std::string>().data());
@@ -59,11 +60,18 @@ void VRScene::onInit()
 			auto video = std::make_shared<Video>(core, url.get<std::string>());
 			video->init();
 
-			m_videos.emplace_back(video,
-				createVideoTarget(position),
-				std::make_shared<TextureStreamer>());
+			if (first) {
+				m_videos.emplace_back(video, skyBoxTarget,
+					std::make_shared<TextureStreamer>());
 
-			position += step;
+				first = false;
+			}
+			else {
+				m_videos.emplace_back(video, createVideoTarget(position),
+					std::make_shared<TextureStreamer>());
+
+				position += step;
+			}
 		}
 	}
 	catch (const std::exception& e) {
@@ -83,6 +91,7 @@ void VRScene::onUpdate(const float dt)
 	}
 
 	m_vrManager->update();
+	m_headSet->update(dt);
 
 	for (size_t i = 0; i < 2; ++i) {
 		const auto eye = static_cast<vr::EVREye>(i);
@@ -93,24 +102,19 @@ void VRScene::onUpdate(const float dt)
 
 		drawScene();
 	}
+
+	m_headSet->submit();
 }
 
 void VRScene::drawScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	m_renderingManager->getState()->setCurrentFrameBuffer(nullptr);
-
-	const auto& windowSize = m_windowManager->getWindow().getSize();
-	m_renderingManager->getState()->setViewport(0, 0, windowSize.x, windowSize.y);
-
 	auto renderer = m_renderingManager->getForwardRenderer();
 	for (auto& mesh : m_meshes) {
 		renderer->push(mesh.get());
 	}
 	renderer->draw();
-
-	m_headSet->submit();
 }
 
 ej::Texture* VRScene::createVideoTarget(const glm::vec3& position)
@@ -119,29 +123,29 @@ ej::Texture* VRScene::createVideoTarget(const glm::vec3& position)
 
 	auto mesh = getCore().get<ej::MeshManager>()->bind("carpet_mesh", []() {
 		return ej::MeshGeometry::createPlane(glm::vec2(1.1f, 1.0f));
-		})->get("carpet_mesh");
+	})->get("carpet_mesh");
 
-		auto material = std::make_shared<SimpleMeshMaterial>(getCore());
+	auto material = std::make_shared<SimpleMeshMaterial>(getCore());
 
-		const auto textureName = "carpet_" + std::to_string(targetCount++);
+	const auto textureName = "carpet_" + std::to_string(targetCount++);
 
-		const auto texture = getCore().get<ej::TextureManager>()
-			->bind(textureName, "textures/carpet.jpg")->get(textureName);
+	const auto texture = getCore().get<ej::TextureManager>()
+		->bind(textureName, "textures/carpet.jpg")->get(textureName);
 
-		material->setDiffuseTexture(texture);
-		material->setTextureFlipped(true);
+	material->setDiffuseTexture(texture);
+	material->setTextureFlipped(true);
 
-		auto entity = std::make_shared<ej::MeshEntity>(mesh, material);
-		entity->getTransform().setPosition(position);
-		entity->getTransform().setRotation(90.0f, 0.0f, 0.0f);
-		entity->getTransform().setScale(1.4f, 1.0f, 1.0f);
+	auto entity = std::make_shared<ej::MeshEntity>(mesh, material);
+	entity->getTransform().setPosition(position);
+	entity->getTransform().setRotation(90.0f, 0.0f, 0.0f);
+	entity->getTransform().setScale(1.4f, 1.0f, 1.0f);
 
-		m_meshes.push_back(entity);
+	m_meshes.push_back(entity);
 
-		return material->getDiffuseTexture();
+	return material->getDiffuseTexture();
 }
 
-void VRScene::createSkyBox()
+ej::Texture* VRScene::createSkyBox()
 {
 	auto mesh = getCore().get<ej::MeshManager>()->bind("skybox_mesh", []() {
 		return ej::MeshGeometry::createCube(glm::vec3(1.0f, 1.0f, 1.0f),
@@ -158,12 +162,6 @@ void VRScene::createSkyBox()
 	const auto entity = std::make_shared<ej::MeshEntity>(mesh, material);
 
 	m_meshes.push_back(entity);
-}
 
-void VRScene::createCamera()
-{
-	m_debugCamera = std::make_unique<DebugCamera>(getCore());
-	m_debugCamera->getCameraEntity()->getTransform().setPosition(0.0f, 1.0f, 0.0f);
-	m_debugCamera->setRotationSpeed(-0.2f);
-	m_renderingManager->getForwardRenderer()->setCameraEntity(m_debugCamera->getCameraEntity());
+	return material->getTexture();
 }

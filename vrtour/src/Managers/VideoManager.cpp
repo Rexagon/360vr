@@ -1,6 +1,7 @@
 #include "Managers/VideoManager.h"
 
 #include <sstream>
+#include <functional>
 #include <asio/post.hpp>
 
 extern "C" {
