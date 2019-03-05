@@ -1,4 +1,4 @@
-#include "Video\VideoStream.h"
+#include "Video/VideoStream.h"
 
 extern "C" {
 #include <libavutil/imgutils.h>
@@ -51,7 +51,6 @@ void VideoStream::init()
 
 	const auto format = AV_PIX_FMT_RGB24;
 	m_size = glm::uvec2(m_decoderContext->width, m_decoderContext->height);
-	m_bufferSize = 3u * m_size.x * m_size.y;
 
 	m_swsContext = sws_getContext(
 		m_decoderContext->width, m_decoderContext->height, m_decoderContext->pix_fmt,
@@ -63,12 +62,14 @@ void VideoStream::init()
 	m_buffer->height = m_size.y;
 	m_buffer->format = format;
 
-	const auto size = av_image_get_buffer_size(format,
+	m_bufferSize = av_image_get_buffer_size(format,
 		m_buffer->width,
 		m_buffer->height,
 		1);
 
-	m_bufferData.resize(size);
+	printf("Buffer size: %zu", m_bufferSize);
+
+	m_bufferData.resize(m_bufferSize);
 
 	av_image_fill_arrays(m_buffer->data, m_buffer->linesize, m_bufferData.data(),
 		format, m_buffer->width, m_buffer->height, 1);

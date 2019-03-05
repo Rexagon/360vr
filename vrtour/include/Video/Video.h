@@ -29,6 +29,11 @@ public:
 	bool isInitialized() const;
 
 private:
+	/**
+	 * \brief Connection timeout in milliseconds
+	 */
+	static const int32_t CONNECTION_TIMEOUT = 10000;
+
 	void initializationTask();
 	void receivingTask();
 	void decodingTask();
@@ -36,6 +41,9 @@ private:
 	void receive();
 
 	void clear();
+
+	static int connectionCallback(void* data);
+	static int interruptionCallback(void* data);
 
 	VideoManager::ptr m_videoManager;
 
@@ -45,8 +53,8 @@ private:
 	AVFormatContext* m_formatContext = nullptr;
 	AVPacket m_packet{};
 
-	std::shared_ptr<VideoStream> m_videoStream;
-	std::shared_ptr<AudioStream> m_audioStream;
+	std::unique_ptr<VideoStream> m_videoStream;
+	std::unique_ptr<AudioStream> m_audioStream;
 
 	VideoState m_state;
 
