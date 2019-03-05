@@ -1,10 +1,9 @@
 #include "Resources/MeshGeometry.h"
 
+#include <cmath>
 #include <glm/gtc/constants.hpp>
 
-using namespace ej;
-
-MeshGeometry MeshGeometry::createQuad(const glm::vec2 & halfSize, ComponentsMask vertexComponents)
+ej::MeshGeometry ej::MeshGeometry::createQuad(const glm::vec2 & halfSize, ComponentsMask vertexComponents)
 {
 	MeshGeometry result(vertexComponents);
 
@@ -37,16 +36,16 @@ MeshGeometry MeshGeometry::createQuad(const glm::vec2 & halfSize, ComponentsMask
 	return result;
 }
 
-MeshGeometry MeshGeometry::createPlane(const glm::vec2 & halfSize, const unsigned int xSegments, const unsigned int ySegments,
-                                       const ComponentsMask vertexComponents)
+ej::MeshGeometry ej::MeshGeometry::createPlane(const glm::vec2 & halfSize, const glm::uvec2& segments,
+	const ComponentsMask vertexComponents)
 {
 	MeshGeometry result(vertexComponents, GL_TRIANGLE_STRIP);
 
-	const auto dX = 1.0f / xSegments;
-	const auto dY = 1.0f / ySegments;
+	const auto dX = 1.0f / segments.x;
+	const auto dY = 1.0f / segments.y;
 
-	for (auto y = 0; y <= static_cast<int>(ySegments); ++y) {
-		for (auto x = 0; x <= static_cast<int>(xSegments); ++x) {
+	for (auto y = 0; y <= static_cast<int>(segments.y); ++y) {
+		for (auto x = 0; x <= static_cast<int>(segments.x); ++x) {
 			if (vertexComponents & Positions) {
 				result.positions.emplace_back(halfSize.x * (dX * x * 2.0f - 1.0f), 0.0f, halfSize.y * (dY * y * 2.0f - 1.0f));
 			}
@@ -62,17 +61,17 @@ MeshGeometry MeshGeometry::createPlane(const glm::vec2 & halfSize, const unsigne
 	}
 
 	auto oddRow = false;
-	for (auto y = 0; y < static_cast<int>(ySegments); ++y) {
+	for (auto y = 0; y < static_cast<int>(segments.y); ++y) {
 		if (!oddRow) {
-			for (auto x = 0; x <= static_cast<int>(xSegments); ++x) {
-				result.indices.push_back(y       * (xSegments + 1) + x);
-				result.indices.push_back((y + 1) * (xSegments + 1) + x);
+			for (auto x = 0; x <= static_cast<int>(segments.x); ++x) {
+				result.indices.push_back(y       * (segments.x + 1) + x);
+				result.indices.push_back((y + 1) * (segments.x + 1) + x);
 			}
 		}
 		else {
-			for (auto x = static_cast<int>(xSegments); x >= 0; --x) {
-				result.indices.push_back((y + 1) * (xSegments + 1) + x);
-				result.indices.push_back(y       * (xSegments + 1) + x);
+			for (auto x = static_cast<int>(segments.x); x >= 0; --x) {
+				result.indices.push_back((y + 1) * (segments.x + 1) + x);
+				result.indices.push_back(y       * (segments.x + 1) + x);
 			}
 		}
 		oddRow = !oddRow;
@@ -81,7 +80,7 @@ MeshGeometry MeshGeometry::createPlane(const glm::vec2 & halfSize, const unsigne
 	return result;
 }
 
-MeshGeometry MeshGeometry::createCube(const glm::vec3 & halfSize, const ComponentsMask vertexComponents)
+ej::MeshGeometry ej::MeshGeometry::createCube(const glm::vec3 & halfSize, const ComponentsMask vertexComponents)
 {
 	MeshGeometry result(vertexComponents);
 
@@ -216,15 +215,15 @@ MeshGeometry MeshGeometry::createCube(const glm::vec3 & halfSize, const Componen
 	return result;
 }
 
-MeshGeometry MeshGeometry::createSphere(float radius, const unsigned int xSegments, const unsigned int ySegments,
-                                        const ComponentsMask vertexComponents)
+ej::MeshGeometry ej::MeshGeometry::createSphere(float radius, const glm::uvec2& segments,
+	const ComponentsMask vertexComponents)
 {
 	MeshGeometry result(vertexComponents);
 
-	for (unsigned int y = 0; y <= ySegments; ++y) {
-		for (unsigned int x = 0; x <= xSegments; ++x) {
-			const auto xSegment = static_cast<float>(x) / static_cast<float>(ySegments);
-			const auto ySegment = static_cast<float>(y) / static_cast<float>(ySegments);
+	for (unsigned int y = 0; y <= segments.y; ++y) {
+		for (unsigned int x = 0; x <= segments.x; ++x) {
+			const auto xSegment = static_cast<float>(x) / static_cast<float>(segments.x);
+			const auto ySegment = static_cast<float>(y) / static_cast<float>(segments.y);
 			const auto xPos = std::cos(xSegment * glm::two_pi<float>()) * std::sin(ySegment * glm::pi<float>());
 			const auto yPos = std::cos(ySegment * glm::pi<float>());
 			const auto zPos = std::sin(xSegment * glm::two_pi<float>()) * std::sin(ySegment * glm::pi<float>());
@@ -244,22 +243,22 @@ MeshGeometry MeshGeometry::createSphere(float radius, const unsigned int xSegmen
 	}
 
 	auto oddRow = false;
-	for (unsigned int y = 0; y < ySegments; ++y) {
-		for (unsigned int x = 0; x < xSegments; ++x) {
-			result.indices.push_back((y + 1) * (xSegments + 1) + x);
-			result.indices.push_back(y       * (xSegments + 1) + x);
-			result.indices.push_back(y       * (xSegments + 1) + x + 1);
+	for (unsigned int y = 0; y < segments.y; ++y) {
+		for (unsigned int x = 0; x < segments.x; ++x) {
+			result.indices.push_back((y + 1) * (segments.x + 1) + x);
+			result.indices.push_back(y       * (segments.x + 1) + x);
+			result.indices.push_back(y       * (segments.x + 1) + x + 1);
 
-			result.indices.push_back((y + 1) * (xSegments + 1) + x);
-			result.indices.push_back(y       * (xSegments + 1) + x + 1);
-			result.indices.push_back((y + 1) * (xSegments + 1) + x + 1);
+			result.indices.push_back((y + 1) * (segments.x + 1) + x);
+			result.indices.push_back(y       * (segments.x + 1) + x + 1);
+			result.indices.push_back((y + 1) * (segments.x + 1) + x + 1);
 		}
 	}
 
 	return result;
 }
 
-MeshGeometry::MeshGeometry(const ComponentsMask vertexComponents, const GLenum topology) :
+ej::MeshGeometry::MeshGeometry(const ComponentsMask vertexComponents, const GLenum topology) :
 	vertexComponents(vertexComponents), topology(topology)
 {
 }

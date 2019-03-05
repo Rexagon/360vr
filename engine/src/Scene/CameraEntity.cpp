@@ -1,6 +1,6 @@
 #include "Scene/CameraEntity.h"
 
-ej::CameraEntity::CameraEntity(Camera::ptr camera) :
+ej::CameraEntity::CameraEntity(Camera* camera) :
 	m_camera(camera)
 {
 }
@@ -12,12 +12,12 @@ void ej::CameraEntity::synchronizeView()
 	}
 }
 
-void ej::CameraEntity::setCamera(Camera::ptr camera)
+void ej::CameraEntity::setCamera(Camera* camera)
 {
 	m_camera = camera;
 }
 
 ej::Camera* ej::CameraEntity::getCamera() const
 {
-	return m_camera.get();
+	return m_camera;
 }

@@ -3,6 +3,7 @@
 #include <Core/Core.h>
 #include <Managers/VRManager.h>
 #include <Managers/FileManager.h>
+#include <Managers/FontManager.h>
 #include <Managers/MeshManager.h>
 #include <Managers/SceneManager.h>
 #include <Managers/InputManager.h>
@@ -10,10 +11,12 @@
 #include <Managers/TextureManager.h>
 #include <Managers/RenderingManager.h>
 
-#include "Scene/MainScene.h"
+#include "Managers/UIManager.h"
 #include "Managers/VideoManager.h"
 
-class MyCore : public ej::Core	
+#include "Scene/MainScene.h"
+
+class MyCore final : public ej::Core	
 {
 public:
 	MyCore()
@@ -24,13 +27,17 @@ public:
 		provide<ej::RenderingManager>();
 		provide<ej::TextureManager>();
 		provide<ej::ShaderManager>();
+		provide<ej::FontManager>();
 		provide<ej::MeshManager>();
 
 		provide<ej::VRManager>();
 
 		provide<VideoManager>();
+		provide<UIManager>();
 
 		m_inputManager = provide<ej::InputManager>();
+		m_uiManager = provide<UIManager>();
+
 		m_sceneManager = provide<ej::SceneManager>(std::make_unique<MainScene>());
 	}
 
@@ -44,7 +51,7 @@ public:
 		m_inputManager->updateState();
 	}
 
-	void onUpdate(float dt) override
+	void onUpdate(const float dt) override
 	{
 		if (!m_sceneManager->hasScenes()) {
 			stop();
@@ -55,8 +62,10 @@ public:
 	}
 
 private:
-	std::shared_ptr<ej::SceneManager> m_sceneManager;
-	std::shared_ptr<ej::InputManager> m_inputManager;
+	ej::SceneManager* m_sceneManager;
+	UIManager* m_uiManager;
+
+	ej::InputManager* m_inputManager;
 };
 
 EJ_MAIN(MyCore);

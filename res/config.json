@@ -1,4 +1,8 @@
 {
-	"url": "http://192.240.127.34:1935/live/cs14.stream/playlist.m3u8",
-	"//url": "rtmp://rtuitlab.ru/stream/test"
+	"urls": {
+		"insta 360": "rtmp://rtuitlab.ru/stream/test"
+	},
+	"japan tv": "http://192.240.127.34:1935/live/cs14.stream/playlist.m3u8",
+	"insta 360": "rtmp://rtuitlab.ru/stream/test",
+	"strange": "http://192.240.127.34:1935/live/cs19.stream/playlist.m3u8"
 }

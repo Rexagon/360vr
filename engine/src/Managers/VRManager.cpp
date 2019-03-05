@@ -1,10 +1,6 @@
 #include "Managers/VRManager.h"
 
-#include <thread>
-
-using namespace ej;
-
-glm::mat4 toGLM(const vr::HmdMatrix34_t& mat)
+static glm::mat4 convert(const vr::HmdMatrix34_t& mat)
 {
 	return glm::mat4(
 		mat.m[0][0], mat.m[1][0], mat.m[2][0], 0.0f,
@@ -14,13 +10,12 @@ glm::mat4 toGLM(const vr::HmdMatrix34_t& mat)
 	);
 }
 
-VRManager::VRManager(const Core& core) :
-	BaseManager(core), m_system(nullptr), m_compositor(nullptr), m_renderModels(nullptr),
-	m_isHmdConnected(false), m_hmdDeviceIndex(-1), m_trackedDevicePoses(), m_trackedDeviceMatrices(), m_isInitialized(false) 
+ej::VRManager::VRManager(const Core& core) :
+	BaseManager(core)
 {
 }
 
-VRManager::~VRManager()
+ej::VRManager::~VRManager()
 {
 	if (!m_isInitialized)
 		return;
@@ -28,7 +23,7 @@ VRManager::~VRManager()
 	vr::VR_Shutdown();
 }
 
-void VRManager::connect()
+void ej::VRManager::init()
 {
 	// IVRSystem initialization
 	vr::HmdError error;
@@ -41,6 +36,7 @@ void VRManager::connect()
 	// IVRRenderModels initializations
 	vr::EVRInitError interfaceInitError;
 	m_renderModels = static_cast<vr::IVRRenderModels*>(VR_GetGenericInterface(vr::IVRRenderModels_Version, &interfaceInitError));
+
 	if (m_renderModels == nullptr) {
 		throw std::runtime_error("IVRRenderModels initialization error: " + std::to_string(interfaceInitError));
 	}
@@ -52,7 +48,7 @@ void VRManager::connect()
 	updateControllersInfo();
 }
 
-void VRManager::update()
+void ej::VRManager::update()
 {
 	if (!m_isInitialized) {
 		return;
@@ -60,35 +56,33 @@ void VRManager::update()
 
 	m_compositor->WaitGetPoses(&m_trackedDevicePoses[0], vr::k_unMaxTrackedDeviceCount, nullptr, 0);
 
-	vr::VREvent_t event;
+	vr::VREvent_t event{};
 	while (m_system->PollNextEvent(&event, sizeof(event))) {
 		processEvent(event);
 	}
 
-	float secondsSinceLastVsync;
-	m_system->GetTimeSinceLastVsync(&secondsSinceLastVsync, nullptr);
+	float secondsSinceLastVSync;
+	m_system->GetTimeSinceLastVsync(&secondsSinceLastVSync, nullptr);
 
 	const auto displayFrequency = m_system->GetFloatTrackedDeviceProperty(vr::k_unTrackedDeviceIndex_Hmd, vr::Prop_DisplayFrequency_Float);
 	const auto frameDuration = 1.f / displayFrequency;
-	const float vsyncToPhotons = m_system->GetFloatTrackedDeviceProperty(vr::k_unTrackedDeviceIndex_Hmd, vr::Prop_SecondsFromVsyncToPhotons_Float);
+	const auto vSyncToPhotons = m_system->GetFloatTrackedDeviceProperty(vr::k_unTrackedDeviceIndex_Hmd, vr::Prop_SecondsFromVsyncToPhotons_Float);
 
-	const float predictedSecondsFromNow = frameDuration * 2.0f - secondsSinceLastVsync + vsyncToPhotons;
+	const auto predictedSecondsFromNow = frameDuration * 2.0f - secondsSinceLastVSync + vSyncToPhotons;
 
 	//printf("%f\n", predictedSecondsFromNow);
 
 	m_system->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, predictedSecondsFromNow, &m_trackedDevicePoses[0], DEVICE_COUNT);
 
 	for (VRDeviceIndex i = 0; i < DEVICE_COUNT; ++i) {
-		vr::TrackedDevicePose_t& devicePose = m_trackedDevicePoses[i];
+		auto& devicePose = m_trackedDevicePoses[i];
 
 		switch (m_system->GetTrackedDeviceClass(i))
 		{
 		case vr::TrackedDeviceClass_HMD:
 		case vr::TrackedDeviceClass_Controller:
-		{
-			m_trackedDeviceMatrices[i] = toGLM(devicePose.mDeviceToAbsoluteTracking);
-		}
-		break;
+			m_trackedDeviceMatrices[i] = convert(devicePose.mDeviceToAbsoluteTracking);
+			break;
 
 		default:
 			break;
@@ -96,7 +90,7 @@ void VRManager::update()
 	}
 }
 
-size_t VRManager::getControllerCount() const
+size_t ej::VRManager::getControllerCount() const
 {
 	if (!m_isInitialized) {
 		return 0;
@@ -105,12 +99,12 @@ size_t VRManager::getControllerCount() const
 	return m_controllerDevicesIndices.size();
 }
 
-const std::vector<VRDeviceIndex>& VRManager::getControllerIndices() const
+const std::vector<ej::VRDeviceIndex>& ej::VRManager::getControllerIndices() const
 {
 	return m_controllerDevicesIndices;
 }
 
-glm::mat4 VRManager::getEyeProjectionMatrix(vr::EVREye eye, glm::vec2 range) const
+glm::mat4 ej::VRManager::getEyeProjectionMatrix(const vr::EVREye eye, const glm::vec2& range) const
 {
 	if (!m_isInitialized) {
 		return glm::mat4(1.0f);
@@ -126,18 +120,18 @@ glm::mat4 VRManager::getEyeProjectionMatrix(vr::EVREye eye, glm::vec2 range) con
 	);
 }
 
-glm::mat4 VRManager::getEyeToHeadTransform(vr::EVREye eye) const
+glm::mat4 ej::VRManager::getEyeToHeadTransform(const vr::EVREye eye) const
 {
 	if (!m_isInitialized) {
 		return glm::mat4(1.0f);
 	}
 
-	return toGLM(m_system->GetEyeToHeadTransform(eye));
+	return convert(m_system->GetEyeToHeadTransform(eye));
 }
 
-glm::vec3 VRManager::getDevicePosition(VRDeviceIndex device) const
+glm::vec3 ej::VRManager::getDevicePosition(const VRDeviceIndex device) const
 {
-	if (!m_isInitialized) {
+	if (!m_isInitialized || device >= DEVICE_COUNT) {
 		return glm::vec3();
 	}
 
@@ -149,9 +143,9 @@ glm::vec3 VRManager::getDevicePosition(VRDeviceIndex device) const
 	return result;
 }
 
-glm::quat VRManager::getDeviceRotation(VRDeviceIndex device) const
+glm::quat ej::VRManager::getDeviceRotation(const VRDeviceIndex device) const
 {
-	if (!m_isInitialized) {
+	if (!m_isInitialized || device >= DEVICE_COUNT) {
 		return glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 	}
 
@@ -170,27 +164,27 @@ glm::quat VRManager::getDeviceRotation(VRDeviceIndex device) const
 	return rotation;
 }
 
-glm::mat4 VRManager::getDeviceTransformation(VRDeviceIndex device) const
+glm::mat4 ej::VRManager::getDeviceTransformation(const VRDeviceIndex device) const
 {
-	if (!m_isInitialized) {
+	if (!m_isInitialized || device >= DEVICE_COUNT) {
 		return glm::mat4(1.0f);
 	}
 
 	return m_trackedDeviceMatrices[device];
 }
 
-vr::ETrackedControllerRole ej::VRManager::getControllerRole(VRDeviceIndex device)
+vr::ETrackedControllerRole ej::VRManager::getControllerRole(const VRDeviceIndex device) const
 {
-	if (!m_isInitialized) {
+	if (!m_isInitialized || device >= DEVICE_COUNT) {
 		return vr::ETrackedControllerRole::TrackedControllerRole_Invalid;
 	}
 
 	return m_system->GetControllerRoleForTrackedDeviceIndex(device);
 }
 
-std::string ej::VRManager::getDeviceRenderModelName(VRDeviceIndex device)
+std::string ej::VRManager::getDeviceRenderModelName(const VRDeviceIndex device) const
 {
-	if (!m_isInitialized) {
+	if (!m_isInitialized || device >= DEVICE_COUNT) {
 		return {};
 	}
 
@@ -207,7 +201,7 @@ std::string ej::VRManager::getDeviceRenderModelName(VRDeviceIndex device)
 	return result;
 }
 
-glm::vec3 VRManager::getHmdPosition() const
+glm::vec3 ej::VRManager::getHmdPosition() const
 {
 	if (!m_isHmdConnected) {
 		return glm::vec3();
@@ -216,7 +210,7 @@ glm::vec3 VRManager::getHmdPosition() const
 	return getDevicePosition(m_hmdDeviceIndex);
 }
 
-glm::quat VRManager::getHmdRotation() const
+glm::quat ej::VRManager::getHmdRotation() const
 {
 	if (!m_isHmdConnected) {
 		return glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
@@ -225,7 +219,7 @@ glm::quat VRManager::getHmdRotation() const
 	return getDeviceRotation(m_hmdDeviceIndex);
 }
 
-glm::mat4 VRManager::getHmdTransformation() const
+glm::mat4 ej::VRManager::getHmdTransformation() const
 {
 	if (!m_isHmdConnected) {
 		return glm::mat4(1.0f);
@@ -234,7 +228,7 @@ glm::mat4 VRManager::getHmdTransformation() const
 	return m_trackedDeviceMatrices[m_hmdDeviceIndex];
 }
 
-glm::uvec2 VRManager::getRenderTargetSize() const
+glm::uvec2 ej::VRManager::getRenderTargetSize() const
 {
 	if (!m_isInitialized) {
 		return glm::uvec2(0.0f, 0.0f);
@@ -245,32 +239,32 @@ glm::uvec2 VRManager::getRenderTargetSize() const
 	return glm::uvec2(width, height);
 }
 
-bool VRManager::isInitialized() const
+bool ej::VRManager::isInitialized() const
 {
 	return m_isInitialized;
 }
 
-bool VRManager::isHmdConnected() const
+bool ej::VRManager::isHmdConnected() const
 {
 	return m_isHmdConnected;
 }
 
-vr::IVRCompositor* VRManager::getCompositorInterface() const
+vr::IVRCompositor* ej::VRManager::getCompositorInterface() const
 {
 	return m_compositor;
 }
 
-vr::IVRRenderModels* VRManager::getRenderModelsInterface() const
+vr::IVRRenderModels* ej::VRManager::getRenderModelsInterface() const
 {
 	return m_renderModels;
 }
 
-bool VRManager::checkHmdPresent()
+bool ej::VRManager::checkHmdPresent()
 {
 	return vr::VR_IsHmdPresent();
 }
 
-void VRManager::processEvent(const vr::VREvent_t& event)
+void ej::VRManager::processEvent(const vr::VREvent_t& event)
 {
 	if (!m_isInitialized) {
 		return;
@@ -293,10 +287,13 @@ void VRManager::processEvent(const vr::VREvent_t& event)
 			m_currentButtonsState[event.trackedDeviceIndex].set(event.data.controller.button, false);
 		}
 		break;
+
+	default:
+		break;
 	}
 }
 
-void VRManager::updateControllersInfo()
+void ej::VRManager::updateControllersInfo()
 {
 	if (!m_isInitialized) {
 		return;
@@ -305,10 +302,8 @@ void VRManager::updateControllersInfo()
 	m_isHmdConnected = false;
 	m_controllerDevicesIndices.clear();
 
-	for (uint32_t i = 0; i < vr::k_unMaxTrackedDeviceCount; i++)
-	{
-		switch (vr::VRSystem()->GetTrackedDeviceClass(i))
-		{
+	for (uint32_t i = 0; i < vr::k_unMaxTrackedDeviceCount; i++) {
+		switch (vr::VRSystem()->GetTrackedDeviceClass(i)) {
 		case vr::TrackedDeviceClass_Controller:
 			m_controllerDevicesIndices.push_back(i);
 			printf("Controllers index: %d\n", i);

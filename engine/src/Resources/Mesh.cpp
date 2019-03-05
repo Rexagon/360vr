@@ -1,22 +1,38 @@
 #include "Resources/Mesh.h"
 
-using namespace ej;
-
-Mesh::Mesh()
+ej::Mesh::Mesh(const Core& core)
 {
-	glGenVertexArrays(1, &m_vao);
 }
 
-Mesh::~Mesh()
+ej::Mesh::~Mesh()
 {
+	if (!m_isInitialized) {
+		return;
+	}
+
 	glDeleteVertexArrays(1, &m_vao);
 	glDeleteBuffers(1, &m_vbo);
 	glDeleteBuffers(1, &m_ebo);
 }
 
-void Mesh::init(const MeshGeometry& geometry)
+void ej::Mesh::init(const MeshGeometry& geometry)
 {
 	if (m_isInitialized) return;
+
+	glGenVertexArrays(1, &m_vao);
+	glGenBuffers(1, &m_vbo);
+	glGenBuffers(1, &m_ebo);
+
+	m_isInitialized = true;
+
+	update(geometry);
+}
+
+void ej::Mesh::update(const MeshGeometry& geometry)
+{
+	if (!m_isInitialized) {
+		return;
+	}
 
 	// Calculating buffer layout
 	m_topology = geometry.topology;
@@ -65,7 +81,6 @@ void Mesh::init(const MeshGeometry& geometry)
 
 	glBindVertexArray(m_vao);
 
-	glGenBuffers(1, &m_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 
 	std::vector<char> data(bufferSize);
@@ -105,22 +120,19 @@ void Mesh::init(const MeshGeometry& geometry)
 
 		offset += bitangentsBufferSize;
 	}
-	
-	glBufferData(GL_ARRAY_BUFFER, bufferSize, data.data(), GL_STATIC_DRAW);
+
+	glBufferData(GL_ARRAY_BUFFER, bufferSize, data.data(), m_bufferUsage);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glGenBuffers(1, &m_ebo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * m_indexCount, &geometry.indices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * m_indexCount, &geometry.indices[0], m_bufferUsage);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
-
-	m_isInitialized = true;
 }
 
-void Mesh::draw() const
+void ej::Mesh::draw() const
 {
 	glBindVertexArray(m_vao);
 	for (unsigned int i = 0; i < m_attributeCount; ++i) {
@@ -137,22 +149,32 @@ void Mesh::draw() const
 	glBindVertexArray(0);
 }
 
-unsigned int Mesh::getIndexCount() const
+unsigned int ej::Mesh::getIndexCount() const
 {
 	return m_indexCount;
 }
 
-unsigned int Mesh::getVertexCount() const
+unsigned int ej::Mesh::getVertexCount() const
 {
 	return m_vertexCount;
 }
 
-unsigned int Mesh::getAttributeCount() const
+unsigned int ej::Mesh::getAttributeCount() const
 {
 	return m_attributeCount;
 }
 
-bool Mesh::isInitialized() const
+void ej::Mesh::setBufferUsage(const GLenum usage)
+{
+	m_bufferUsage = usage;
+}
+
+GLenum ej::Mesh::getBufferUsage() const
+{
+	return m_bufferUsage;
+}
+
+bool ej::Mesh::isInitialized() const
 {
 	return m_isInitialized;
 }

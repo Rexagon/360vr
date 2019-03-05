@@ -10,7 +10,9 @@
 # Test video
 *.mp4
 
+doc/html/
 build/
+html/
 temp/
 Debug/
 Thumbs.db

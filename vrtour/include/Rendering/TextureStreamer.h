@@ -2,20 +2,21 @@
 
 #include <GL/glew.h>
 
-#include <Core/PointerDefs.h>
 #include <Resources/Texture.h>
 
-#include "Video/Video.h"
+#include "Video/VideoStream.h"
 
-class TextureStreamer : public ej::PointerDefs<TextureStreamer>
+class TextureStreamer final
 {
 public:
 	TextureStreamer();
 	~TextureStreamer();
 
-	void write(ej::Texture* texture, Video* video);
+	void write(ej::Texture* texture, VideoStream* stream);
 
 private:
-	GLuint m_buffers[2];
-	size_t m_currentBufferIndex;
+	uint64_t m_decodingId{ 0 };
+
+	GLuint m_buffers[2]{ 0 };
+	size_t m_currentBufferIndex{ 0 };
 };

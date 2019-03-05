@@ -6,19 +6,19 @@
 
 namespace ej
 {
-	class MeshEntity : public Entity, public PointerDefs<MeshEntity>
+	class MeshEntity final : public Entity
 	{
 	public:
-		MeshEntity(Mesh::ptr mesh, std::shared_ptr<Material> material);
+		MeshEntity(Mesh* mesh, Material* material);
 
-		void setMesh(Mesh::ptr mesh);
+		void setMesh(Mesh* mesh);
 		Mesh* getMesh() const;
 
-		void setMaterial(std::shared_ptr<Material> material);
+		void setMaterial(Material* material);
 		Material* getMaterial() const;
 
 	private:
-		Mesh::ptr m_mesh;
-		std::shared_ptr<Material> m_material;
+		Mesh* m_mesh{ nullptr };
+		Material* m_material{ nullptr };
 	};
 }

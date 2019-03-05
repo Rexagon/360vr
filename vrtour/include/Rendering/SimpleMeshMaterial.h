@@ -5,14 +5,14 @@
 #include <Resources/Texture.h>
 #include <Resources/Material.h>
 
-class SimpleMeshMaterial : public ej::Material, public ej::PointerDefs<SimpleMeshMaterial>
+class SimpleMeshMaterial final : public ej::Material
 {
 public:
-	explicit SimpleMeshMaterial(const ej::Core& core, ej::Texture::ptr diffuseTexture = nullptr);
+	explicit SimpleMeshMaterial(const ej::Core& core, ej::Texture* diffuseTexture = nullptr);
 
 	void bind() override;
 
-	void setDiffuseTexture(ej::Texture::ptr texture);
+	void setDiffuseTexture(ej::Texture* texture);
 	ej::Texture* getDiffuseTexture() const;
 
 	void setTextureFlipped(bool horizontally, bool vertically = false);
@@ -26,8 +26,8 @@ public:
 	bool hasTexture() const;
 
 private:
-	ej::Texture::ptr m_diffuseTexture;
-	glm::ivec2 m_textureFlip;
+	ej::Texture* m_diffuseTexture{ nullptr };
+	glm::ivec2 m_textureFlip{0, 0};
 
 	glm::vec4 m_color{1.0f};
 };

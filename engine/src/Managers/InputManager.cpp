@@ -2,26 +2,24 @@
 
 #include "Core/Core.h"
 
-using namespace ej;
-
-bool details::isKeyValid(const Key key)
+bool ej::details::isKeyValid(const Key key)
 {
 	return key > Key::Unknown && key < Key::KeyCount;
 }
 
-bool details::isMouseButtonValid(const MouseButton button)
+bool ej::details::isMouseButtonValid(const MouseButton button)
 {
-	return button > -1 && button < MouseButton::ButtonCount;
+	return button < MouseButton::ButtonCount;
 }
 
 
-InputManager::InputManager(const Core& core) :
+ej::InputManager::InputManager(const Core& core) :
 	BaseManager(core)
 {
-	m_windowManager = core.get<ej::WindowManager>();
+	m_windowManager = core.get<WindowManager>();
 }
 
-void InputManager::updateState()
+void ej::InputManager::updateState()
 {
 	m_anyKeyUp = false;
 	m_anyKeyDown = false;
@@ -36,21 +34,19 @@ void InputManager::updateState()
 	m_mouseWheelDelta = 0.0f;
 }
 
-void InputManager::handleEvent(const sf::Event& event)
+void ej::InputManager::handleEvent(const sf::Event& event)
 {
 	switch (event.type)
 	{
 	case sf::Event::KeyPressed:
-		if (details::isKeyValid(event.key.code))
-		{
+		if (details::isKeyValid(event.key.code)) {
 			m_anyKeyDown = true;
 			m_currentKeysState.set(event.key.code);
 		}
 		break;
 
 	case sf::Event::KeyReleased:
-		if (details::isKeyValid(event.key.code))
-		{
+		if (details::isKeyValid(event.key.code)) {
 			m_anyKeyUp = true;
 			m_currentKeysState.reset(event.key.code);
 		}
@@ -83,72 +79,62 @@ void InputManager::handleEvent(const sf::Event& event)
 	}
 }
 
-bool InputManager::getKey(const Key key) const
+bool ej::InputManager::getKey(const Key key) const
 {
 	return details::isKeyValid(key) &&
 		m_currentKeysState.test(static_cast<size_t>(key));
 }
 
-bool InputManager::getKeyDown(const Key key) const
+bool ej::InputManager::getKeyDown(const Key key) const
 {
 	return details::isKeyValid(key) &&
 		!m_lastKeysState.test(key) &&
 		m_currentKeysState.test(key);
 }
 
-bool InputManager::getKeyUp(const Key key) const
+bool ej::InputManager::getKeyUp(const Key key) const
 {
 	return details::isKeyValid(key) &&
 		m_lastKeysState.test(key) &&
 		!m_currentKeysState.test(key);
 }
 
-bool InputManager::getAnyKey() const
+bool ej::InputManager::getAnyKey() const
 {
 	return m_currentKeysState.any();
 }
 
-bool InputManager::getAnyKeyDown() const
+bool ej::InputManager::getAnyKeyDown() const
 {
 	return m_anyKeyDown;
 }
 
-bool InputManager::getAnyKeyUp() const
+bool ej::InputManager::getAnyKeyUp() const
 {
 	return m_anyKeyUp;
 }
 
-bool InputManager::getMouseButton(const MouseButton button) const
+bool ej::InputManager::getMouseButton(const MouseButton button) const
 {
 	return details::isMouseButtonValid(button) &&
 		m_currentMouseButtonsState.test(button);
 }
 
-bool InputManager::getMouseButtonDown(const MouseButton button) const
+bool ej::InputManager::getMouseButtonDown(const MouseButton button) const
 {
 	return details::isMouseButtonValid(button) &&
 		!m_lastMouseButtonsState.test(button) &&
 		m_currentMouseButtonsState.test(button);
 }
 
-bool InputManager::getMouseButtonUp(const MouseButton button) const
+bool ej::InputManager::getMouseButtonUp(const MouseButton button) const
 {
 	return details::isMouseButtonValid(button) &&
 		m_lastMouseButtonsState.test(button) &&
 		!m_currentMouseButtonsState.test(button);
 }
 
-float InputManager::getAxis(const std::string& name)
-{
-	const auto it = m_axes.find(name);
-	if (it == m_axes.end() || it->second == nullptr) {
-		return 0.0f;
-	}
-
-	return it->second->getValue();
-}
-
-void ej::InputManager::setMouseCursorVisible(bool visible)
+void ej::InputManager::setMouseCursorVisible(const bool visible)
 {
 	m_windowManager->getWindow().setMouseCursorVisible(visible);
 }

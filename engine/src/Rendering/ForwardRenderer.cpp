@@ -14,6 +14,12 @@ void ej::ForwardRenderer::draw()
 		return;
 	}
 
+	auto state = m_renderingManager->getState();
+
+	state->setDepthTestEnabled(true);
+	state->setFaceCullingEnabled(true);
+	state->setBlendingEnabled(false);
+
 	const auto& camera = m_cameraEntity->getCamera();
 	const auto& cameraTransform = m_cameraEntity->getTransform();
 
@@ -29,12 +35,12 @@ void ej::ForwardRenderer::draw()
 		entity->getMaterial()->bind();
 
 		auto shader = entity->getMaterial()->getShader();
-		m_renderingManager->getState()->setCurrentShader(shader);
+		state->setCurrentShader(shader);
 
 		shader->setUniform("uCameraViewMatrix", camera->getViewMatrix());
 		shader->setUniform("uCameraProjectionMatrix", camera->getProjectionMatrix());
 		shader->setUniform("uCameraViewProjectionMatrix", camera->getViewProjectionMatrix());
-		shader->setUniform("uCameraRotationMatrix", cameraTransform.getRotationMatrixInverse());
+		shader->setUniform("uCameraRotationMatrix", cameraTransform.getGlobalRotationMatrixInverse());
 		shader->setUniform("uCameraPosition", cameraTransform.getGlobalPosition());
 
 		shader->setUniform("uMeshTransformation", meshTransform.getGlobalTransformationMatrix());
@@ -46,12 +52,12 @@ void ej::ForwardRenderer::draw()
 	m_entities.clear();
 }
 
-void ej::ForwardRenderer::setCameraEntity(CameraEntity::ptr entity)
+void ej::ForwardRenderer::setCameraEntity(CameraEntity* entity)
 {
 	m_cameraEntity = entity;
 }
 
 ej::CameraEntity* ej::ForwardRenderer::getCameraEntity() const
 {
-	return m_cameraEntity.get();
+	return m_cameraEntity;
 }

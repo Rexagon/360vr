@@ -19,3 +19,8 @@ ej::Transform& ej::Entity::getTransform()
 {
 	return m_transform;
 }
+
+const ej::Transform& ej::Entity::getTransform() const
+{
+	return m_transform;
+}

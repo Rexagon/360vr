@@ -1,88 +1,60 @@
 #pragma once
 
-#include <list>
 #include <mutex>
 #include <string>
 
-#include <glm/vec2.hpp>
-#include <SFML/System/Clock.hpp>
-
 extern "C" {
 #include <libavcodec/avcodec.h>
-#include <libswscale/swscale.h>
 #include <libavformat/avformat.h>
-#include <libswresample/swresample.h>
 }
 
-#include <Core/PointerDefs.h>
-
+#include "VideoState.h"
 #include "AudioStream.h"
+#include "VideoStream.h"
+#include "Managers/VideoManager.h"
 
-class Video : public ej::PointerDefs<Video>
+class Video final
 {
 public:
-	explicit Video(const std::string& file);
+	explicit Video(const ej::Core& core, const std::string& file);
 	~Video();
 
 	void init();
 
-	void receive();
-	bool shouldReceive() const;
-	void flush() const;
+	VideoStream* getVideoStream() const;
+	AudioStream* getAudioStream() const;
 
-	void decodeVideo();
-	void decodeAudio();
-
-	glm::vec2 getSize() const;
-	bool hasVideoData() const;
-
-	bool writeVideoData(uint8_t* destination, size_t size);
-	bool writeAudioData(const int16_t** destination, size_t& size);
+	bool isInitialized() const;
 
 private:
-	void initVideoStream();
-	void initAudioStream();
+	/**
+	 * \brief Connection timeout in milliseconds
+	 */
+	static const int32_t CONNECTION_TIMEOUT = 10000;
 
-	bool m_isInitialized;
+	void initializationTask();
+	void receivingTask();
+	void decodingTask();
+
+	void receive();
+
+	void clear();
+
+	static int connectionCallback(void* data);
+	static int interruptionCallback(void* data);
+
+	VideoManager* m_videoManager{nullptr};
+
 	std::string m_file;
 
-	sf::Clock m_videoTimer;
-	double m_currentVideoTime;
-	bool m_videoStarted = false;
+	std::mutex m_receiverMutex;
+	AVFormatContext* m_formatContext = nullptr;
+	AVPacket m_packet{};
 
-	double m_lastAudioDts;
-	double m_lastAudioDelay;
-	bool m_audioStarted = false;
+	std::unique_ptr<VideoStream> m_videoStream;
+	std::unique_ptr<AudioStream> m_audioStream;
 
-	glm::vec2 m_size;
+	VideoState m_state;
 
-	AVFormatContext* m_formatContext;
-	AVPacket m_packet;
-
-	AVCodec* m_videoDecoder;
-	AVCodecContext* m_videoDecoderContext;
-	SwsContext* m_swsContext;
-
-	AVCodec* m_audioDecoder;
-	AVCodecContext* m_audioDecoderContext;
-	SwrContext* m_swrContext;
-
-	AVStream* m_videoStream;
-	AVStream* m_audioStream;
-
-	std::mutex m_videoBufferMutex;
-	bool m_hasVideoData;
-	AVFrame* m_videoBuffer;
-	uint8_t* m_videoBufferFrameData;
-
-	bool m_hasAudioData;
-	std::vector<uint8_t> m_audioBuffer;
-
-	std::mutex m_videoQueueMutex;
-	std::list<AVFrame*> m_videoQueue;
-
-	std::mutex m_audioQueueMutex;
-	std::list<AVFrame*> m_audioQueue;
-
-	AudioStream m_soundStream;
+	bool m_isInitialized = false;
 };

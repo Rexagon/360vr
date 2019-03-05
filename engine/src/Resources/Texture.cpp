@@ -1,26 +1,26 @@
 #include "Resources/Texture.h"
 
-using namespace ej;
+#include "Managers/RenderingManager.h"
 
-Texture::Texture(GLenum target) :
-	m_target(target), m_internalFormat(GL_RGBA), m_format(GL_RGBA), m_type(GL_UNSIGNED_BYTE),
-	m_minFilter(GL_LINEAR), m_maxFilter(GL_LINEAR),
-	m_wrapS(GL_REPEAT), m_wrapT(GL_REPEAT), m_wrapR(GL_REPEAT),
-	m_initialized(false), m_id(0)
+ej::Texture::Texture(const Core& core, const GLenum target) :
+	m_target(target)
 {
-
+	m_renderingState = core.get<RenderingManager>()->getState();
 }
 
-Texture::~Texture()
+ej::Texture::~Texture()
 {
 	if (m_initialized) {
 		glDeleteTextures(1, &m_id);
 	}
 }
 
-bool Texture::init(unsigned int width, GLenum internalFormat, GLenum format, GLenum type, const void * data)
+bool ej::Texture::init(const unsigned int width, const GLenum internalFormat, 
+	const GLenum format, const GLenum type, const void * data)
 {
-	if (m_initialized || m_target != GL_TEXTURE_1D || width == 0) {
+	if (m_initialized || m_renderingState == nullptr || 
+		m_target != GL_TEXTURE_1D || width == 0) 
+	{
 		return false;
 	}
 
@@ -31,59 +31,72 @@ bool Texture::init(unsigned int width, GLenum internalFormat, GLenum format, GLe
 	m_format = format;
 	m_type = type;
 
-	glBindTexture(m_target, m_id);
+	m_renderingState->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 
-	glTexImage1D(m_target, 0, internalFormat, width, 0, format, type, data);
+	glTexImage1D(m_target, 0, internalFormat, static_cast<GLsizei>(width), 
+		0, format, type, data);
+
 	glTexParameteri(m_target, GL_TEXTURE_MIN_FILTER, m_minFilter);
 	glTexParameteri(m_target, GL_TEXTURE_MAG_FILTER, m_maxFilter);
 	glTexParameteri(m_target, GL_TEXTURE_WRAP_S, m_wrapS);
-	glBindTexture(m_target, 0);
 
 	m_initialized = true;
 	return true;
 }
 
-bool Texture::init(unsigned int width, unsigned int height, GLenum internalFormat, GLenum format, GLenum type, const void * data)
+bool ej::Texture::init(const unsigned int width, const unsigned int height, 
+	const GLenum internalFormat, const GLenum format, const GLenum type,
+	const void * data)
 {
-	if (m_initialized || m_target != GL_TEXTURE_2D || width == 0 || height == 0) {
+	if (m_initialized || m_renderingState == nullptr || 
+		m_target != GL_TEXTURE_2D || width == 0 || height == 0) 
+	{
 		return false;
 	}
 
 	glGenTextures(1, &m_id);
 
-	m_size = glm::ivec3(width, height, 0);
+	m_size = glm::uvec3(width, height, 0);
 	m_internalFormat = internalFormat;
 	m_format = format;
 	m_type = type;
 
-	glBindTexture(m_target, m_id);
+	m_renderingState->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 
-	glTexImage2D(m_target, 0, internalFormat, width, height, 0, format, type, data);
+	glTexImage2D(m_target, 0, internalFormat, static_cast<GLsizei>(width), 
+		static_cast<GLsizei>(height), 0, format, type, data);
+
 	glTexParameteri(m_target, GL_TEXTURE_MIN_FILTER, m_minFilter);
 	glTexParameteri(m_target, GL_TEXTURE_MAG_FILTER, m_maxFilter);
 	glTexParameteri(m_target, GL_TEXTURE_WRAP_S, m_wrapS);
 	glTexParameteri(m_target, GL_TEXTURE_WRAP_T, m_wrapT);
-	glBindTexture(m_target, 0);
 
 	m_initialized = true;
 	return true;
 }
 
-bool Texture::init(unsigned int width, unsigned int height, unsigned int depth, GLenum internalFormat, GLenum format, GLenum type, const void * data)
+bool ej::Texture::init(unsigned int width, unsigned int height, unsigned int depth, 
+	GLenum internalFormat, GLenum format, GLenum type, const void * data)
 {
-	if (m_initialized || m_target != GL_TEXTURE_3D || width == 0 || height == 0 || depth == 0) {
+	if (m_initialized || m_renderingState == nullptr || 
+		m_target != GL_TEXTURE_3D || width == 0 || height == 0 || depth == 0) 
+	{
 		return false;
 	}
 
 	glGenTextures(1, &m_id);
 
-	m_size = glm::ivec3(width, height, depth);
+	m_size = glm::uvec3(width, height, depth);
 	m_internalFormat = internalFormat;
 	m_format = format;
 	m_type = type;
 
-	glBindTexture(m_target, m_id);
-	glTexImage3D(m_target, 0, internalFormat, width, height, depth, 0, format, type, data);
+	m_renderingState->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
+
+	glTexImage3D(m_target, 0, internalFormat, static_cast<GLsizei>(width), 
+		static_cast<GLsizei>(height), static_cast<GLsizei>(depth), 
+		0, format, type, data);
+
 	glTexParameteri(m_target, GL_TEXTURE_MIN_FILTER, m_minFilter);
 	glTexParameteri(m_target, GL_TEXTURE_MAG_FILTER, m_maxFilter);
 	glTexParameteri(m_target, GL_TEXTURE_WRAP_S, m_wrapS);
@@ -94,94 +107,134 @@ bool Texture::init(unsigned int width, unsigned int height, unsigned int depth, 
 	return true;
 }
 
-void Texture::resize(unsigned int width, unsigned int height, unsigned int depth)
+void ej::Texture::resize(const unsigned int width, const unsigned int height, 
+	const unsigned int depth)
 {
 	if (!m_initialized) return;
 
-	glBindTexture(m_target, m_id);
+	m_renderingState->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 
 	switch (m_target) {
-	case GL_TEXTURE_1D:
-		if (width == 0) return;
-		m_size.x = width;
-		glTexImage1D(GL_TEXTURE_1D, 0, m_internalFormat, width, 0, m_format, m_type, nullptr);
-		break;
+		case GL_TEXTURE_1D:
+			if (width == 0) return;
+			m_size.x = width;
+			glTexImage1D(GL_TEXTURE_1D, 0, m_internalFormat, 
+				width, 0, m_format, m_type, nullptr);
+			break;
 
-	case GL_TEXTURE_2D:
-		if (width == 0 || height == 0) return;
-		m_size.x = width;
-		m_size.y = height;
-		glTexImage2D(GL_TEXTURE_2D, 0, m_internalFormat, width, height, 0, m_format, m_type, nullptr);
-		break;
+		case GL_TEXTURE_2D:
+			if (width == 0 || height == 0) return;
+			m_size.x = width;
+			m_size.y = height;
+			glTexImage2D(GL_TEXTURE_2D, 0, m_internalFormat, 
+				width, height, 0, m_format, m_type, nullptr);
+			break;
 
-	case GL_TEXTURE_3D:
-		if (width == 0 || height == 0 || depth == 0) return;
-		m_size.x = width;
-		m_size.y = height;
-		m_size.z = height;
-		glTexImage3D(GL_TEXTURE_3D, 0, m_internalFormat, width, height, depth, 0, m_format, m_type, nullptr);
-		break;
+		case GL_TEXTURE_3D:
+			if (width == 0 || height == 0 || depth == 0) return;
+			m_size.x = width;
+			m_size.y = height;
+			m_size.z = height;
+			glTexImage3D(GL_TEXTURE_3D, 0, m_internalFormat, 
+				width, height, depth, 0, m_format, m_type, nullptr);
+			break;
+
+		default:
+			break;
 	}
 }
 
-void Texture::setFilters(GLenum minFilter, GLenum maxFilter, bool bind)
+void ej::Texture::setFilters(const GLenum minFilter, const GLenum maxFilter)
 {
-	if (!m_initialized && bind || m_minFilter == minFilter && m_maxFilter == maxFilter) return;
+	if (m_minFilter == minFilter && m_maxFilter == maxFilter)  {
+		return;
+	}
 
 	m_minFilter = minFilter;
 	m_maxFilter = maxFilter;
 
-	if (bind) {
-		glBindTexture(m_target, m_id);
+	if (m_initialized) {
+		m_renderingState->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 
-		glTexParameteri(m_target, GL_TEXTURE_MIN_FILTER, minFilter);
-		glTexParameteri(m_target, GL_TEXTURE_MAG_FILTER, maxFilter);
-	}
-}
+		if (m_minFilter != minFilter) {
+			glTexParameteri(m_target, GL_TEXTURE_MIN_FILTER, minFilter);
+		}
 
-void Texture::setWrapMode(GLenum wrapMode, bool bind)
-{
-	if (!m_initialized && bind) return;
-
-	m_wrapR = wrapMode;
-	m_wrapT = wrapMode;
-	m_wrapS = wrapMode;
-
-	if (bind) {
-		glBindTexture(m_target, m_id);
-
-		switch (m_target) {
-		case GL_TEXTURE_3D:
-			glTexParameteri(m_target, GL_TEXTURE_WRAP_R, wrapMode);
-
-		case GL_TEXTURE_2D:
-			glTexParameteri(m_target, GL_TEXTURE_WRAP_T, wrapMode);
-
-		case GL_TEXTURE_1D:
-			glTexParameteri(m_target, GL_TEXTURE_WRAP_S, wrapMode);
+		if (m_maxFilter != maxFilter) {
+			glTexParameteri(m_target, GL_TEXTURE_MAG_FILTER, maxFilter);
 		}
 	}
 }
 
-void Texture::generateMipmap() const
+void ej::Texture::setWrapMode(const GLenum wrapMode)
 {
-	if (!m_initialized) return;
+	switch (m_target) {
+		case GL_TEXTURE_3D:
+			setWrapMode(wrapMode, 2);
+		case GL_TEXTURE_2D:
+			setWrapMode(wrapMode, 1);
+		case GL_TEXTURE_1D:
+			setWrapMode(wrapMode, 0);
+		default:
+			break;
+	}
+}
 
-	glBindTexture(m_target, m_id);
+void ej::Texture::setWrapMode(const GLenum wrapMode, const size_t component)
+{
+	GLenum wrapComponent = 0;
+	GLenum* wrapVariable = nullptr;
+	switch (component) {
+		case 0:
+			wrapVariable = &m_wrapS;
+			wrapComponent = GL_TEXTURE_WRAP_S;
+			break;
+
+		case 1:
+			wrapVariable = &m_wrapT;
+			wrapComponent = GL_TEXTURE_WRAP_T;
+			break;
+
+		case 2:
+			wrapVariable = &m_wrapR;
+			wrapComponent = GL_TEXTURE_WRAP_R;
+			break;
+
+		default:
+			return;
+	}
+
+	if (*wrapVariable != wrapMode) {
+		*wrapVariable = wrapMode;
+
+		if (m_initialized) {
+			m_renderingState->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
+			glTexParameteri(m_target, wrapComponent, wrapMode);
+		}
+	}
+}
+
+void ej::Texture::generateMipmap() const
+{
+	if (!m_initialized) {
+		return;
+	}
+
+	m_renderingState->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 	glGenerateMipmap(m_target);
 }
 
-GLuint Texture::getHandle() const
+GLuint ej::Texture::getHandle() const
 {
 	return m_id;
 }
 
-GLenum Texture::getTarget() const
+GLenum ej::Texture::getTarget() const
 {
 	return m_target;
 }
 
-glm::ivec3 Texture::getSize() const
+glm::uvec3 ej::Texture::getSize() const
 {
 	return m_size;
 }

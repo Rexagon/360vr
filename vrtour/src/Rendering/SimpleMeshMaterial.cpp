@@ -2,7 +2,7 @@
 
 #include <Managers/RenderingManager.h>
 
-SimpleMeshMaterial::SimpleMeshMaterial(const ej::Core& core, ej::Texture::ptr diffuseTexture) :
+SimpleMeshMaterial::SimpleMeshMaterial(const ej::Core& core, ej::Texture* diffuseTexture) :
 	Material(core), m_diffuseTexture(diffuseTexture)
 {
 	const std::string shaderName = "simple";
@@ -18,7 +18,7 @@ SimpleMeshMaterial::SimpleMeshMaterial(const ej::Core& core, ej::Texture::ptr di
 	m_shader->setAttribute(1, "vTexCoords");
 	m_shader->setAttribute(2, "vNormal");
 
-	m_renderingManager->getState()->setCurrentShader(m_shader.get());
+	m_renderingManager->getState()->setCurrentShader(m_shader);
 	m_shader->setUniform("uDiffuseTexture", 0);
 }
 
@@ -27,23 +27,23 @@ void SimpleMeshMaterial::bind()
 	auto state = m_renderingManager->getState();
 
 	state->setFaceCullingSide(GL_BACK);
-	state->bindTexture(m_diffuseTexture.get(), 0);
+	state->bindTexture(m_diffuseTexture, 0);
 
-	state->setCurrentShader(m_shader.get());
+	state->setCurrentShader(m_shader);
 
 	m_shader->setUniform("uColor", m_color);
 	m_shader->setUniform("uTextureFlip", m_textureFlip);
 	m_shader->setUniform("uHasTexture", static_cast<int>(m_diffuseTexture != nullptr));
 }
 
-void SimpleMeshMaterial::setDiffuseTexture(ej::Texture::ptr texture)
+void SimpleMeshMaterial::setDiffuseTexture(ej::Texture* texture)
 {
 	m_diffuseTexture = texture;
 }
 
 ej::Texture* SimpleMeshMaterial::getDiffuseTexture() const
 {
-	return m_diffuseTexture.get();
+	return m_diffuseTexture;
 }
 
 void SimpleMeshMaterial::setTextureFlipped(bool horizontally, bool vertically)

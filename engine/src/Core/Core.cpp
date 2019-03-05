@@ -2,14 +2,7 @@
 
 #include "Managers/WindowManager.h"
 
-using namespace ej;
-
-Core::Core() :
-	m_isRunning(false)
-{	
-}
-
-void Core::run()
+void ej::Core::run()
 {
 	if (m_isRunning) {
 		return;
@@ -48,7 +41,7 @@ void Core::run()
 	}
 }
 
-void Core::stop()
+void ej::Core::stop()
 {
 	m_isRunning = false;
 }

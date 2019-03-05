@@ -16,6 +16,7 @@ namespace ej
 
 		void setTransform(const Transform& transform);
 		Transform& getTransform();
+		const Transform& getTransform() const;
 
 	protected:
 		Entity() = default;

@@ -7,7 +7,7 @@
 #include <Managers/ShaderManager.h>
 
 SteamVRObject::SteamVRObject(const ej::Core& core, const std::string & name) :
-	m_isInitialized(false), m_name(name), m_renderModel(nullptr), m_iVRRenderModels(nullptr)
+	m_name(name)
 {
 	m_meshManager = core.get<ej::MeshManager>();
 	m_renderingManager = core.get<ej::RenderingManager>();
@@ -22,9 +22,9 @@ SteamVRObject::~SteamVRObject()
 	}
 }
 
-ej::MeshEntity::ptr SteamVRObject::getMeshEntity() const
+ej::MeshEntity* SteamVRObject::getMeshEntity()
 {
-	return m_meshEntity;
+	return &m_meshEntity;
 }
 
 void SteamVRObject::tryLoad()
@@ -74,12 +74,12 @@ void SteamVRObject::tryLoad()
 
 		mesh = m_meshManager->bind(m_name, [meshGeometry = std::move(meshGeometry)]() {
 			return meshGeometry;
-		})->get(m_name);
+		}).get(m_name);
 
 		printf("Loaded SteamVR object: %s\n", m_name.data());
 	}
 
-	m_meshEntity->setMesh(mesh);
+	m_meshEntity.setMesh(mesh);
 
 	m_isInitialized = true;
 }
