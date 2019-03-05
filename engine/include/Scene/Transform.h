@@ -3,11 +3,9 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-#include "Core/PointerDefs.h"
-
 namespace ej 
 {
-	class Transform final : public PointerDefs<Transform>
+	class Transform final
 	{
 	public:
 		explicit Transform(Transform* parent = nullptr);
@@ -64,7 +62,7 @@ namespace ej
 		void updateRotation() const;
 		void updateScale() const;
 
-		Transform* m_parent = nullptr;
+		Transform* m_parent{ nullptr };
 
 		glm::vec3 m_position{0.0f};
 		glm::quat m_rotation{1.0f, 0.0f, 0.0f, 0.0f};
@@ -85,10 +83,10 @@ namespace ej
 		mutable glm::mat4 m_scaleMatrix{1.0f};
 		mutable glm::mat4 m_scaleMatrixInverse{1.0f};
 
-		mutable bool m_positionChanged = true;
-		mutable bool m_rotationChanged = true;
-		mutable bool m_scaleChanged = true;
+		mutable bool m_positionChanged{ true };
+		mutable bool m_rotationChanged{ true };
+		mutable bool m_scaleChanged{ true };
 
-		mutable bool m_transformationChanged = true;
+		mutable bool m_transformationChanged{ true };
 	};
 }

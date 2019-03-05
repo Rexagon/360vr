@@ -134,16 +134,6 @@ bool ej::InputManager::getMouseButtonUp(const MouseButton button) const
 		!m_currentMouseButtonsState.test(button);
 }
 
-float ej::InputManager::getAxis(const std::string& name)
-{
-	const auto it = m_axes.find(name);
-	if (it == m_axes.end() || it->second == nullptr) {
-		return 0.0f;
-	}
-
-	return it->second->getValue();
-}
-
 void ej::InputManager::setMouseCursorVisible(const bool visible)
 {
 	m_windowManager->getWindow().setMouseCursorVisible(visible);

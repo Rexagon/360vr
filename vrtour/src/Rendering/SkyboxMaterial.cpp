@@ -2,7 +2,7 @@
 
 #include <Managers/RenderingManager.h>
 
-SkyboxMaterial::SkyboxMaterial(const ej::Core& core) :
+SkyBoxMaterial::SkyBoxMaterial(const ej::Core& core) :
 	Material(core)
 {
 	const std::string shaderName = "skybox";
@@ -16,28 +16,28 @@ SkyboxMaterial::SkyboxMaterial(const ej::Core& core) :
 
 	m_shader->setAttribute(0, "vPosition");
 
-	m_renderingManager->getState()->setCurrentShader(m_shader.get());
+	m_renderingManager->getState()->setCurrentShader(m_shader);
 	m_shader->setUniform("uSkyTexture", 2);
 }
 
-void SkyboxMaterial::bind()
+void SkyBoxMaterial::bind()
 {
 	auto state = m_renderingManager->getState();
 
 	state->setFaceCullingSide(GL_FRONT);
-	state->bindTexture(m_skyTexture.get(), 2);
+	state->bindTexture(m_skyTexture, 2);
 
-	state->setCurrentShader(m_shader.get());
+	state->setCurrentShader(m_shader);
 
 	m_shader->setUniform("uHasTexture", static_cast<int>(m_skyTexture != nullptr));
 }
 
-void SkyboxMaterial::setSkyTexture(ej::Texture::ptr texture)
+void SkyBoxMaterial::setSkyTexture(ej::Texture* texture)
 {
 	m_skyTexture = texture;
 }
 
-ej::Texture* SkyboxMaterial::getTexture() const
+ej::Texture* SkyBoxMaterial::getSkyTexture() const
 {
-	return m_skyTexture.get();
+	return m_skyTexture;
 }

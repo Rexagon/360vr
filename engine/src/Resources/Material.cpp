@@ -10,5 +10,5 @@ ej::Material::Material(const Core& core)
 
 ej::Shader* ej::Material::getShader() const
 {
-	return m_shader.get();
+	return m_shader;
 }

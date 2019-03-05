@@ -123,7 +123,7 @@ void VideoStream::receive(AVPacket* packet)
 		throw std::runtime_error("Unable to send video packet for decoding");
 	}
 
-	AVFrame* frame = av_frame_alloc();
+	auto* frame = av_frame_alloc();
 
 	if (avcodec_receive_frame(m_decoderContext, frame) < 0) {
 		av_frame_free(&frame);
@@ -144,7 +144,7 @@ void VideoStream::decode()
 		return;
 	}
 
-	AVFrame* frame = m_frameQueue.front();
+	auto* frame = m_frameQueue.front();
 
 	if (frame == nullptr) {
 		return;

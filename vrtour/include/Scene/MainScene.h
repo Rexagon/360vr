@@ -3,12 +3,14 @@
 #include <memory>
 
 #include <Scene/MeshEntity.h>
+#include <Managers/VRManager.h>
 #include <Managers/InputManager.h>
 #include <Managers/SceneManager.h>
 #include <Managers/WindowManager.h>
 #include <Managers/RenderingManager.h>
 
 #include "Video/Video.h"
+#include "Scene/HeadSet.h"
 #include "Scene/DebugCamera.h"
 #include "Rendering/TextureStreamer.h"
 
@@ -16,13 +18,13 @@ class MainScene : public ej::Scene
 {
 	struct VideoData
 	{
-		VideoData(Video::ptr video, ej::Texture* target, TextureStreamer::ptr streamer) :
-			video(video), target(target), streamer(streamer)
+		VideoData(std::unique_ptr<Video> video, ej::Texture* target, std::unique_ptr<TextureStreamer> streamer) :
+			video(std::move(video)), target(target), streamer(std::move(streamer))
 		{}
 
-		Video::ptr video;
+		std::unique_ptr<Video> video;
 		ej::Texture* target;
-		TextureStreamer::ptr streamer;
+		std::unique_ptr<TextureStreamer> streamer;
 	};
 
 public:
@@ -37,13 +39,15 @@ private:
 	ej::Texture* createSkyBox();
 	void createCamera();
 
-	ej::InputManager::ptr m_inputManager;
-	ej::WindowManager::ptr m_windowManager;
-	ej::RenderingManager::ptr m_renderingManager;
+	ej::VRManager* m_vrManager{ nullptr };
+	ej::InputManager* m_inputManager{ nullptr };
+	ej::WindowManager* m_windowManager{ nullptr };
+	ej::RenderingManager* m_renderingManager{ nullptr };
 
 	std::vector<VideoData> m_videos;
-	
-	std::vector<ej::MeshEntity::ptr> m_meshes;
 
+	std::vector<std::pair<ej::MeshEntity, std::unique_ptr<ej::Material>>> m_entities;
+
+	std::unique_ptr<HeadSet> m_headSet;
 	std::unique_ptr<DebugCamera> m_debugCamera;
 };

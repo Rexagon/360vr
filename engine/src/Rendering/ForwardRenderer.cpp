@@ -52,12 +52,12 @@ void ej::ForwardRenderer::draw()
 	m_entities.clear();
 }
 
-void ej::ForwardRenderer::setCameraEntity(CameraEntity::ptr entity)
+void ej::ForwardRenderer::setCameraEntity(CameraEntity* entity)
 {
 	m_cameraEntity = entity;
 }
 
 ej::CameraEntity* ej::ForwardRenderer::getCameraEntity() const
 {
-	return m_cameraEntity.get();
+	return m_cameraEntity;
 }

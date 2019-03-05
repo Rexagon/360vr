@@ -11,26 +11,19 @@ ej::ShaderManager::ShaderManager(const Core & core) :
 ej::ShaderManager* ej::ShaderManager::bind(const std::string & name, const ShaderSource & vertexShaderSource,
 	const ShaderSource & fragmentShaderSource, const ShaderSource & geometryShaderSource)
 {
-	m_factoryData.emplace(name, FactoryData(name, vertexShaderSource, geometryShaderSource, fragmentShaderSource));
+	m_factoryData.emplace(name, 
+		details::ShaderFactoryData{ 
+			name, 
+			vertexShaderSource, 
+			geometryShaderSource, 
+			fragmentShaderSource 
+		}
+	);
 
 	return this;
 }
 
-std::shared_ptr<ej::Shader> ej::ShaderManager::get(const std::string & name)
-{
-	auto result = find(name);
-	if (result == nullptr) {
-		const auto it = m_factoryData.find(name);
-		if (it != m_factoryData.end()) {
-			result = load(it->second);
-			insert(name, result);
-		}
-	}
-
-	return result;
-}
-
-std::shared_ptr<ej::Shader> ej::ShaderManager::load(const FactoryData & factoryData) const
+std::unique_ptr<ej::Shader> ej::ShaderManager::load(const FactoryDataType& factoryData)
 {
 	auto shader = std::make_unique<Shader>(m_core);
 

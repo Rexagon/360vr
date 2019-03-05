@@ -20,7 +20,7 @@ namespace ej
 	/**
 	 * \brief Give access to SteamVR API
 	 */
-	class VRManager final : public BaseManager, public PointerDefs<VRManager>
+	class VRManager final : public BaseManager
 	{
 	public:
 		/**
@@ -178,17 +178,17 @@ namespace ej
 		void processEvent(const vr::VREvent_t & event);
 		void updateControllersInfo();
 
-		vr::IVRSystem* m_system = nullptr;
-		vr::IVRCompositor* m_compositor = nullptr;
-		vr::IVRRenderModels* m_renderModels = nullptr;
+		vr::IVRSystem* m_system{ nullptr };
+		vr::IVRCompositor* m_compositor{ nullptr };
+		vr::IVRRenderModels* m_renderModels{ nullptr };
 
-		bool m_isInitialized = false;
-		bool m_isHmdConnected = false;
+		bool m_isInitialized{ false };
+		bool m_isHmdConnected{ false };
 		VRDeviceIndex m_hmdDeviceIndex = -1;
 		std::vector<VRDeviceIndex> m_controllerDevicesIndices;
 
-		std::array<std::bitset<vr::k_EButton_Max>, DEVICE_COUNT> m_currentButtonsState;
-		std::array<std::bitset<vr::k_EButton_Max>, DEVICE_COUNT> m_lastButtonsState;
+		std::array<std::bitset<vr::k_EButton_Max>, DEVICE_COUNT> m_currentButtonsState{};
+		std::array<std::bitset<vr::k_EButton_Max>, DEVICE_COUNT> m_lastButtonsState{};
 
 		std::array<vr::TrackedDevicePose_t, DEVICE_COUNT> m_trackedDevicePoses{};
 		std::array<glm::mat4, DEVICE_COUNT> m_trackedDeviceMatrices{};

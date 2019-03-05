@@ -5,10 +5,10 @@
 
 #include <Resources/Material.h>
 
-class TextMaterial : public ej::Material, public ej::PointerDefs<TextMaterial>
+class TextMaterial final : public ej::Material
 {
 public:
-	TextMaterial(const ej::Core& core);
+	explicit TextMaterial(const ej::Core& core);
 
 	void bind() override;
 
@@ -20,6 +20,6 @@ public:
 	void setTexture(const sf::Texture* texture);
 
 private:
-	const sf::Texture* m_texture = nullptr;
+	const sf::Texture* m_texture{ nullptr };
 	glm::vec4 m_color{ 1.0f };
 };

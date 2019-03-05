@@ -4,28 +4,22 @@
 #include "Managers/RenderingManager.h"
 
 ej::UIRenderer::UIRenderer(const Core& core) :
-	Renderer(core)
+	Renderer(core), m_cameraEntity(&m_camera)
 {
 	m_windowManager = core.get<WindowManager>();
 
-	auto camera = std::make_shared<Camera>();
-	camera->setProjectionType(Camera::Isometric);
-
-	m_cameraEntity = std::make_shared<CameraEntity>(camera);
+	m_camera.setProjectionType(Camera::Isometric);
+	m_camera.setDepthRange(glm::vec2(-100.0f, 100.0f));
 }
 
 void ej::UIRenderer::draw()
 {
-	const auto& camera = m_cameraEntity->getCamera();
-	const auto& cameraTransform = m_cameraEntity->getTransform();
-
 	const auto windowSize = sf::Vector2f(m_windowManager->getWindow().getSize());
 
-	camera->setDepthRange(glm::vec2(-100.0f, 100.0f));
-	camera->setDimensions(windowSize.x * 0.5f, windowSize.y * 0.5f);
-	camera->updateProjection();
+	m_camera.setDimensions(windowSize.x * 0.5f, windowSize.y * 0.5f);
+	m_camera.updateProjection();
 
-	m_cameraEntity->synchronizeView();
+	m_cameraEntity.synchronizeView();
 
 	auto state = m_renderingManager->getState();
 
@@ -48,7 +42,7 @@ void ej::UIRenderer::draw()
 		auto shader = entity->getMaterial()->getShader();
 		state->setCurrentShader(shader);
 
-		shader->setUniform("uCameraViewProjectionMatrix", camera->getViewProjectionMatrix());
+		shader->setUniform("uCameraViewProjectionMatrix", m_camera.getViewProjectionMatrix());
 		shader->setUniform("uMeshTransformation", meshTransform.getGlobalTransformationMatrix());
 		shader->setUniform("uWindowSize", glm::vec2(windowSize.x, windowSize.y));
 

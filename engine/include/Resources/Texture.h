@@ -6,7 +6,6 @@
 #include <glm/vec3.hpp>
 
 #include "Core/Core.h"
-#include "Core/PointerDefs.h"
 
 namespace ej 
 {
@@ -15,7 +14,7 @@ namespace ej
 	/**
 	 * \brief Image living on the graphics card that can be used for drawing
 	 */
-	class Texture final : public PointerDefs<Texture>
+	class Texture final
 	{
 	public:
 		/**
@@ -179,24 +178,24 @@ namespace ej
 	private:
 		static const unsigned DEFAULT_TEXTURE_UNIT = 16;
 
-		RenderingState* m_renderingState = nullptr;
+		RenderingState* m_renderingState{ nullptr };
 
-		GLuint m_id = 0;
+		GLuint m_id{ 0 };
 		GLenum m_target;
 
-		GLenum m_internalFormat = GL_RGBA;
-		GLenum m_format = GL_RGBA;
-		GLenum m_type = GL_UNSIGNED_BYTE;
+		GLenum m_internalFormat{ GL_RGBA };
+		GLenum m_format{ GL_RGBA };
+		GLenum m_type{ GL_UNSIGNED_BYTE };
 
-		GLenum m_minFilter = GL_LINEAR;
-		GLenum m_maxFilter = GL_LINEAR;
+		GLenum m_minFilter{ GL_LINEAR };
+		GLenum m_maxFilter{ GL_LINEAR };
 
-		GLenum m_wrapS = GL_REPEAT;
-		GLenum m_wrapT = GL_REPEAT;
-		GLenum m_wrapR = GL_REPEAT;
+		GLenum m_wrapS{ GL_REPEAT };
+		GLenum m_wrapT{ GL_REPEAT };
+		GLenum m_wrapR{ GL_REPEAT };
 
 		glm::uvec3 m_size{};
 
-		bool m_initialized = false;
+		bool m_initialized{ false };
 	};
 }

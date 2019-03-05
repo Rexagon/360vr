@@ -77,13 +77,13 @@ namespace ej
 		 * 
 		 * Assigned during creation by ej::SceneManager
 		 */
-		const Core* m_core = nullptr;
+		const Core* m_core{ nullptr };
 	};
 
 	/**
 	 * \brief Manage scenes stack
 	 */
-	class SceneManager final : public BaseManager, public PointerDefs<SceneManager>
+	class SceneManager final : public BaseManager
 	{
 	public:
 		/**

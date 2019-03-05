@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <unordered_map>
 
 #include "Resources/Shader.h"
 #include "Core/ResourceManager.h"
@@ -10,41 +9,37 @@ namespace ej
 {
 	class FileManager;
 
-	/**
-	 * \brief Manage shaders
-	 */
-	class ShaderManager final : public ResourceManager<Shader>, public PointerDefs<ShaderManager>
+	struct ShaderSource
 	{
-		struct ShaderSource
+		enum Type { None, File, String };
+
+		ShaderSource() :
+			type(None)
+		{}
+
+		ShaderSource(const Type type, const std::string& source) :
+			type(type), source(source)
+		{}
+
+		Type type;
+		std::string source;
+	};
+
+	namespace details {
+		struct ShaderFactoryData final
 		{
-			enum Type { None, File, String };
-
-			ShaderSource() :
-				type(None)
-			{}
-
-			ShaderSource(Type type, const std::string& source) :
-				type(type), source(source)
-			{}
-
-			Type type;
-			std::string source;
-		};
-
-		struct FactoryData
-		{
-			FactoryData(const std::string& name, const ShaderSource& vertexShaderSource,
-				const ShaderSource& geometryShaderSource, const ShaderSource& fragmentShaderSource) :
-				name(name),	vertexShaderSource(vertexShaderSource), geometryShaderSource(geometryShaderSource), 
-				fragmentShaderSource(fragmentShaderSource) 
-			{}
-
 			std::string name;
 			ShaderSource vertexShaderSource;
 			ShaderSource geometryShaderSource;
 			ShaderSource fragmentShaderSource;
 		};
+	}
 
+	/**
+	 * \brief Manage shaders
+	 */
+	class ShaderManager final : public ResourceManager<ShaderManager, Shader, details::ShaderFactoryData>
+	{
 	public:
 		struct FromFile final : ShaderSource
 		{
@@ -73,16 +68,6 @@ namespace ej
 			const ShaderSource& fragmentShaderSource = ShaderSource(), 
 			const ShaderSource& geometryShaderSource = ShaderSource());
 
-		/**
-		 * \brief Get shader by name
-		 * 
-		 * \throw std::runtime_error if unable to load
-		 * 
-		 * \param name Resource name
-		 * \return Shader or nullptr if it was not registered
-		 */
-		std::shared_ptr<Shader> get(const std::string& name);
-
 	private:
 		/**
 		 * \brief Load shader
@@ -92,9 +77,8 @@ namespace ej
 		 * \param factoryData Shader factory data
 		 * \return Shader
 		 */
-		std::shared_ptr<Shader> load(const FactoryData& factoryData) const;
+		std::unique_ptr<Shader> load(const FactoryDataType& factoryData) override;
 
-		std::shared_ptr<FileManager> m_fileManager;
-		std::unordered_map<std::string, FactoryData> m_factoryData;
+		FileManager* m_fileManager{ nullptr };
 	};
 }

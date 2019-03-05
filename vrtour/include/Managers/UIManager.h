@@ -6,7 +6,7 @@
 
 #include "UI/Widget.h"
 
-class UIManager : public ej::BaseManager, public ej::PointerDefs<UIManager>
+class UIManager final : public ej::BaseManager
 {
 public:
 	explicit UIManager(const ej::Core& core);
@@ -14,5 +14,5 @@ public:
 	void handleEvent(const sf::Event& event);
 
 private:
-	std::shared_ptr<ej::Widget> m_rootWidget;
+	std::unique_ptr<ej::Widget> m_rootWidget{};
 };

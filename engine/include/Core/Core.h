@@ -65,7 +65,7 @@ namespace ej
 		 * \return Created manager
 		 */
 		template<typename T, typename... Args>
-		std::shared_ptr<T> provide(Args&&... args);
+		T* provide(Args&&... args);
 
 		/**
 		 * \brief Find manager
@@ -78,7 +78,7 @@ namespace ej
 		 * \return Manager object
 		 */
 		template<typename T>
-		std::shared_ptr<T> get() const;
+		T* get() const;
 
 		/**
 		 * \brief Check if manager of type \a T has been provided
@@ -132,29 +132,29 @@ namespace ej
 		virtual void onUpdate(float dt) = 0;
 
 	private:
-		bool m_isRunning = false;
-		std::unordered_map<std::type_index, std::shared_ptr<BaseManager>> m_managers;
+		bool m_isRunning{ false };
+		std::unordered_map<std::type_index, std::unique_ptr<BaseManager>> m_managers;
 	};
 
 	template<typename T, typename ...Args>
-	std::shared_ptr<T> Core::provide(Args && ...args)
+	T* Core::provide(Args && ...args)
 	{
 		static_assert(std::is_base_of<BaseManager, T>(), "Provided manager must be derived from BaseManager");
 
-		auto manager = std::make_shared<T>(*this, std::forward<Args>(args)...);
-		m_managers.insert_or_assign(std::type_index(typeid(T)), std::static_pointer_cast<BaseManager>(manager));
+		auto manager = new T(*this, std::forward<Args>(args)...);
+		m_managers.insert_or_assign(std::type_index(typeid(T)), std::unique_ptr<BaseManager>(manager));
 
 		return manager;
 	}
 
 	template<typename T>
-	std::shared_ptr<T> Core::get() const
+	T* Core::get() const
 	{
 		static_assert(std::is_base_of<BaseManager, T>(), "Provided manager must be derived from BaseManager");
 
 		const auto it = m_managers.find(std::type_index(typeid(T)));
 		assert(it != m_managers.end());
-		return std::dynamic_pointer_cast<T>(it->second);
+		return dynamic_cast<T*>(it->second.get());
 	}
 
 	template<typename T>

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Core/PointerDefs.h"
 #include "Resources/Shader.h"
 #include "Managers/ShaderManager.h"
 
@@ -44,9 +43,9 @@ namespace ej
 		Shader* getShader() const;
 
 	protected:
-		ShaderManager::ptr m_shaderManager;
-		std::shared_ptr<RenderingManager> m_renderingManager;
+		ShaderManager* m_shaderManager{nullptr};
+		RenderingManager* m_renderingManager{nullptr};
 
-		Shader::ptr m_shader;
+		Shader* m_shader{nullptr};
 	};
 }

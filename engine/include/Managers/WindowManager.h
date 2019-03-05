@@ -12,7 +12,7 @@ namespace ej
 	/**
 	 * \brief Give access to current window
 	 */
-	class WindowManager final : public BaseManager, public PointerDefs<WindowManager>
+	class WindowManager final : public BaseManager
 	{
 	public:
 		/**

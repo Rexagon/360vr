@@ -12,14 +12,14 @@ ej::RenderingManager::RenderingManager(const Core& core) :
 		throw std::runtime_error("Unable to initialize GLEW");
 	}
 
-	m_renderingState = std::make_shared<RenderingState>();
+	m_renderingState = std::make_unique<RenderingState>();
 	m_renderingState->apply();
 }
 
 void ej::RenderingManager::init()
 {
-	m_forwardRenderer = std::make_shared<ForwardRenderer>(m_core);
-	m_uiRenderer = std::make_shared<UIRenderer>(m_core);
+	m_forwardRenderer = std::make_unique<ForwardRenderer>(m_core);
+	m_uiRenderer = std::make_unique<UIRenderer>(m_core);
 }
 
 ej::RenderingState* ej::RenderingManager::getState() const

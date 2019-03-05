@@ -3,7 +3,7 @@
 #include <Managers/MeshManager.h>
 
 TextWidget::TextWidget(const ej::Core& core) :
-	Widget(core)
+	Widget(core), m_material(core)
 {
 	const auto meshName = "text_mesh_" + std::to_string(reinterpret_cast<intptr_t>(this));
 
@@ -11,14 +11,12 @@ TextWidget::TextWidget(const ej::Core& core) :
 	if (mesh == nullptr) {
 		mesh = core.get<ej::MeshManager>()->bind(meshName, []() {
 			return ej::MeshGeometry(ej::MeshGeometry::TEXTURED_VERTEX);
-		})->get(meshName);
+		}).get(meshName);
 	}
 
 	mesh->setBufferUsage(GL_DYNAMIC_DRAW);
 
-	m_material = std::make_shared<TextMaterial>(core);
-
-	initMesh(mesh, m_material);
+	initMesh(mesh, &m_material);
 }
 
 void TextWidget::update(float dt)
@@ -39,7 +37,7 @@ const std::string& TextWidget::getText() const
 	return m_text;
 }
 
-void TextWidget::setBold(bool bold)
+void TextWidget::setBold(const bool bold)
 {
 	if (m_isBold != bold) {
 		m_isBold = bold;
@@ -52,7 +50,7 @@ bool TextWidget::isBold() const
 	return m_isBold;
 }
 
-void TextWidget::setCharacterSize(unsigned int size)
+void TextWidget::setCharacterSize(const unsigned int size)
 {
 	if (m_characterSize != size) {
 		m_characterSize = size;
@@ -65,7 +63,7 @@ unsigned TextWidget::getCharacterSize() const
 	return m_characterSize;
 }
 
-void TextWidget::setLetterSpacing(float spacingFactor)
+void TextWidget::setLetterSpacing(const float spacingFactor)
 {
 	if (m_letterSpacingFactor != spacingFactor) {
 		m_letterSpacingFactor = spacingFactor;
@@ -78,7 +76,7 @@ float TextWidget::getLetterSpacing() const
 	return m_letterSpacingFactor;
 }
 
-void TextWidget::setFont(std::shared_ptr<sf::Font> font)
+void TextWidget::setFont(sf::Font* font)
 {
 	if (font != nullptr && m_font != font) {
 		m_font = font;
@@ -88,7 +86,7 @@ void TextWidget::setFont(std::shared_ptr<sf::Font> font)
 
 sf::Font* TextWidget::getFont() const
 {
-	return m_font.get();
+	return m_font;
 }
 
 sf::FloatRect TextWidget::getBounds() const
@@ -106,7 +104,7 @@ void TextWidget::ensureGeometryUpdate() const
 
 	m_geometryNeedUpdate = false;
 
-	m_material->setTexture(&m_font->getTexture(m_characterSize));
+	const_cast<TextMaterial*>(&m_material)->setTexture(&m_font->getTexture(m_characterSize));
 
 	ej::MeshGeometry meshGeometry(ej::MeshGeometry::TEXTURED_VERTEX);
 	meshGeometry.positions.reserve(m_text.size() * 4);
@@ -114,7 +112,7 @@ void TextWidget::ensureGeometryUpdate() const
 	meshGeometry.indices.reserve(m_text.size() * 6);
 
 	if (m_text.empty()) {
-		m_meshEntity->getMesh()->update(meshGeometry);
+		m_meshEntity.getMesh()->update(meshGeometry);
 		return;
 	}
 
@@ -230,5 +228,5 @@ void TextWidget::ensureGeometryUpdate() const
 	m_bounds.top = boundsMin.y;
 	m_bounds.width = size.x;
 	m_bounds.height = size.y;
-	m_meshEntity->getMesh()->update(meshGeometry);
+	m_meshEntity.getMesh()->update(meshGeometry);
 }

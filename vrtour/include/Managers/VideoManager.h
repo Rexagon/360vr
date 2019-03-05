@@ -1,12 +1,12 @@
 #pragma once
 
 #include <mutex>
-#include <thread>
 
-#include <Core/BaseManager.h>
+#include <asio/strand.hpp>
 #include <asio/io_service.hpp>
+#include <Core/BaseManager.h>
 
-class VideoManager : public ej::BaseManager, public ej::PointerDefs<VideoManager>
+class VideoManager final : public ej::BaseManager
 {
 public:
 	explicit VideoManager(const ej::Core& core);
@@ -22,13 +22,13 @@ public:
 private:
 	void worker();
 
-	bool m_isInitialized;
+	bool m_isInitialized{ false };
 
-	size_t m_threadCount;
+	size_t m_threadCount{ 1 };
 
 	std::mutex m_workerThreadMutex;
-	std::shared_ptr<asio::io_service> m_ioService;
-	std::shared_ptr<asio::io_service::strand> m_strand;
-	std::shared_ptr<asio::io_service::work> m_ioServiceWork;
-	std::shared_ptr<asio::detail::thread_group> m_threadGroup;
+	std::unique_ptr<asio::io_service> m_ioService;
+	std::unique_ptr<asio::io_service::strand> m_strand;
+	std::unique_ptr<asio::io_service::work> m_ioServiceWork;
+	std::unique_ptr<asio::detail::thread_group> m_threadGroup;
 };

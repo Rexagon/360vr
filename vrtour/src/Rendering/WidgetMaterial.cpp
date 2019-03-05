@@ -20,7 +20,7 @@ WidgetMaterial::WidgetMaterial(const ej::Core& core) :
 
 	m_texture = core.get<ej::TextureManager>()->get("carpet");
 
-	m_renderingManager->getState()->setCurrentShader(m_shader.get());
+	m_renderingManager->getState()->setCurrentShader(m_shader);
 	m_shader->setUniform("uTexture", 3);
 }
 
@@ -28,9 +28,9 @@ void WidgetMaterial::bind()
 {
 	auto state = m_renderingManager->getState();
 
-	state->bindTexture(m_texture.get(), 3);
+	state->bindTexture(m_texture, 3);
 
-	state->setCurrentShader(m_shader.get());
+	state->setCurrentShader(m_shader);
 
 	m_shader->setUniform("uColor", m_color);
 	m_shader->setUniform("uHasTexture", static_cast<int>(m_texture != nullptr));

@@ -9,8 +9,7 @@ extern "C" {
 }
 
 VideoManager::VideoManager(const ej::Core & core) :
-	BaseManager(core),
-	m_isInitialized(false)
+	BaseManager(core)
 {
 	m_threadCount = std::thread::hardware_concurrency();
 	if (m_threadCount < 4) {
@@ -42,12 +41,12 @@ void VideoManager::init()
 
 	avformat_network_init();
 
-	m_ioService = std::make_shared<asio::io_service>();
-	m_ioServiceWork = std::make_shared<asio::io_service::work>(*m_ioService);
+	m_ioService = std::make_unique<asio::io_service>();
+	m_ioServiceWork = std::make_unique<asio::io_service::work>(*m_ioService);
 
 	printf("Starting %zu worker threads...\n", m_threadCount);
 
-	m_threadGroup = std::make_shared<asio::detail::thread_group>();
+	m_threadGroup = std::make_unique<asio::detail::thread_group>();
 	m_threadGroup->create_threads(std::bind(&VideoManager::worker, this), m_threadCount);
 
 	m_isInitialized = true;

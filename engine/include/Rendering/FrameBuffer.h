@@ -2,7 +2,6 @@
 
 #include <GL/glew.h>
 
-#include "Core/PointerDefs.h"
 #include "Resources/Texture.h"
 
 namespace ej 
@@ -10,7 +9,7 @@ namespace ej
 	/**
 	 * \brief OpenGL frame buffer wrapper
 	 */
-	class FrameBuffer final : public PointerDefs<FrameBuffer>
+	class FrameBuffer final
 	{
 	public:
 		/**
@@ -44,10 +43,10 @@ namespace ej
 		GLuint getHandle() const { return m_id; }
 
 	private:
-		bool m_isInitialized = false;
+		bool m_isInitialized{ false };
 
-		GLuint m_id = 0;
+		GLuint m_id{ 0 };
 		Texture m_colorTexture;
-		GLuint m_depthBuffer = 0;
+		GLuint m_depthBuffer{ 0 };
 	};
 }

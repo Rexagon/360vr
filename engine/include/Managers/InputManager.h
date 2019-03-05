@@ -1,12 +1,10 @@
 #pragma once
 
-#include <map>
 #include <bitset>
 
 #include <SFML/Window/Event.hpp>
 
 #include "Core/BaseManager.h"
-#include "Resources/InputAxis.h"
 #include "Managers/WindowManager.h"
 
 namespace ej
@@ -34,7 +32,7 @@ namespace ej
 	/**
 	 * \brief Give access to the real-time state of input
 	 */
-	class InputManager final : public BaseManager, public PointerDefs<InputManager>
+	class InputManager final : public BaseManager
 	{
 		using KeysState = std::bitset<Key::KeyCount>;
 		using MouseButtonsState = std::bitset<MouseButton::ButtonCount>;
@@ -126,16 +124,6 @@ namespace ej
 		bool getMouseButtonUp(MouseButton button) const;
 
 		/**
-		 * \brief Get axis value
-		 * 
-		 * SHOULD NOT BE USED NOW!!!
-		 * 
-		 * \param name Axis name
-		 * \return axis value if found, 0 otherwise
-		 */
-		float getAxis(const std::string& name);
-
-		/**
 		 * \brief Set cursor visibility
 		 * \param visible Cursor visibility. Show on true, hide otherwise
 		 */
@@ -160,23 +148,21 @@ namespace ej
 		glm::ivec2 getMousePosition() const;
 
 	private:
-		WindowManager::ptr m_windowManager;
+		WindowManager* m_windowManager{ nullptr };
 
-		bool m_anyKeyUp = false;
-		bool m_anyKeyDown = false;
+		bool m_anyKeyUp{ false };
+		bool m_anyKeyDown{ false };
 		KeysState m_currentKeysState;
 		KeysState m_lastKeysState;
 
-		bool m_anyMouseButtonUp = false;
-		bool m_anyMouseButtonDown = false;
+		bool m_anyMouseButtonUp{ false };
+		bool m_anyMouseButtonDown{ false };
 		MouseButtonsState m_currentMouseButtonsState;
 		MouseButtonsState m_lastMouseButtonsState;
 
 		glm::ivec2 m_lastMousePosition{};
 		glm::ivec2 m_currentMousePosition{};
 
-		float m_mouseWheelDelta = 0.0f;
-
-		std::map<std::string, std::shared_ptr<BaseInputAxis>> m_axes;
+		float m_mouseWheelDelta{ 0.0f };
 	};
 }

@@ -8,7 +8,7 @@ namespace ej
 	/**
 	 * \brief Simple renderer with one render target
 	 */
-	class ForwardRenderer final : public Renderer, public PointerDefs<ForwardRenderer>
+	class ForwardRenderer final : public Renderer
 	{
 	public:
 		/**
@@ -28,7 +28,7 @@ namespace ej
 		 * \brief Set current camera entity
 		 * \param entity Camera entity
 		 */
-		void setCameraEntity(CameraEntity::ptr entity);
+		void setCameraEntity(CameraEntity* entity);
 
 		/**
 		 * \brief Return current camera entity
@@ -37,6 +37,6 @@ namespace ej
 		CameraEntity* getCameraEntity() const;
 
 	private:
-		CameraEntity::ptr m_cameraEntity;
+		CameraEntity* m_cameraEntity{ nullptr };
 	};
 }

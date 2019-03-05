@@ -1,7 +1,5 @@
 #include "Managers/VRManager.h"
 
-#include <thread>
-
 static glm::mat4 convert(const vr::HmdMatrix34_t& mat)
 {
 	return glm::mat4(

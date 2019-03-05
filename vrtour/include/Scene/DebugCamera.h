@@ -4,14 +4,14 @@
 #include <Managers/InputManager.h>
 #include <Managers/WindowManager.h>
 
-class DebugCamera : public ej::PointerDefs<DebugCamera>
+class DebugCamera final
 {
 public:
-	DebugCamera(const ej::Core& core);
+	explicit DebugCamera(const ej::Core& core);
 
 	void update(float dt);
 
-	ej::CameraEntity::ptr getCameraEntity();
+	ej::CameraEntity* getCameraEntity();
 
 	void setMovementSpeed(float speed);
 	float getMovementSpeed() const;
@@ -20,15 +20,16 @@ public:
 	float getRotationSpeed() const;
 
 private:
-	float m_movementSpeed;
-	float m_rotationSpeed;
+	ej::InputManager* m_inputManager{nullptr};
+	ej::WindowManager* m_windowManager{nullptr};
 
-	glm::vec2 m_rotation;
+	float m_movementSpeed{1.0f};
+	float m_rotationSpeed{1.0f};
 
-	ej::InputManager::ptr m_inputManager;
-	ej::WindowManager::ptr m_windowManager;
+	glm::vec2 m_rotation{0.0f};
 
-	ej::CameraEntity::ptr m_cameraEntity;
+	ej::Camera m_camera{};
+	ej::CameraEntity m_cameraEntity;
 
-	glm::vec2 m_lastMousePosition;
+	glm::vec2 m_lastMousePosition{0.0f};
 };

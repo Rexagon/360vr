@@ -8,14 +8,12 @@ extern "C" {
 #include <libavformat/avformat.h>
 }
 
-#include <Core/PointerDefs.h>
-
 #include "VideoState.h"
 #include "AudioStream.h"
 #include "VideoStream.h"
 #include "Managers/VideoManager.h"
 
-class Video : public ej::PointerDefs<Video>
+class Video final
 {
 public:
 	explicit Video(const ej::Core& core, const std::string& file);
@@ -45,7 +43,7 @@ private:
 	static int connectionCallback(void* data);
 	static int interruptionCallback(void* data);
 
-	VideoManager::ptr m_videoManager;
+	VideoManager* m_videoManager{nullptr};
 
 	std::string m_file;
 

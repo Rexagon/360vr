@@ -11,14 +11,13 @@
 #include <glm/mat4x4.hpp>
 
 #include "Core/Core.h"
-#include "Core/PointerDefs.h"
 
 namespace ej
 {
 	/**
 	 * \brief Set of programs for GPU
 	 */
-	class Shader final : public PointerDefs<Shader>
+	class Shader final
 	{
 	public:
 		/**
@@ -101,7 +100,7 @@ namespace ej
 		GLuint getHandle() const;
 
 	private:
-		GLuint m_program;
+		GLuint m_program{ 0 };
 
 		std::vector<GLint> m_shaders;
 		std::unordered_map<std::string, GLint> m_uniformLocations;

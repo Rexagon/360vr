@@ -1,4 +1,4 @@
-#include "Video\AudioStream.h"
+#include "Video/AudioStream.h"
 
 extern "C" {
 #include <libavutil/opt.h>

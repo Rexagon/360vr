@@ -1,13 +1,12 @@
 #pragma once
 
-#include <Resources/Mesh.h>
 #include <Scene/Transform.h>
 #include <Rendering/FrameBuffer.h>
 
 #include <Managers/VRManager.h>
 #include <Managers/RenderingManager.h>
 
-class HeadSet final : public ej::PointerDefs<HeadSet>
+class HeadSet final
 {
 public:
 	explicit HeadSet(const ej::Core& core);
@@ -18,15 +17,16 @@ public:
 	void submit();
 
 	const ej::Transform& getTransform() const;
-	ej::CameraEntity::ptr getCameraEntity(vr::EVREye eye) const;
+	ej::CameraEntity* getCameraEntity(vr::EVREye eye);
 
 private:
-	ej::VRManager::ptr m_vrManager;
-	ej::RenderingManager::ptr m_renderingManager;
+	ej::VRManager* m_vrManager{ nullptr };
+	ej::RenderingManager* m_renderingManager{ nullptr };
 
 	ej::Transform m_transform;
 
-	ej::CameraEntity::ptr m_cameraEntities[2];
+	ej::Camera m_cameras[2]{};
+	ej::CameraEntity m_cameraEntities[2];
 
 	ej::FrameBuffer m_eyeBuffers[2];
 };

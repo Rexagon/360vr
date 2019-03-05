@@ -4,23 +4,19 @@
 #include <Core/Core.h>
 
 DebugCamera::DebugCamera(const ej::Core & core) :
-	m_movementSpeed(1.0f), m_rotationSpeed(1.0f)
+	m_cameraEntity(&m_camera)
 {
 	m_inputManager = core.get<ej::InputManager>();
 	m_windowManager = core.get<ej::WindowManager>();
-
-	auto camera = std::make_shared<ej::Camera>();
-	m_cameraEntity = std::make_shared<ej::CameraEntity>(camera);
 }
 
 void DebugCamera::update(const float dt)
 {
-	auto camera = m_cameraEntity->getCamera();
-	auto& transform = m_cameraEntity->getTransform();
+	auto& transform = m_cameraEntity.getTransform();
 
 	const auto windowSize = m_windowManager->getWindow().getSize();
-	m_cameraEntity->getCamera()->setAspect(static_cast<float>(windowSize.x) / windowSize.y);
-	m_cameraEntity->getCamera()->updateProjection();
+	m_camera.setAspect(static_cast<float>(windowSize.x) / windowSize.y);
+	m_camera.updateProjection();
 	
 	// Handle rotation
 
@@ -62,15 +58,15 @@ void DebugCamera::update(const float dt)
 	transform.move(transform.getRotation() * direction * dt * m_movementSpeed);
 
 	// Update view
-	m_cameraEntity->synchronizeView();
+	m_cameraEntity.synchronizeView();
 }
 
-ej::CameraEntity::ptr DebugCamera::getCameraEntity()
+ej::CameraEntity* DebugCamera::getCameraEntity()
 {
-	return m_cameraEntity;
+	return &m_cameraEntity;
 }
 
-void DebugCamera::setMovementSpeed(float speed)
+void DebugCamera::setMovementSpeed(const float speed)
 {
 	m_movementSpeed = speed;
 }
@@ -80,7 +76,7 @@ float DebugCamera::getMovementSpeed() const
 	return m_movementSpeed;
 }
 
-void DebugCamera::setRotationSpeed(float speed)
+void DebugCamera::setRotationSpeed(const float speed)
 {
 	m_rotationSpeed = speed;
 }

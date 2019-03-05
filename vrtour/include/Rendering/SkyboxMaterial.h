@@ -3,16 +3,16 @@
 #include <Resources/Texture.h>
 #include <Resources/Material.h>
 
-class SkyboxMaterial : public ej::Material, public ej::PointerDefs<SkyboxMaterial>
+class SkyBoxMaterial final : public ej::Material
 {
 public:
-	explicit SkyboxMaterial(const ej::Core& core);
+	explicit SkyBoxMaterial(const ej::Core& core);
 
 	void bind() override;
 
-	void setSkyTexture(ej::Texture::ptr texture);
-	ej::Texture* getTexture() const;
+	void setSkyTexture(ej::Texture* texture);
+	ej::Texture* getSkyTexture() const;
 
 private:
-	ej::Texture::ptr m_skyTexture;
+	ej::Texture* m_skyTexture{ nullptr };
 };

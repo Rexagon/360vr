@@ -1,7 +1,6 @@
 #include "Rendering/TextureStreamer.h"
 
-TextureStreamer::TextureStreamer() :
-	m_buffers{0}, m_currentBufferIndex(0)
+TextureStreamer::TextureStreamer()
 {
 	glGenBuffers(2, m_buffers);
 

@@ -12,7 +12,7 @@ namespace ej
 	/**
 	 * \brief Manage access to filesystem
 	 */
-	class FileManager final : public BaseManager, public PointerDefs<FileManager>
+	class FileManager final : public BaseManager
 	{
 		/**
 		 * \brief Base file provider

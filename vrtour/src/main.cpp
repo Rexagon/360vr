@@ -14,7 +14,6 @@
 #include "Managers/UIManager.h"
 #include "Managers/VideoManager.h"
 
-#include "Scene/VRScene.h"
 #include "Scene/MainScene.h"
 
 class MyCore final : public ej::Core	
@@ -39,12 +38,7 @@ public:
 		m_inputManager = provide<ej::InputManager>();
 		m_uiManager = provide<UIManager>();
 
-		if (ej::VRManager::checkHmdPresent()) {
-			m_sceneManager = provide<ej::SceneManager>(std::make_unique<VRScene>());
-		}
-		else {
-			m_sceneManager = provide<ej::SceneManager>(std::make_unique<MainScene>());
-		}
+		m_sceneManager = provide<ej::SceneManager>(std::make_unique<MainScene>());
 	}
 
 	void onHandleEvent(const sf::Event& event) override
@@ -68,10 +62,10 @@ public:
 	}
 
 private:
-	ej::SceneManager::ptr m_sceneManager;
-	UIManager::ptr m_uiManager;
+	ej::SceneManager* m_sceneManager;
+	UIManager* m_uiManager;
 
-	ej::InputManager::ptr m_inputManager;
+	ej::InputManager* m_inputManager;
 };
 
 EJ_MAIN(MyCore);

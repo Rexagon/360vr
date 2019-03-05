@@ -7,25 +7,25 @@
 #include <Managers/MeshManager.h>
 #include <Managers/RenderingManager.h>
 
-class SteamVRObject : ej::PointerDefs<SteamVRObject>
+class SteamVRObject final
 {
 public:
 	SteamVRObject(const ej::Core& core, const std::string& name);
 	~SteamVRObject();
 
-	ej::MeshEntity::ptr getMeshEntity() const;
+	ej::MeshEntity* getMeshEntity();
 
 private:
 	void tryLoad();
 
-	ej::MeshManager::ptr m_meshManager;
-	ej::RenderingManager::ptr m_renderingManager;
+	ej::MeshManager* m_meshManager{nullptr};
+	ej::RenderingManager* m_renderingManager{nullptr};
 
-	bool m_isInitialized;
+	bool m_isInitialized{false};
 	std::string m_name;
 
-	ej::MeshEntity::ptr m_meshEntity;
+	ej::MeshEntity m_meshEntity{nullptr, nullptr};
 
-	vr::RenderModel_t* m_renderModel;
-	vr::IVRRenderModels* m_iVRRenderModels;
+	vr::RenderModel_t* m_renderModel{nullptr};
+	vr::IVRRenderModels* m_iVRRenderModels{nullptr};
 };

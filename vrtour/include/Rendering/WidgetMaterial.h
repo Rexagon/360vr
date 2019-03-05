@@ -5,10 +5,10 @@
 #include <Resources/Texture.h>
 #include <Resources/Material.h>
 
-class WidgetMaterial : public ej::Material, public ej::PointerDefs<WidgetMaterial>
+class WidgetMaterial final : public ej::Material
 {
 public:
-	WidgetMaterial(const ej::Core& core);
+	explicit WidgetMaterial(const ej::Core& core);
 
 	void bind() override;
 
@@ -18,6 +18,6 @@ public:
 	const glm::vec4& getColor() const;
 
 private:
-	ej::Texture::ptr m_texture;
+	ej::Texture* m_texture{nullptr};
 	glm::vec4 m_color{1.0f};
 };

@@ -33,7 +33,7 @@ namespace ej
 
 		virtual void handleEvent(const sf::Event& event) {};
 
-		void setName(std::string_view name);
+		void setName(const std::string& name);
 		const std::string& getName() const;
 
 		void setSize(const glm::vec2& size);
@@ -47,13 +47,13 @@ namespace ej
 
 		Transform& getTransform();
 
-		MeshEntity::ptr getMeshEntity() const;
+		MeshEntity* getMeshEntity();
 
 	protected:
-		void initMesh(Mesh::ptr mesh, std::shared_ptr<Material> material);
+		void initMesh(Mesh* mesh, Material* material);
 
 		std::string m_name;
-		MeshEntity::ptr m_meshEntity;
+		MeshEntity m_meshEntity{nullptr, nullptr};
 		Transform m_transform;
 	};
 }

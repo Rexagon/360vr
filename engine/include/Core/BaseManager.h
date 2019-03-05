@@ -1,7 +1,5 @@
 #pragma once
 
-#include "PointerDefs.h"
-
 namespace ej
 {
 	class Core;

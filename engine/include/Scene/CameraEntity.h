@@ -5,17 +5,17 @@
 
 namespace ej
 {
-	class CameraEntity : public Entity, public PointerDefs<CameraEntity>
+	class CameraEntity final : public Entity
 	{
 	public:
-		CameraEntity(Camera::ptr camera);
+		explicit CameraEntity(Camera* camera);
 
 		void synchronizeView();
 
-		void setCamera(Camera::ptr camera);
+		void setCamera(Camera* camera);
 		Camera* getCamera() const;
 
 	private:
-		Camera::ptr m_camera;
+		Camera* m_camera{ nullptr };
 	};
 }

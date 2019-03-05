@@ -21,7 +21,6 @@ set(SOURCES
 	"${SOURCE_DIR}/Rendering/RenderingState.cpp"
 	"${SOURCE_DIR}/Rendering/UIRenderer.cpp"
 
-	"${SOURCE_DIR}/Resources/InputAxis.cpp"
 	"${SOURCE_DIR}/Resources/Material.cpp"
 	"${SOURCE_DIR}/Resources/Mesh.cpp"
 	"${SOURCE_DIR}/Resources/MeshGeometry.cpp"

@@ -4,14 +4,13 @@
 
 #include "Core/Core.h"
 #include "MeshGeometry.h"
-#include "Core/PointerDefs.h"
 
 namespace ej
 {
 	/**
 	 * \brief Drawable object
 	 */
-	class Mesh final : public PointerDefs<Mesh>
+	class Mesh final
 	{
 	public:
 		/**
@@ -84,17 +83,17 @@ namespace ej
 		bool isInitialized() const;
 
 	private:
-		GLuint m_vao = 0;
-		GLuint m_vbo = 0;
-		GLuint m_ebo = 0;
+		GLuint m_vao{0};
+		GLuint m_vbo{0};
+		GLuint m_ebo{0};
 
-		unsigned int m_indexCount = 0;
-		unsigned int m_vertexCount = 0;
-		unsigned int m_attributeCount = 0;
+		unsigned int m_indexCount{0};
+		unsigned int m_vertexCount{0};
+		unsigned int m_attributeCount{0};
 
-		GLenum m_topology = 0;
+		GLenum m_topology{0};
 
-		GLenum m_bufferUsage = GL_STATIC_DRAW;
-		bool m_isInitialized = false;
+		GLenum m_bufferUsage{ GL_STATIC_DRAW };
+		bool m_isInitialized{ false };
 	};
 }

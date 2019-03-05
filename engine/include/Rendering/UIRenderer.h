@@ -10,7 +10,7 @@ namespace ej
 	/**
 	 * \brief Renderer for user interface
 	 */
-	class UIRenderer final : public Renderer, public PointerDefs<UIRenderer>
+	class UIRenderer final : public Renderer
 	{
 	public:
 		/**
@@ -27,8 +27,9 @@ namespace ej
 		void draw() override;
 
 	private:
-		std::shared_ptr<WindowManager> m_windowManager;
+		WindowManager* m_windowManager{ nullptr };
 
-		CameraEntity::ptr m_cameraEntity;
+		Camera m_camera{};
+		CameraEntity m_cameraEntity;
 	};
 }

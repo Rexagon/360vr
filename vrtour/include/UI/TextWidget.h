@@ -6,7 +6,7 @@
 
 #include "Rendering/TextMaterial.h"
 
-class TextWidget : public ej::Widget, public ej::PointerDefs<TextWidget>
+class TextWidget : public ej::Widget
 {
 public:
 	explicit TextWidget(const ej::Core& core);
@@ -25,7 +25,7 @@ public:
 	void setLetterSpacing(float spacingFactor);
 	float getLetterSpacing() const;
 
-	void setFont(std::shared_ptr<sf::Font> font);
+	void setFont(sf::Font* font);
 	sf::Font* getFont() const;
 
 	sf::FloatRect getBounds() const;
@@ -33,16 +33,16 @@ public:
 private:
 	void ensureGeometryUpdate() const;
 
-	TextMaterial::ptr m_material;
+	TextMaterial m_material;
 
 	std::string m_text;
-	bool m_isBold = false;
-	unsigned int m_characterSize = 36;
-	float m_letterSpacingFactor = 1.0f;
+	bool m_isBold{false};
+	unsigned int m_characterSize{36};
+	float m_letterSpacingFactor{1.0f};
 
-	std::shared_ptr<sf::Font> m_font;
+	sf::Font* m_font{nullptr};
 
 	mutable sf::FloatRect m_bounds;
-	mutable bool m_geometryNeedUpdate = false;
+	mutable bool m_geometryNeedUpdate{false};
 
 };

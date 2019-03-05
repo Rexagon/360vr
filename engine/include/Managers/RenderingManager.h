@@ -1,10 +1,9 @@
 #pragma once
 
 #include "Core/BaseManager.h"
-#include "Resources/Shader.h"
-#include "Rendering/UIRenderer.h"
-#include "Rendering/FrameBuffer.h"
 #include "Rendering/RenderingState.h"
+
+#include "Rendering/UIRenderer.h"
 #include "Rendering/ForwardRenderer.h"
 
 namespace ej
@@ -14,7 +13,7 @@ namespace ej
 	/**
 	 * \brief Give access to renderer and rendering state
 	 */
-	class RenderingManager final : public BaseManager, public PointerDefs<RenderingManager>
+	class RenderingManager final : public BaseManager
 	{
 	public:
 		/**
@@ -56,10 +55,11 @@ namespace ej
 		UIRenderer* getUIRenderer() const;
 
 	protected:
-		WindowManager::ptr m_windowManager;
-		RenderingState::ptr m_renderingState;
+		WindowManager* m_windowManager{ nullptr };
 
-		ForwardRenderer::ptr m_forwardRenderer;
-		UIRenderer::ptr m_uiRenderer;
+		std::unique_ptr<RenderingState> m_renderingState{};
+
+		std::unique_ptr<ForwardRenderer> m_forwardRenderer{};
+		std::unique_ptr<UIRenderer> m_uiRenderer{};
 	};
 }

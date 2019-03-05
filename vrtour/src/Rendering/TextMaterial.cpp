@@ -18,7 +18,7 @@ TextMaterial::TextMaterial(const ej::Core& core) :
 	m_shader->setAttribute(0, "vPosition");
 	m_shader->setAttribute(1, "vTexCoords");
 
-	m_renderingManager->getState()->setCurrentShader(m_shader.get());
+	m_renderingManager->getState()->setCurrentShader(m_shader);
 	m_shader->setUniform("uTexture", 3);
 }
 
@@ -31,7 +31,7 @@ void TextMaterial::bind()
 		glBindTexture(GL_TEXTURE_2D, m_texture->getNativeHandle());
 	}
 
-	state->setCurrentShader(m_shader.get());
+	state->setCurrentShader(m_shader);
 
 	m_shader->setUniform("uColor", m_color);
 	m_shader->setUniform("uHasTexture", static_cast<int>(m_texture != nullptr));

@@ -1,6 +1,7 @@
 #include "Scene/HeadSet.h"
 
 HeadSet::HeadSet(const ej::Core & core) :
+	m_cameraEntities{ ej::CameraEntity(&m_cameras[0]), ej::CameraEntity(&m_cameras[1]) },
 	m_eyeBuffers{ ej::FrameBuffer(core), ej::FrameBuffer(core) }
 {
 	m_vrManager = core.get<ej::VRManager>();
@@ -12,16 +13,13 @@ HeadSet::HeadSet(const ej::Core & core) :
 	for (size_t i = 0; i < 2; ++i) {
 		m_eyeBuffers[i].init(renderTargetSize.x, renderTargetSize.y, true);
 
-		auto camera = std::make_shared<ej::Camera>(
-			m_vrManager->getEyeProjectionMatrix(static_cast<vr::EVREye>(i), zRange));
+		m_cameras[i].setCustomProjection(
+			m_vrManager->getEyeProjectionMatrix(static_cast<vr::EVREye>(i), zRange)
+		);
 
-		auto cameraEntity = std::make_shared<ej::CameraEntity>(camera);
-		auto& transform = cameraEntity->getTransform();
-
+		auto& transform = m_cameraEntities[i].getTransform();
 		transform.setParent(&m_transform);
 		transform.setTransformationMatrix(m_vrManager->getEyeToHeadTransform(static_cast<vr::EVREye>(i)));
-
-		m_cameraEntities[i] = cameraEntity;
 	}
 }
 
@@ -32,7 +30,7 @@ void HeadSet::update(const float dt)
 		m_transform.setRotation(m_vrManager->getHmdRotation());
 
 		for (auto& cameraEntity : m_cameraEntities) {
-			cameraEntity->synchronizeView();
+			cameraEntity.synchronizeView();
 		}
 	}
 }
@@ -71,7 +69,7 @@ const ej::Transform& HeadSet::getTransform() const
 	return m_transform;
 }
 
-ej::CameraEntity::ptr HeadSet::getCameraEntity(const vr::EVREye eye) const
+ej::CameraEntity* HeadSet::getCameraEntity(const vr::EVREye eye)
 {
-	return m_cameraEntities[static_cast<size_t>(eye)];
+	return &m_cameraEntities[static_cast<size_t>(eye)];
 }

@@ -5,7 +5,7 @@
 #include "Rendering/WidgetMaterial.h"
 
 RectangleWidget::RectangleWidget(const ej::Core& core) :
-	Widget(core)
+	Widget(core), m_material(core)
 {
 	const auto meshName = "rectangle_mesh";
 
@@ -14,12 +14,10 @@ RectangleWidget::RectangleWidget(const ej::Core& core) :
 		mesh = core.get<ej::MeshManager>()->bind(meshName, []() {
 			return ej::MeshGeometry::createQuad(glm::vec2(0.5f), 
 				ej::MeshGeometry::TEXTURED_VERTEX);
-		})->get(meshName);
+		}).get(meshName);
 	}
 
-	const auto material = std::make_shared<WidgetMaterial>(core);
-
-	initMesh(mesh, material);
+	initMesh(mesh, &m_material);
 }
 
 void RectangleWidget::update(float dt)
