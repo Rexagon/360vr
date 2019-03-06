@@ -91,6 +91,11 @@ void ej::VRManager::update()
 	}
 }
 
+bool ej::VRManager::isInitialized() const
+{
+	return m_isInitialized;
+}
+
 size_t ej::VRManager::getControllerCount() const
 {
 	if (!m_isInitialized) {
@@ -252,11 +257,6 @@ glm::uvec2 ej::VRManager::getRenderTargetSize() const
 	uint32_t width, height;
 	m_system->GetRecommendedRenderTargetSize(&width, &height);
 	return glm::uvec2(width, height);
-}
-
-bool ej::VRManager::isInitialized() const
-{
-	return m_isInitialized;
 }
 
 bool ej::VRManager::isHmdConnected() const

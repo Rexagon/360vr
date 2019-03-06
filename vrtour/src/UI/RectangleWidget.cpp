@@ -4,7 +4,7 @@
 
 #include "Rendering/WidgetMaterial.h"
 
-RectangleWidget::RectangleWidget(const ej::Core& core) :
+app::RectangleWidget::RectangleWidget(const ej::Core& core) :
 	Widget(core), m_material(core)
 {
 	const auto meshName = "rectangle_mesh";
@@ -20,7 +20,7 @@ RectangleWidget::RectangleWidget(const ej::Core& core) :
 	initMesh(mesh, &m_material);
 }
 
-void RectangleWidget::update(float dt)
+void app::RectangleWidget::update(float dt)
 {
 	//TODO: call draw method here
 }

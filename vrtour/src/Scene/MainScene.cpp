@@ -13,7 +13,7 @@
 
 using json = nlohmann::json;
 
-void MainScene::onInit()
+void app::MainScene::onInit()
 {
 	const auto& core = getCore();
 
@@ -85,7 +85,7 @@ void MainScene::onInit()
 	}
 }
 
-void MainScene::onUpdate(const float dt)
+void app::MainScene::onUpdate(const float dt)
 {
 	if (m_inputManager->getKeyDown(ej::Key::Escape)) {
 		getCore().get<ej::SceneManager>()->removeScene();
@@ -148,7 +148,7 @@ void MainScene::onUpdate(const float dt)
 	}
 }
 
-void MainScene::drawScene()
+void app::MainScene::drawScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -160,7 +160,7 @@ void MainScene::drawScene()
 	renderer->draw();
 }
 
-ej::Texture* MainScene::createVideoTarget(const glm::vec3& position)
+ej::Texture* app::MainScene::createVideoTarget(const glm::vec3& position)
 {
 	static size_t targetCount = 0;
 
@@ -188,7 +188,7 @@ ej::Texture* MainScene::createVideoTarget(const glm::vec3& position)
 	return texture;
 }
 
-ej::Texture* MainScene::createSkyBox()
+ej::Texture* app::MainScene::createSkyBox()
 {
 	const auto mesh = getCore().get<ej::MeshManager>()->bind("skybox_mesh", []() {
 		return ej::MeshGeometry::createCube(glm::vec3(1.0f, 1.0f, 1.0f),
@@ -208,7 +208,7 @@ ej::Texture* MainScene::createSkyBox()
 	return texture;
 }
 
-void MainScene::createCamera()
+void app::MainScene::createCamera()
 {
 	m_debugCamera = std::make_unique<DebugCamera>(getCore());
 	m_debugCamera->getCameraEntity()->getTransform().setPosition(0.0f, 1.0f, 0.0f);

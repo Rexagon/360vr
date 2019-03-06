@@ -8,18 +8,18 @@ extern "C" {
 
 #include <Core/Core.h>
 
-Video::Video(const ej::Core& core, const std::string& file):
+app::Video::Video(const ej::Core& core, const std::string& file):
 	m_file(file)
 {
 	m_videoManager = core.get<VideoManager>();
 }
 
-Video::~Video()
+app::Video::~Video()
 {
 	clear();
 }
 
-void Video::init()
+void app::Video::init()
 {
 	if (m_isInitialized) {
 		return;
@@ -29,22 +29,22 @@ void Video::init()
 	post(*m_videoManager->getService(), std::bind(&Video::initializationTask, this));
 }
 
-VideoStream* Video::getVideoStream() const
+app::VideoStream* app::Video::getVideoStream() const
 {
 	return m_videoStream.get();
 }
 
-AudioStream* Video::getAudioStream() const
+app::AudioStream* app::Video::getAudioStream() const
 {
 	return m_audioStream.get();
 }
 
-bool Video::isInitialized() const
+bool app::Video::isInitialized() const
 {
 	return m_isInitialized;
 }
 
-void Video::initializationTask()
+void app::Video::initializationTask()
 {
 	m_formatContext = avformat_alloc_context();
 
@@ -53,8 +53,7 @@ void Video::initializationTask()
 	m_callbackState = CallbackState::Connection;
 	m_formatContext->interrupt_callback.opaque = static_cast<void*>(this);
 	m_formatContext->interrupt_callback.callback = &Video::interruptionCallback;
-
-
+	
 	// Connect to data stream
 	if (avformat_open_input(&m_formatContext, m_file.data(), nullptr, nullptr) < 0) {
 		throw std::runtime_error("Could not open input file " + m_file + "\n");
@@ -97,7 +96,7 @@ void Video::initializationTask()
 	post(*m_videoManager->getService(), std::bind(&Video::decodingTask, this));
 }
 
-void Video::receivingTask()
+void app::Video::receivingTask()
 {
 	if (!m_isInitialized) {
 		return;
@@ -108,7 +107,7 @@ void Video::receivingTask()
 	post(*m_videoManager->getService(), std::bind(&Video::receivingTask, this));
 }
 
-void Video::decodingTask()
+void app::Video::decodingTask()
 {
 	if (!m_isInitialized) {
 		return;
@@ -119,7 +118,7 @@ void Video::decodingTask()
 	post(*m_videoManager->getService(), std::bind(&Video::decodingTask, this));
 }
 
-void Video::receive()
+void app::Video::receive()
 {
 	std::unique_lock<std::mutex> lockReceiver(m_receiverMutex);
 
@@ -142,7 +141,7 @@ void Video::receive()
 	av_packet_unref(&m_packet);
 }
 
-void Video::clear()
+void app::Video::clear()
 {
 	m_isInitialized = false;
 	m_shouldStop = true;
@@ -154,7 +153,7 @@ void Video::clear()
 	avformat_close_input(&m_formatContext);
 }
 
-int Video::interruptionCallback(void* data)
+int app::Video::interruptionCallback(void* data)
 {
 	if (data == nullptr) {
 		return 1;

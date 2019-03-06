@@ -2,7 +2,7 @@
 
 #include <Managers/RenderingManager.h>
 
-SimpleMeshMaterial::SimpleMeshMaterial(const ej::Core& core, ej::Texture* diffuseTexture) :
+app::SimpleMeshMaterial::SimpleMeshMaterial(const ej::Core& core, ej::Texture* diffuseTexture) :
 	Material(core), m_diffuseTexture(diffuseTexture)
 {
 	const std::string shaderName = "simple";
@@ -22,7 +22,7 @@ SimpleMeshMaterial::SimpleMeshMaterial(const ej::Core& core, ej::Texture* diffus
 	m_shader->setUniform("uDiffuseTexture", 0);
 }
 
-void SimpleMeshMaterial::bind()
+void app::SimpleMeshMaterial::bind()
 {
 	auto state = m_renderingManager->getState();
 
@@ -36,38 +36,38 @@ void SimpleMeshMaterial::bind()
 	m_shader->setUniform("uHasTexture", static_cast<int>(m_diffuseTexture != nullptr));
 }
 
-void SimpleMeshMaterial::setDiffuseTexture(ej::Texture* texture)
+void app::SimpleMeshMaterial::setDiffuseTexture(ej::Texture* texture)
 {
 	m_diffuseTexture = texture;
 }
 
-ej::Texture* SimpleMeshMaterial::getDiffuseTexture() const
+ej::Texture* app::SimpleMeshMaterial::getDiffuseTexture() const
 {
 	return m_diffuseTexture;
 }
 
-void SimpleMeshMaterial::setTextureFlipped(bool horizontally, bool vertically)
+void app::SimpleMeshMaterial::setTextureFlipped(bool horizontally, bool vertically)
 {
 	m_textureFlip.x = 1 - static_cast<int>(horizontally);
 	m_textureFlip.y = 1 - static_cast<int>(vertically);
 }
 
-const glm::ivec2& SimpleMeshMaterial::getTextureFlip() const
+const glm::ivec2& app::SimpleMeshMaterial::getTextureFlip() const
 {
 	return m_textureFlip;
 }
 
-void SimpleMeshMaterial::setColor(float r, float g, float b, float a)
+void app::SimpleMeshMaterial::setColor(float r, float g, float b, float a)
 {
 	m_color = glm::vec4(r, g, b, a);
 }
 
-void SimpleMeshMaterial::setColor(const glm::vec4& color)
+void app::SimpleMeshMaterial::setColor(const glm::vec4& color)
 {
 	m_color = color;
 }
 
-void SimpleMeshMaterial::setColor(const sf::Color& color)
+void app::SimpleMeshMaterial::setColor(const sf::Color& color)
 {
 	m_color = glm::vec4(
 		static_cast<float>(color.r) / 255.0f,
@@ -77,12 +77,12 @@ void SimpleMeshMaterial::setColor(const sf::Color& color)
 	);
 }
 
-const glm::vec4& SimpleMeshMaterial::getColor() const
+const glm::vec4& app::SimpleMeshMaterial::getColor() const
 {
 	return m_color;
 }
 
-bool SimpleMeshMaterial::hasTexture() const
+bool app::SimpleMeshMaterial::hasTexture() const
 {
 	return m_diffuseTexture != nullptr;
 }

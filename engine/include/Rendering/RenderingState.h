@@ -347,28 +347,28 @@ namespace ej
 
 		GLclampf m_clearColor[4]{ 0.0f, 0.0f, 0.0f, 1.0f };
 
-		float m_clearDepth{ 1.0f };
+		float m_clearDepth = 1.0f;
 
-		bool m_isDepthTestEnabled{ true };
-		bool m_isDepthWriteEnabled{ true };
-		GLenum m_depthTestFunction{ GL_LEQUAL };
+		bool m_isDepthTestEnabled = true;
+		bool m_isDepthWriteEnabled = true;
+		GLenum m_depthTestFunction = GL_LEQUAL;
 
-		GLenum m_clipControlOrigin{ GL_LOWER_LEFT };
-		GLenum m_clipControlDepth{ GL_NEGATIVE_ONE_TO_ONE };
+		GLenum m_clipControlOrigin = GL_LOWER_LEFT;
+		GLenum m_clipControlDepth = GL_NEGATIVE_ONE_TO_ONE;
 
-		bool m_isBlendingEnabled{ false };
-		GLenum m_blendingFunctionSrc{ GL_SRC_ALPHA };
-		GLenum m_blendingFunctionDst{ GL_ONE_MINUS_SRC_ALPHA };
+		bool m_isBlendingEnabled = false;
+		GLenum m_blendingFunctionSrc = GL_SRC_ALPHA;
+		GLenum m_blendingFunctionDst = GL_ONE_MINUS_SRC_ALPHA;
 
-		bool m_isFaceCullingEnabled{ true };
-		GLenum m_faceCullingSide{ GL_BACK };
+		bool m_isFaceCullingEnabled = true;
+		GLenum m_faceCullingSide = GL_BACK;
 
-		GLenum m_polygonMode{ GL_FILL };
+		GLenum m_polygonMode = GL_FILL;
 
-		size_t m_activeTextureUnit{ 0 };
+		size_t m_activeTextureUnit = 0;
 
-		GLuint m_currentShaderId{ 0 };
-		GLuint m_currentFrameBufferId{ 0 };
+		GLuint m_currentShaderId = 0;
+		GLuint m_currentFrameBufferId = 0;
 		std::pair<GLenum, GLuint> m_currentTextures[TEXTURE_COUNT]{std::pair(0, 0)};
 	};
 }

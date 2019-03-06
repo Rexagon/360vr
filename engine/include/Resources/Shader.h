@@ -100,7 +100,7 @@ namespace ej
 		GLuint getHandle() const;
 
 	private:
-		GLuint m_program{ 0 };
+		GLuint m_program = 0;
 
 		std::vector<GLint> m_shaders;
 		std::unordered_map<std::string, GLint> m_uniformLocations;

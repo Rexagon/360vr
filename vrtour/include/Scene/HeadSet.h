@@ -6,27 +6,30 @@
 #include <Managers/VRManager.h>
 #include <Managers/RenderingManager.h>
 
-class HeadSet final
+namespace app
 {
-public:
-	explicit HeadSet(const ej::Core& core);
+	class HeadSet final
+	{
+	public:
+		explicit HeadSet(const ej::Core& core);
 
-	void update(float dt);
-	   
-	void bindEye(vr::EVREye eye);
-	void submit();
+		void update(float dt);
 
-	const ej::Transform& getTransform() const;
-	ej::CameraEntity* getCameraEntity(vr::EVREye eye);
+		void bindEye(vr::EVREye eye);
+		void submit();
 
-private:
-	ej::VRManager* m_vrManager{ nullptr };
-	ej::RenderingManager* m_renderingManager{ nullptr };
+		const ej::Transform& getTransform() const;
+		ej::CameraEntity* getCameraEntity(vr::EVREye eye);
 
-	ej::Transform m_transform;
+	private:
+		ej::VRManager* m_vrManager = nullptr;
+		ej::RenderingManager* m_renderingManager = nullptr;
 
-	ej::Camera m_cameras[2]{};
-	ej::CameraEntity m_cameraEntities[2];
+		ej::Transform m_transform;
 
-	ej::FrameBuffer m_eyeBuffers[2];
-};
+		ej::Camera m_cameras[2]{};
+		ej::CameraEntity m_cameraEntities[2];
+
+		ej::FrameBuffer m_eyeBuffers[2];
+	};
+}

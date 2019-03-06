@@ -37,6 +37,6 @@ namespace ej
 		CameraEntity* getCameraEntity() const;
 
 	private:
-		CameraEntity* m_cameraEntity{ nullptr };
+		CameraEntity* m_cameraEntity = nullptr;
 	};
 }

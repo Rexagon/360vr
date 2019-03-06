@@ -1,6 +1,6 @@
 #include "Scene/HeadSet.h"
 
-HeadSet::HeadSet(const ej::Core & core) :
+app::HeadSet::HeadSet(const ej::Core & core) :
 	m_cameraEntities{ ej::CameraEntity(&m_cameras[0]), ej::CameraEntity(&m_cameras[1]) },
 	m_eyeBuffers{ ej::FrameBuffer(core), ej::FrameBuffer(core) }
 {
@@ -23,7 +23,7 @@ HeadSet::HeadSet(const ej::Core & core) :
 	}
 }
 
-void HeadSet::update(const float dt)
+void app::HeadSet::update(const float dt)
 {
 	if (m_vrManager->isHmdConnected()) {
 		m_transform.setPosition(m_vrManager->getHmdPosition());
@@ -35,7 +35,7 @@ void HeadSet::update(const float dt)
 	}
 }
 
-void HeadSet::bindEye(const vr::EVREye eye)
+void app::HeadSet::bindEye(const vr::EVREye eye)
 {
 	auto state = m_renderingManager->getState();
 
@@ -45,7 +45,7 @@ void HeadSet::bindEye(const vr::EVREye eye)
 	state->setViewport(0, 0, size.x, size.y);
 }
 
-void HeadSet::submit()
+void app::HeadSet::submit()
 {
 	static vr::Texture_t leftEyeTexture = {
 		reinterpret_cast<void*>(static_cast<uintptr_t>(m_eyeBuffers[0].getColorTexture().getHandle())),
@@ -64,12 +64,12 @@ void HeadSet::submit()
 	glFlush();
 }
 
-const ej::Transform& HeadSet::getTransform() const
+const ej::Transform& app::HeadSet::getTransform() const
 {
 	return m_transform;
 }
 
-ej::CameraEntity* HeadSet::getCameraEntity(const vr::EVREye eye)
+ej::CameraEntity* app::HeadSet::getCameraEntity(const vr::EVREye eye)
 {
 	return &m_cameraEntities[static_cast<size_t>(eye)];
 }

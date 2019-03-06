@@ -5,7 +5,7 @@
 #include <Managers/VRManager.h>
 #include <Managers/MeshManager.h>
 
-SteamVRObject::SteamVRObject(const ej::Core& core, const std::string & name) :
+app::SteamVRObject::SteamVRObject(const ej::Core& core, const std::string & name) :
 	m_name(name), m_mesh(core), m_material(core), m_core(core)
 {
 	m_meshManager = core.get<ej::MeshManager>();
@@ -15,39 +15,40 @@ SteamVRObject::SteamVRObject(const ej::Core& core, const std::string & name) :
 	m_iVRRenderModels = core.get<ej::VRManager>()->getRenderModelsInterface();
 }
 
-SteamVRObject::~SteamVRObject()
+app::SteamVRObject::~SteamVRObject()
 {
 	if (m_renderModel) {
 		m_iVRRenderModels->FreeRenderModel(m_renderModel);
 	}
 }
 
-ej::MeshEntity* SteamVRObject::getMeshEntity()
+ej::MeshEntity* app::SteamVRObject::getMeshEntity()
 {
-	tryLoad();
+	ensureLoaded();
 	return &m_meshEntity;
 }
 
-bool SteamVRObject::tryLoad()
+void app::SteamVRObject::ensureLoaded()
 {
 	if (m_isInitialized) {
-		return false;
+		return;
 	}
 
 	if (m_meshEntity.getMesh() == nullptr && !tryLoadMesh()) {
-		return false;
+		return;
 	}
 
 	if (m_meshEntity.getMaterial() == nullptr && !tryLoadTexture()) {
-		return false;
+		return;
 	}
 
 	m_isInitialized = true;
-	return true;
 }
 
-bool SteamVRObject::tryLoadMesh()
+bool app::SteamVRObject::tryLoadMesh()
 {
+	//TODO: made caching or move to special manager
+
 	const auto res = m_iVRRenderModels->LoadRenderModel_Async(m_name.data(), &m_renderModel);
 	if (res == vr::VRRenderModelError_Loading) {
 		return false;
@@ -93,8 +94,10 @@ bool SteamVRObject::tryLoadMesh()
 	return true;
 }
 
-bool SteamVRObject::tryLoadTexture()
+bool app::SteamVRObject::tryLoadTexture()
 {
+	//TODO: make caching or move to special manager
+
 	if (m_renderModel == nullptr) {
 		m_material.setDiffuseTexture(nullptr);
 		m_meshEntity.setMaterial(&m_material);

@@ -45,6 +45,11 @@ namespace ej
 		void draw() const;
 
 		/**
+		 * \return true if initialized
+		 */
+		bool isInitialized() const;
+
+		/**
 		 * \return Index count
 		 */
 		unsigned int getIndexCount() const;
@@ -77,23 +82,19 @@ namespace ej
 		 */
 		GLenum getBufferUsage() const;
 
-		/**
-		 * \return true if initialized
-		 */
-		bool isInitialized() const;
-
 	private:
-		GLuint m_vao{0};
-		GLuint m_vbo{0};
-		GLuint m_ebo{0};
+		bool m_isInitialized = false;
 
-		unsigned int m_indexCount{0};
-		unsigned int m_vertexCount{0};
-		unsigned int m_attributeCount{0};
+		GLuint m_vao = 0;
+		GLuint m_vbo = 0;
+		GLuint m_ebo = 0;
 
-		GLenum m_topology{0};
+		unsigned int m_indexCount = 0;
+		unsigned int m_vertexCount = 0;
+		unsigned int m_attributeCount = 0;
 
-		GLenum m_bufferUsage{ GL_STATIC_DRAW };
-		bool m_isInitialized{ false };
+		GLenum m_topology = 0;
+
+		GLenum m_bufferUsage = GL_STATIC_DRAW;
 	};
 }

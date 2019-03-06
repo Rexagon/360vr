@@ -13,11 +13,6 @@ ej::FrameBuffer::~FrameBuffer()
 	glDeleteRenderbuffers(1, &m_depthBuffer);
 }
 
-ej::Texture & ej::FrameBuffer::getColorTexture()
-{
-	return m_colorTexture;
-}
-
 void ej::FrameBuffer::init(const unsigned int width, const unsigned int height, const bool depthEnabled)
 {
 	if (m_isInitialized) {
@@ -44,4 +39,19 @@ void ej::FrameBuffer::init(const unsigned int width, const unsigned int height, 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	m_isInitialized = true;
+}
+
+bool ej::FrameBuffer::isInitialized() const
+{
+	return m_isInitialized;
+}
+
+ej::Texture& ej::FrameBuffer::getColorTexture()
+{
+	return m_colorTexture;
+}
+
+GLuint ej::FrameBuffer::getHandle() const
+{
+	return m_id;
 }

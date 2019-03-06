@@ -11,53 +11,56 @@ extern "C" {
 #include "AudioPlayer.h"
 #include "VideoState.h"
 
-class AudioStream
+namespace app
 {
-public:
-	AudioStream(VideoState& state, AVStream* stream);
-	~AudioStream();
+	class AudioStream
+	{
+	public:
+		AudioStream(VideoState& state, AVStream* stream);
+		~AudioStream();
 
-	void init();
-	void clear();
+		void init();
+		void clear();
 
-	void receive(AVPacket* packet);
-	void decode();
+		void receive(AVPacket* packet);
+		void decode();
 
-	void flush();
+		void flush();
 
-	int getIndex() const;
+		bool isInitialized() const;
 
-	size_t shouldReceive() const;
+		int getIndex() const;
 
-	void setVolume(float volume);
+		size_t shouldReceive() const;
 
-	uint64_t getCurrentDecodingId() const;
+		void setVolume(float volume);
 
-	bool isInitialized() const;
+		uint64_t getCurrentDecodingId() const;
 
-private:
-	VideoState& m_state;
-	AVStream* m_stream;
+	private:
+		bool m_isInitialized = false;
 
-	std::mutex m_receiverMutex;
+		VideoState& m_state;
+		AVStream* m_stream;
 
-	std::mutex m_decoderMutex;
-	AVCodec* m_decoder = nullptr;
-	AVCodecContext* m_decoderContext = nullptr;
-	SwrContext* m_swrContext = nullptr;
-	uint64_t m_decodingId = 0;
+		std::mutex m_receiverMutex;
 
-	std::mutex m_bufferMutex;
-	std::vector<uint8_t> m_buffer;
-	size_t m_sampleCount = 0;
-	bool m_hasData = false;
+		std::mutex m_decoderMutex;
+		AVCodec* m_decoder = nullptr;
+		AVCodecContext* m_decoderContext = nullptr;
+		SwrContext* m_swrContext = nullptr;
+		uint64_t m_decodingId = 0;
 
-	std::shared_ptr<AudioPlayer> m_audioPlayer;
+		std::mutex m_bufferMutex;
+		std::vector<uint8_t> m_buffer;
+		size_t m_sampleCount = 0;
+		bool m_hasData = false;
 
-	std::mutex m_queueMutex;
-	std::list<AVFrame*> m_frameQueue;
+		std::shared_ptr<AudioPlayer> m_audioPlayer;
 
-	bool m_hasStarted = false;
+		std::mutex m_queueMutex;
+		std::list<AVFrame*> m_frameQueue;
 
-	bool m_isInitialized = false;
-};
+		bool m_hasStarted = false;
+	};
+}

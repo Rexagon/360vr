@@ -4,17 +4,17 @@ extern "C" {
 #include <libavutil/opt.h>
 }
 
-AudioStream::AudioStream(VideoState& state, AVStream * stream) :
+app::AudioStream::AudioStream(VideoState& state, AVStream * stream) :
 	m_state(state), m_stream(stream)
 {
 }
 
-AudioStream::~AudioStream()
+app::AudioStream::~AudioStream()
 {
 	clear();
 }
 
-void AudioStream::init()
+void app::AudioStream::init()
 {
 	if (m_isInitialized) {
 		return;
@@ -84,7 +84,7 @@ void AudioStream::init()
 	m_isInitialized = true;
 }
 
-void AudioStream::clear()
+void app::AudioStream::clear()
 {
 	if (!m_isInitialized) {
 		return;
@@ -119,7 +119,7 @@ void AudioStream::clear()
 	m_hasStarted = false;
 }
 
-void AudioStream::receive(AVPacket* packet)
+void app::AudioStream::receive(AVPacket* packet)
 {
 	std::unique_lock<std::mutex> lockReceiver(m_receiverMutex);
 
@@ -150,7 +150,7 @@ void AudioStream::receive(AVPacket* packet)
 	}
 }
 
-void AudioStream::decode()
+void app::AudioStream::decode()
 {
 	std::unique_lock<std::mutex> decoderLock(m_decoderMutex);
 
@@ -215,14 +215,19 @@ void AudioStream::decode()
 	av_frame_free(&frame);
 }
 
-void AudioStream::flush()
+void app::AudioStream::flush()
 {
 	if (m_isInitialized) {
 		avcodec_send_packet(m_decoderContext, nullptr);
 	}
 }
 
-int AudioStream::getIndex() const
+bool app::AudioStream::isInitialized() const
+{
+	return m_isInitialized;
+}
+
+int app::AudioStream::getIndex() const
 {
 	if (!m_isInitialized) {
 		return -1;
@@ -231,24 +236,19 @@ int AudioStream::getIndex() const
 	return m_stream->index;
 }
 
-size_t AudioStream::shouldReceive() const
+size_t app::AudioStream::shouldReceive() const
 {
 	return m_frameQueue.size() < 256;
 }
 
-void AudioStream::setVolume(float volume)
+void app::AudioStream::setVolume(float volume)
 {
 	if (m_audioPlayer != nullptr) {
 		m_audioPlayer->setVolume(volume);
 	}
 }
 
-uint64_t AudioStream::getCurrentDecodingId() const
+uint64_t app::AudioStream::getCurrentDecodingId() const
 {
 	return m_decodingId;
-}
-
-bool AudioStream::isInitialized() const
-{
-	return m_isInitialized;
 }

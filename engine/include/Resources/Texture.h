@@ -176,26 +176,26 @@ namespace ej
 		glm::uvec3 getSize() const;
 
 	private:
-		static const unsigned DEFAULT_TEXTURE_UNIT = 16;
+		static const unsigned DEFAULT_TEXTURE_UNIT = 15;
 
-		RenderingState* m_renderingState{ nullptr };
+		bool m_initialized = false;
 
-		GLuint m_id{ 0 };
-		GLenum m_target;
+		RenderingState* m_renderingState = nullptr;
 
-		GLenum m_internalFormat{ GL_RGBA };
-		GLenum m_format{ GL_RGBA };
-		GLenum m_type{ GL_UNSIGNED_BYTE };
+		GLuint m_id = 0;
+		GLenum m_target = GL_TEXTURE_2D;
 
-		GLenum m_minFilter{ GL_LINEAR };
-		GLenum m_maxFilter{ GL_LINEAR };
+		GLenum m_internalFormat = GL_RGBA;
+		GLenum m_format = GL_RGBA;
+		GLenum m_type = GL_UNSIGNED_BYTE;
 
-		GLenum m_wrapS{ GL_REPEAT };
-		GLenum m_wrapT{ GL_REPEAT };
-		GLenum m_wrapR{ GL_REPEAT };
+		GLenum m_minFilter = GL_LINEAR;
+		GLenum m_maxFilter = GL_LINEAR;
+
+		GLenum m_wrapS = GL_REPEAT;
+		GLenum m_wrapT = GL_REPEAT;
+		GLenum m_wrapR = GL_REPEAT;
 
 		glm::uvec3 m_size{};
-
-		bool m_initialized{ false };
 	};
 }

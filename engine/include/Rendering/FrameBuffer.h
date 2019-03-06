@@ -32,6 +32,11 @@ namespace ej
 		void init(unsigned int width, unsigned int height, bool depthEnabled);
 
 		/**
+		 * \return true if initialized
+		 */
+		bool isInitialized() const;
+
+		/**
 		 * \brief Get color texture
 		 * \return Texture
 		 */
@@ -40,13 +45,13 @@ namespace ej
 		/**
 		 * \return OpenGL native handle
 		 */
-		GLuint getHandle() const { return m_id; }
+		GLuint getHandle() const;
 
 	private:
-		bool m_isInitialized{ false };
+		bool m_isInitialized = false;
 
-		GLuint m_id{ 0 };
+		GLuint m_id = 0;
 		Texture m_colorTexture;
-		GLuint m_depthBuffer{ 0 };
+		GLuint m_depthBuffer = 0;
 	};
 }
