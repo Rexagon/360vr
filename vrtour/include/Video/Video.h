@@ -15,6 +15,12 @@ extern "C" {
 
 class Video final
 {
+	enum class CallbackState
+	{
+		Connection,
+		Interruption,
+	};
+
 public:
 	explicit Video(const ej::Core& core, const std::string& file);
 	~Video();
@@ -40,7 +46,6 @@ private:
 
 	void clear();
 
-	static int connectionCallback(void* data);
 	static int interruptionCallback(void* data);
 
 	VideoManager* m_videoManager{nullptr};
@@ -57,4 +62,7 @@ private:
 	VideoState m_state;
 
 	bool m_isInitialized = false;
+	bool m_shouldStop = false;
+	CallbackState m_callbackState;
+	sf::Clock m_connectionTimer;
 };

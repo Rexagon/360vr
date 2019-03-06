@@ -35,6 +35,9 @@ void ej::Transform::setTransformationMatrix(const glm::mat4 & transformation)
 	glm::vec4 perspective;
 
 	decompose(transformation, m_scale, m_rotation, m_position, skew, perspective);
+	m_positionChanged = true;
+	m_rotationChanged = true;
+	m_scaleChanged = true;
 }
 
 glm::mat4 ej::Transform::getTransformationMatrix() const
@@ -94,7 +97,7 @@ glm::mat4 ej::Transform::getGlobalRotationMatrixInverse() const
 		return getRotationMatrixInverse();
 	}
 
-	return getRotationMatrixInverse() * m_parent->getRotationMatrix();
+	return getRotationMatrixInverse() * m_parent->getRotationMatrixInverse();
 }
 
 glm::mat4 ej::Transform::getScaleMatrix() const

@@ -49,18 +49,20 @@ void Video::initializationTask()
 	m_formatContext = avformat_alloc_context();
 
 	// Create connection callback
-	sf::Clock connectionTimer;
-	m_formatContext->interrupt_callback.opaque = static_cast<void*>(&connectionTimer);
-	m_formatContext->interrupt_callback.callback = &Video::connectionCallback;
+	m_connectionTimer.restart();
+	m_callbackState = CallbackState::Connection;
+	m_formatContext->interrupt_callback.opaque = static_cast<void*>(this);
+	m_formatContext->interrupt_callback.callback = &Video::interruptionCallback;
+
 
 	// Connect to data stream
 	if (avformat_open_input(&m_formatContext, m_file.data(), nullptr, nullptr) < 0) {
-		clear();
 		throw std::runtime_error("Could not open input file " + m_file + "\n");
 	}
 
-	// Remove callback
-	m_formatContext->interrupt_callback.callback = nullptr;
+	// Change callback
+	m_shouldStop = false;
+	m_callbackState = CallbackState::Interruption;
 
 	// Retrieve all stream information
 	if (avformat_find_stream_info(m_formatContext, nullptr) < 0) {
@@ -90,9 +92,6 @@ void Video::initializationTask()
 	m_audioStream->init();
 
 	m_isInitialized = true;
-
-	m_formatContext->interrupt_callback.opaque = static_cast<void*>(this);
-	m_formatContext->interrupt_callback.callback = &Video::interruptionCallback;
 
 	post(*m_videoManager->getService(), std::bind(&Video::receivingTask, this));
 	post(*m_videoManager->getService(), std::bind(&Video::decodingTask, this));
@@ -146,22 +145,13 @@ void Video::receive()
 void Video::clear()
 {
 	m_isInitialized = false;
+	m_shouldStop = true;
 
 	std::unique_lock<std::mutex> lockReceiver(m_receiverMutex);
 	m_videoStream.reset();
 	m_audioStream.reset();
 
 	avformat_close_input(&m_formatContext);
-}
-
-int Video::connectionCallback(void* data)
-{
-	if (data == nullptr) {
-		return 1;
-	}
-
-	const auto* clock = reinterpret_cast<sf::Clock*>(data);
-	return clock->getElapsedTime().asMilliseconds() > CONNECTION_TIMEOUT;
 }
 
 int Video::interruptionCallback(void* data)
@@ -171,5 +161,15 @@ int Video::interruptionCallback(void* data)
 	}
 
 	const auto* video = reinterpret_cast<Video*>(data);
-	return !video->isInitialized();
+
+	switch (video->m_callbackState) {
+	case CallbackState::Connection:
+		return video->m_connectionTimer.getElapsedTime().asMilliseconds() > CONNECTION_TIMEOUT;
+
+	case CallbackState::Interruption:
+		return video->m_shouldStop;
+
+	default: 
+		return 1;
+	}
 }

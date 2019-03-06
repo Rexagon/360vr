@@ -64,6 +64,18 @@ namespace ej
 		const std::vector<VRDeviceIndex>& getControllerIndices() const;
 
 		/**
+		 * \brief Get active tracking camera count
+		 * \return Active tracking camera count
+		 */
+		size_t getTrackerCount() const;
+
+		/**
+		 * \brief Get active tracking cameras
+		 * \return Const reference to active tracking cameras
+		 */
+		const std::vector<VRDeviceIndex>& getTrackerIndices() const;
+
+		/**
 		 * \brief Get eye projection
 		 * \param eye Left or Right eye
 		 * \param range Depth range for projection
@@ -186,6 +198,7 @@ namespace ej
 		bool m_isHmdConnected{ false };
 		VRDeviceIndex m_hmdDeviceIndex = -1;
 		std::vector<VRDeviceIndex> m_controllerDevicesIndices;
+		std::vector<VRDeviceIndex> m_trackerDevicesIndices;
 
 		std::array<std::bitset<vr::k_EButton_Max>, DEVICE_COUNT> m_currentButtonsState{};
 		std::array<std::bitset<vr::k_EButton_Max>, DEVICE_COUNT> m_lastButtonsState{};

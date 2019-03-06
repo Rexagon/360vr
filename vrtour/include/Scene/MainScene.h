@@ -12,6 +12,7 @@
 #include "Video/Video.h"
 #include "Scene/HeadSet.h"
 #include "Scene/DebugCamera.h"
+#include "Scene/SteamVRObject.h"
 #include "Rendering/TextureStreamer.h"
 
 class MainScene : public ej::Scene
@@ -49,5 +50,7 @@ private:
 	std::vector<std::pair<ej::MeshEntity, std::unique_ptr<ej::Material>>> m_entities;
 
 	std::unique_ptr<HeadSet> m_headSet;
+	std::unordered_map<ej::VRDeviceIndex, std::unique_ptr<SteamVRObject>> m_controllers;
+
 	std::unique_ptr<DebugCamera> m_debugCamera;
 };
