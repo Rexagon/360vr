@@ -28,7 +28,7 @@ void app::WidgetMaterial::bind()
 {
 	auto state = m_renderingManager->getState();
 
-	state->bindTexture(m_texture, 3);
+	state->bindTexture(m_texture, 5);
 
 	state->setCurrentShader(m_shader);
 

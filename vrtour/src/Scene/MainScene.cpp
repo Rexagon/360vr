@@ -39,10 +39,10 @@ void app::MainScene::onInit()
 	m_windowManager->getWindow().setVerticalSyncEnabled(m_vrManager == nullptr);
 
 	// Create scene structure
-	auto skyBoxTarget = createSkyBox();
+	createSkyBox();
 
 	// Load video config
-	json config;
+	/*json config;
 	try {
 		std::ifstream file("config.json");
 		file >> config;
@@ -82,7 +82,7 @@ void app::MainScene::onInit()
 	}
 	catch (const std::exception & e) {
 		printf("Video source not provided\n");
-	}
+	}*/
 }
 
 void app::MainScene::onUpdate(const float dt)
@@ -92,9 +92,9 @@ void app::MainScene::onUpdate(const float dt)
 		return;
 	}
 
-	for (auto& data : m_videos) {
+	/*for (auto& data : m_videos) {
 		data.streamer->write(data.target, data.video->getVideoStream());
-	}
+	}*/
 
 	if (m_debugCamera != nullptr) {
 		m_debugCamera->update(dt);
@@ -153,42 +153,13 @@ void app::MainScene::drawScene()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	auto renderer = m_renderingManager->getForwardRenderer();
-	for (auto& entity : m_entities) {
-		const auto mesh = &entity.first;
-		renderer->push(mesh);
-	}
+	
+	renderer->push(&m_skyBox.first);
+
 	renderer->draw();
 }
 
-ej::Texture* app::MainScene::createVideoTarget(const glm::vec3& position)
-{
-	static size_t targetCount = 0;
-
-	const auto mesh = getCore().get<ej::MeshManager>()->bind("carpet_mesh", []() {
-		return ej::MeshGeometry::createPlane(glm::vec2(1.1f, 1.0f));
-	}).get("carpet_mesh");
-
-	auto material = std::make_unique<SimpleMeshMaterial>(getCore());
-
-	const auto textureName = "carpet_" + std::to_string(targetCount++);
-
-	const auto texture = getCore().get<ej::TextureManager>()
-		->bind(textureName, "textures/carpet.jpg").get(textureName);
-
-	material->setDiffuseTexture(texture);
-	material->setTextureFlipped(true);
-
-	ej::MeshEntity entity(mesh, material.get());
-	entity.getTransform().setPosition(position);
-	entity.getTransform().setRotation(90.0f, 0.0f, 0.0f);
-	entity.getTransform().setScale(1.4f, 1.0f, 1.0f);
-
-	m_entities.emplace_back(entity, std::move(material));
-
-	return texture;
-}
-
-ej::Texture* app::MainScene::createSkyBox()
+void app::MainScene::createSkyBox()
 {
 	const auto mesh = getCore().get<ej::MeshManager>()->bind("skybox_mesh", []() {
 		return ej::MeshGeometry::createCube(glm::vec3(1.0f, 1.0f, 1.0f),
@@ -197,15 +168,9 @@ ej::Texture* app::MainScene::createSkyBox()
 
 	auto material = std::make_unique<SkyBoxMaterial>(getCore());
 
-	const auto texture = getCore().get<ej::TextureManager>()
-		->bind("loading", "textures/loading.jpg").get("loading");
-
-	material->setSkyTexture(texture);
-
-	ej::MeshEntity entity(mesh, material.get());
-	m_entities.emplace_back(std::move(entity), std::move(material));
-
-	return texture;
+	m_skyBox.first.setMesh(mesh);
+	m_skyBox.first.setMaterial(material.get());
+	m_skyBox.second = std::move(material);
 }
 
 void app::MainScene::createCamera()

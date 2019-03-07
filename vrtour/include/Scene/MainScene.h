@@ -13,21 +13,21 @@
 #include "Scene/HeadSet.h"
 #include "Scene/DebugCamera.h"
 #include "Scene/SteamVRObject.h"
+#include "Rendering/SkyboxMaterial.h"
 #include "Rendering/TextureStreamer.h"
 
 namespace app
 {
 	class MainScene final : public ej::Scene
 	{
-		struct VideoData final
+		struct Target final
 		{
-			VideoData(std::unique_ptr<Video> video, ej::Texture* target, std::unique_ptr<TextureStreamer> streamer) :
-				video(std::move(video)), target(target), streamer(std::move(streamer))
+			explicit Target(const ej::Core& core) :
+				streamer(core)
 			{}
 
-			std::unique_ptr<Video> video;
-			ej::Texture* target;
-			std::unique_ptr<TextureStreamer> streamer;
+			ej::Texture* target = nullptr;
+			TextureStreamer streamer;
 		};
 
 	public:
@@ -39,7 +39,7 @@ namespace app
 		void drawScene();
 
 		ej::Texture* createVideoTarget(const glm::vec3& position);
-		ej::Texture* createSkyBox();
+		void createSkyBox();
 		void createCamera();
 
 		ej::VRManager* m_vrManager = nullptr;
@@ -47,9 +47,10 @@ namespace app
 		ej::WindowManager* m_windowManager = nullptr;
 		ej::RenderingManager* m_renderingManager = nullptr;
 
-		std::vector<VideoData> m_videos;
+		std::vector<std::unique_ptr<Video>> m_videos;
+		std::unordered_map<std::string, Target> m_targets;
 
-		std::vector<std::pair<ej::MeshEntity, std::unique_ptr<ej::Material>>> m_entities;
+		std::pair<ej::MeshEntity, std::unique_ptr<SkyBoxMaterial>> m_skyBox{};
 
 		std::unique_ptr<HeadSet> m_headSet;
 		std::unordered_map<ej::VRDeviceIndex, std::unique_ptr<SteamVRObject>> m_controllers;
