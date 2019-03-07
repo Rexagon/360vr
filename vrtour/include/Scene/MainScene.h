@@ -1,5 +1,6 @@
 #pragma once
 
+#include <tuple>
 #include <memory>
 
 #include <Scene/MeshEntity.h>
@@ -20,14 +21,21 @@ namespace app
 {
 	class MainScene final : public ej::Scene
 	{
-		struct Target final
+		class Target final
 		{
-			explicit Target(const ej::Core& core) :
-				streamer(core)
-			{}
+		public:
+			Target(ej::Texture* texture, 
+				std::unique_ptr<TextureStreamer> streamer,
+				std::unique_ptr<Video> video);
 
-			ej::Texture* target = nullptr;
-			TextureStreamer streamer;
+			void write() const;
+
+			ej::Texture* getTexture() const;
+
+		private:
+			ej::Texture* m_texture = nullptr;
+			std::unique_ptr<TextureStreamer> m_streamer;
+			std::unique_ptr<Video> m_video;
 		};
 
 	public:
@@ -38,17 +46,22 @@ namespace app
 	private:
 		void drawScene();
 
-		ej::Texture* createVideoTarget(const glm::vec3& position);
 		void createSkyBox();
 		void createCamera();
+
+		void prepareTransition(const std::string& begin, const std::string& end);
 
 		ej::VRManager* m_vrManager = nullptr;
 		ej::InputManager* m_inputManager = nullptr;
 		ej::WindowManager* m_windowManager = nullptr;
 		ej::RenderingManager* m_renderingManager = nullptr;
 
-		std::vector<std::unique_ptr<Video>> m_videos;
 		std::unordered_map<std::string, Target> m_targets;
+
+		std::unordered_map<std::string, std::string> m_transitions;
+
+		std::pair<std::string, std::string> m_currentTransition;
+		std::pair<Target*, Target*> m_transitionPair{nullptr, nullptr};
 
 		std::pair<ej::MeshEntity, std::unique_ptr<SkyBoxMaterial>> m_skyBox{};
 

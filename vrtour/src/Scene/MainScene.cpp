@@ -9,9 +9,33 @@
 
 #include "Managers/VideoManager.h"
 #include "Rendering/SkyboxMaterial.h"
-#include "Rendering/SimpleMeshMaterial.h"
 
 using json = nlohmann::json;
+
+app::MainScene::Target::Target(ej::Texture* texture, 
+	std::unique_ptr<TextureStreamer> streamer,
+	std::unique_ptr<Video> video) :
+	m_texture(texture), m_streamer(std::move(streamer)), 
+	m_video(std::move(video))
+{
+}
+
+void app::MainScene::Target::write() const
+{
+	if (m_texture == nullptr ||
+		m_streamer == nullptr ||
+		m_video == nullptr)
+	{
+		return;
+	}
+
+	m_streamer->write(m_texture, m_video->getVideoStream());
+}
+
+ej::Texture* app::MainScene::Target::getTexture() const
+{
+	return m_texture;
+}
 
 void app::MainScene::onInit()
 {
@@ -41,48 +65,77 @@ void app::MainScene::onInit()
 	// Create scene structure
 	createSkyBox();
 
-	// Load video config
-	/*json config;
+	// Create video targets
 	try {
+		json config;
 		std::ifstream file("config.json");
 		file >> config;
 
-		const auto it = config.find("urls");
-		if (it == config.end() || !it.value().is_object() || it.value().empty()) {
-			throw std::exception();
+		const auto urlsList = config.find("urls");
+		if (urlsList == config.end() || 
+			!urlsList.value().is_object() || 
+			urlsList.value().empty()) 
+		{
+			throw std::runtime_error("Unable to find urls");
 		}
 
-		const auto videoCount = static_cast<float>(it.value().size() - 1);
+		for (auto it = urlsList->begin(); it != urlsList->end(); ++it) {
+			const auto& target = it.key();
+			const auto& url = it.value().get<std::string>();
 
-		const glm::vec3 step{ 0.0f, 2.2f, 0.0 };
-		const auto offset = -step * videoCount * 0.5f + glm::vec3(0.0f, 0.0f, -2.0f);
-		auto position = offset;
+			printf("Found video url: %s\n", url.c_str());
 
-		auto first = true;
-
-		for (const auto& url : it.value()) {
-			printf("Found video url: %s\n", url.get<std::string>().data());
-
-			auto video = std::make_unique<Video>(core, url.get<std::string>());
+			auto video = std::make_unique<Video>(core, url);
 			video->init();
 
-			if (first) {
-				m_videos.emplace_back(std::move(video), skyBoxTarget,
-					std::make_unique<TextureStreamer>());
+			const auto textureName = "target_" + target;
+			const auto texture = core.get<ej::TextureManager>()->bind(textureName, [this]() {
+				auto texture = std::make_unique<ej::Texture>(getCore());
+				texture->init(1920, 1080, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+				return texture;
+			}).get(textureName);
 
-				first = false;
-			}
-			else {
-				m_videos.emplace_back(std::move(video), createVideoTarget(position),
-					std::make_unique<TextureStreamer>());
+			auto textureStreamer = std::make_unique<TextureStreamer>(core);
+			textureStreamer->init();
 
-				position += step;
+			m_targets.try_emplace(target, 
+				Target{ texture, std::move(textureStreamer), std::move(video) });
+		}
+
+		const auto transitionsList = config.find("transitions");
+		if (transitionsList == config.end() ||
+			!transitionsList.value().is_array() ||
+			transitionsList.value().empty())
+		{
+			throw std::runtime_error("Unable to find transitions");
+		}
+
+		for (auto it = transitionsList->begin(); it != transitionsList->end(); ++it) {
+			const auto& transition = it.value();
+			if (!transition.is_object() ||
+				transition.find("begin") == transition.end() ||
+				transition.find("end") == transition.end()) {
+				continue;
 			}
+
+			const auto begin = transition.find("begin").value().get<std::string>();
+			const auto end = transition.find("end").value().get<std::string>();
+
+			m_transitions.try_emplace(begin, end);
 		}
 	}
-	catch (const std::exception & e) {
+	catch (const json::exception & e) {
+		printf("Error parsing video source: %s\n", e.what());
+	}
+	catch (const std::runtime_error& e) {
 		printf("Video source not provided\n");
-	}*/
+	}
+
+	if (!m_transitions.empty()) {
+		prepareTransition(
+			m_transitions.begin()->first, 
+			m_transitions.begin()->second);
+	}
 }
 
 void app::MainScene::onUpdate(const float dt)
@@ -92,9 +145,27 @@ void app::MainScene::onUpdate(const float dt)
 		return;
 	}
 
-	/*for (auto& data : m_videos) {
-		data.streamer->write(data.target, data.video->getVideoStream());
-	}*/
+	if (m_transitionPair.first != nullptr) {
+		m_transitionPair.first->write();
+	}
+
+
+	if (m_transitionPair.second != nullptr) {
+		m_transitionPair.second->write();
+	}
+
+	if (m_inputManager->getKeyDown(ej::Key::T)) {
+		const auto begin = m_currentTransition.first;
+		const auto end = m_currentTransition.second;
+		
+		prepareTransition(begin, end);
+		m_currentTransition.first = end;
+		m_currentTransition.second = begin;
+
+		m_skyBox.second->startTransition();		
+	}
+
+	m_skyBox.second->update(dt);
 
 	if (m_debugCamera != nullptr) {
 		m_debugCamera->update(dt);
@@ -178,4 +249,32 @@ void app::MainScene::createCamera()
 	m_debugCamera = std::make_unique<DebugCamera>(getCore());
 	m_debugCamera->getCameraEntity()->getTransform().setPosition(0.0f, 1.0f, 0.0f);
 	m_debugCamera->setRotationSpeed(-0.2f);
+}
+
+void app::MainScene::prepareTransition(const std::string& begin, const std::string& end)
+{
+	m_currentTransition.first = begin;
+	m_currentTransition.second = end;
+
+	auto it = m_targets.find(begin);
+	if (it != m_targets.end()) {
+		auto* target = &it->second;
+		m_transitionPair.first = target;
+		m_skyBox.second->setSkyTexture(target->getTexture());
+	}
+	else {
+		m_transitionPair.first = nullptr;
+		m_skyBox.second->setSkyTexture(nullptr);
+	}
+
+	it = m_targets.find(end);
+	if (it != m_targets.end()) {
+		auto* target = &it->second;
+		m_transitionPair.second = target;
+		m_skyBox.second->setNextSkyTexture(target->getTexture());
+	}
+	else {
+		m_transitionPair.second = nullptr;
+		m_skyBox.second->setNextSkyTexture(nullptr);
+	}
 }

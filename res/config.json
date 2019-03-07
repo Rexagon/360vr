@@ -1,8 +1,17 @@
 {
 	"urls": {
-		"insta 360": "rtmp://rtuitlab.ru/stream/test"
+		"insta 360": "rtmp://rtuitlab.ru/stream/test",
+		"japan tv": "http://192.240.127.34:1935/live/cs14.stream/playlist.m3u8",
+		"strange": "http://192.240.127.34:1935/live/cs19.stream/playlist.m3u8"
 	},
-	"japan tv": "http://192.240.127.34:1935/live/cs14.stream/playlist.m3u8",
-	"insta 360": "rtmp://rtuitlab.ru/stream/test",
-	"strange": "http://192.240.127.34:1935/live/cs19.stream/playlist.m3u8"
+	"transitions": [
+		{
+			"begin": "insta 360",
+			"end": "japan tv"
+		},
+		{
+			"begin": "japan tv",
+			"end": "insta 360"
+		}
+	]
 }
