@@ -79,6 +79,6 @@ namespace ej
 		 */
 		std::unique_ptr<Shader> load(const FactoryDataType& factoryData) override;
 
-		FileManager* m_fileManager{ nullptr };
+		FileManager* m_fileManager = nullptr;
 	};
 }

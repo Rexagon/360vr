@@ -4,17 +4,17 @@ extern "C" {
 #include <libavutil/imgutils.h>
 }
 
-VideoStream::VideoStream(VideoState& state, AVStream * stream) :
+app::VideoStream::VideoStream(VideoState& state, AVStream * stream) :
 	m_state(state), m_stream(stream)
 {
 }
 
-VideoStream::~VideoStream()
+app::VideoStream::~VideoStream()
 {
 	clear();
 }
 
-void VideoStream::init()
+void app::VideoStream::init()
 {
 	if (m_isInitialized) {
 		return;
@@ -77,7 +77,7 @@ void VideoStream::init()
 	m_isInitialized = true;
 }
 
-void VideoStream::clear()
+void app::VideoStream::clear()
 {
 	if (!m_isInitialized) {
 		return;
@@ -111,7 +111,7 @@ void VideoStream::clear()
 	m_hasStarted = false;
 }
 
-void VideoStream::receive(AVPacket* packet)
+void app::VideoStream::receive(AVPacket* packet)
 {
 	std::unique_lock<std::mutex> receiverLock(m_receiverMutex);
 
@@ -136,7 +136,7 @@ void VideoStream::receive(AVPacket* packet)
 	}
 }
 
-void VideoStream::decode()
+void app::VideoStream::decode()
 {
 	std::unique_lock<std::mutex> decoderLock(m_decoderMutex);
 
@@ -181,14 +181,19 @@ void VideoStream::decode()
 	av_frame_free(&frame);
 }
 
-void VideoStream::flush()
+void app::VideoStream::flush()
 {
 	if (m_isInitialized) {
 		avcodec_send_packet(m_decoderContext, nullptr);		
 	}
 }
 
-int VideoStream::getIndex() const
+bool app::VideoStream::isInitialized() const
+{
+	return m_isInitialized;
+}
+
+int app::VideoStream::getIndex() const
 {
 	if (!m_isInitialized) {
 		return -1;
@@ -197,27 +202,27 @@ int VideoStream::getIndex() const
 	return m_stream->index;
 }
 
-size_t VideoStream::shouldReceive() const
+size_t app::VideoStream::shouldReceive() const
 {
 	return m_frameQueue.size() < 256;
 }
 
-glm::uvec2 VideoStream::getSize() const
+glm::uvec2 app::VideoStream::getSize() const
 {
 	return m_size;
 }
 
-size_t VideoStream::getBufferSize() const
+size_t app::VideoStream::getBufferSize() const
 {
 	return m_bufferSize;
 }
 
-uint64_t VideoStream::getCurrentDecodingId() const
+uint64_t app::VideoStream::getCurrentDecodingId() const
 {
 	return m_decodingId;
 }
 
-bool VideoStream::writeVideoData(uint8_t* destination, size_t size, size_t decodingId)
+bool app::VideoStream::writeVideoData(uint8_t* destination, size_t size, size_t decodingId)
 {
 	std::lock_guard<std::mutex> lock(m_bufferMutex);
 
@@ -228,9 +233,4 @@ bool VideoStream::writeVideoData(uint8_t* destination, size_t size, size_t decod
 	std::memcpy(destination, m_buffer->data[0], size);
 
 	return true;
-}
-
-bool VideoStream::isInitialized() const
-{
-	return m_isInitialized;
 }

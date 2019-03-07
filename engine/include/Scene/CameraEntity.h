@@ -16,6 +16,6 @@ namespace ej
 		Camera* getCamera() const;
 
 	private:
-		Camera* m_camera{ nullptr };
+		Camera* m_camera = nullptr;
 	};
 }

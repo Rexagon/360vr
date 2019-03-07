@@ -1,6 +1,6 @@
 #include "Rendering/TextureStreamer.h"
 
-TextureStreamer::TextureStreamer()
+app::TextureStreamer::TextureStreamer()
 {
 	glGenBuffers(2, m_buffers);
 
@@ -11,13 +11,15 @@ TextureStreamer::TextureStreamer()
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 }
 
-TextureStreamer::~TextureStreamer()
+app::TextureStreamer::~TextureStreamer()
 {
 	glDeleteBuffers(2, m_buffers);
 }
 
-void TextureStreamer::write(ej::Texture* texture, VideoStream* stream)
+void app::TextureStreamer::write(ej::Texture* texture, VideoStream* stream)
 {
+	//TODO: fix rendering state resynchronization
+
 	if (texture == nullptr || stream == nullptr || 
 		stream->getCurrentDecodingId() == m_decodingId) 
 	{

@@ -3,7 +3,8 @@
 #include <glm/vec2.hpp>
 #include <glm/mat4x4.hpp>
 
-namespace ej {
+namespace ej 
+{
 	class Camera final
 	{
 	public:
@@ -60,25 +61,25 @@ namespace ej {
 		glm::vec2 getDepthRange() const;
 
 	protected:
-		glm::vec2 m_depthRange{0.0f};
+		glm::vec2 m_depthRange{ 0.0f, 0.0f };
 
-		ProjectionType m_projectionType{ Custom };
+		ProjectionType m_projectionType = Custom;
 
-		float m_fov{ 0.0f };
-		float m_aspect{ 0.0f };
+		float m_fov = 0.0f;
+		float m_aspect = 0.0f;
 
-		float m_left{0.0f};
-		float m_right{0.0f};
-		float m_bottom{0.0f};
-		float m_top{0.0f};
+		float m_left = 0.0f;
+		float m_right = 0.0f;
+		float m_bottom = 0.0f;
+		float m_top = 0.0f;
 
 		glm::mat4 m_viewMatrix{1.0f};
 		glm::mat4 m_globalTransformation{1.0f};
 
 		glm::mat4 m_projectionMatrix{1.0f};
-		bool m_projectionChanged{true};
+		bool m_projectionChanged = true;
 
 		mutable glm::mat4 m_viewProjectionMatrix{1.0f};
-		mutable bool m_viewProjectionChanged{true};
+		mutable bool m_viewProjectionChanged = true;
 	};
 }

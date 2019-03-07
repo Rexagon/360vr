@@ -52,6 +52,12 @@ namespace ej
 		void update();
 
 		/**
+		 * \brief Check initialization status
+		 * \return true if initialized
+		 */
+		bool isInitialized() const;
+
+		/**
 		 * \brief Get active controller count
 		 * \return Active controller count
 		 */
@@ -62,6 +68,18 @@ namespace ej
 		 * \return Const reference to active controllers
 		 */
 		const std::vector<VRDeviceIndex>& getControllerIndices() const;
+
+		/**
+		 * \brief Get active tracking camera count
+		 * \return Active tracking camera count
+		 */
+		size_t getTrackerCount() const;
+
+		/**
+		 * \brief Get active tracking cameras
+		 * \return Const reference to active tracking cameras
+		 */
+		const std::vector<VRDeviceIndex>& getTrackerIndices() const;
 
 		/**
 		 * \brief Get eye projection
@@ -143,12 +161,6 @@ namespace ej
 		glm::uvec2 getRenderTargetSize() const;
 
 		/**
-		 * \brief Check initialization status
-		 * \return true if initialized
-		 */
-		bool isInitialized() const;
-
-		/**
 		 * \brief Check head mounted device connection status
 		 * \return true if connected
 		 */
@@ -173,19 +185,21 @@ namespace ej
 		static bool checkHmdPresent();
 
 	private:
-		static const size_t DEVICE_COUNT = vr::k_unMaxTrackedDeviceCount;
-
 		void processEvent(const vr::VREvent_t & event);
 		void updateControllersInfo();
 
-		vr::IVRSystem* m_system{ nullptr };
-		vr::IVRCompositor* m_compositor{ nullptr };
-		vr::IVRRenderModels* m_renderModels{ nullptr };
+		static const size_t DEVICE_COUNT = vr::k_unMaxTrackedDeviceCount;
 
-		bool m_isInitialized{ false };
-		bool m_isHmdConnected{ false };
+		bool m_isInitialized = false;
+
+		vr::IVRSystem* m_system = nullptr;
+		vr::IVRCompositor* m_compositor = nullptr;
+		vr::IVRRenderModels* m_renderModels = nullptr;
+
+		bool m_isHmdConnected = false;
 		VRDeviceIndex m_hmdDeviceIndex = -1;
 		std::vector<VRDeviceIndex> m_controllerDevicesIndices;
+		std::vector<VRDeviceIndex> m_trackerDevicesIndices;
 
 		std::array<std::bitset<vr::k_EButton_Max>, DEVICE_COUNT> m_currentButtonsState{};
 		std::array<std::bitset<vr::k_EButton_Max>, DEVICE_COUNT> m_lastButtonsState{};

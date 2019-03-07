@@ -32,13 +32,13 @@ public:
 
 		provide<ej::VRManager>();
 
-		provide<VideoManager>();
-		provide<UIManager>();
+		provide<app::VideoManager>();
+		provide<app::UIManager>();
 
 		m_inputManager = provide<ej::InputManager>();
-		m_uiManager = provide<UIManager>();
+		m_uiManager = provide<app::UIManager>();
 
-		m_sceneManager = provide<ej::SceneManager>(std::make_unique<MainScene>());
+		m_sceneManager = provide<ej::SceneManager>(std::make_unique<app::MainScene>());
 	}
 
 	void onHandleEvent(const sf::Event& event) override
@@ -62,10 +62,10 @@ public:
 	}
 
 private:
-	ej::SceneManager* m_sceneManager;
-	UIManager* m_uiManager;
-
+	app::UIManager* m_uiManager;
 	ej::InputManager* m_inputManager;
+	ej::SceneManager* m_sceneManager;
+
 };
 
 EJ_MAIN(MyCore);

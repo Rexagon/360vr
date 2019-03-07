@@ -4,13 +4,16 @@
 #include <Rendering/WidgetMaterial.h>
 #include <Managers/RenderingManager.h>
 
-class RectangleWidget : public ej::Widget
+namespace app
 {
-public:
-	explicit RectangleWidget(const ej::Core& core);
+	class RectangleWidget : public ej::Widget
+	{
+	public:
+		explicit RectangleWidget(const ej::Core& core);
 
-	void update(float dt) override;
+		void update(float dt) override;
 
-private:
-	WidgetMaterial m_material;
-};
+	private:
+		WidgetMaterial m_material;
+	};
+}

@@ -55,7 +55,7 @@ namespace ej
 		UIRenderer* getUIRenderer() const;
 
 	protected:
-		WindowManager* m_windowManager{ nullptr };
+		WindowManager* m_windowManager = nullptr;
 
 		std::unique_ptr<RenderingState> m_renderingState{};
 

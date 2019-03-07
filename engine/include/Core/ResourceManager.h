@@ -1,6 +1,9 @@
 #pragma once
 
 #include <memory>
+#include <variant>
+#include <functional>
+#include <type_traits>
 #include <unordered_map>
 
 #include "Core.h"
@@ -20,6 +23,8 @@ namespace ej
 		using ResourceType = T;
 		using FactoryDataType = F;
 
+		using GenericLoader = std::function<std::unique_ptr<T>()>;
+
 		/**
 		 * \param core Owner of this manager
 		 */
@@ -30,7 +35,7 @@ namespace ej
 		 */
 		virtual ~ResourceManager() = default;
 
-		M& bind(const std::string& name, const FactoryDataType& factoryData);
+		M& bind(const std::string& name, const std::variant<F, GenericLoader>& factoryData);
 
 		/**
 		 * \brief Get resource by name
@@ -72,13 +77,13 @@ namespace ej
 		virtual std::unique_ptr<T> load(const F& factoryData) = 0;
 
 		std::unordered_map<std::string, std::unique_ptr<T>> m_resources;
-		std::unordered_map<std::string, F> m_factoryData;
+		std::unordered_map<std::string, std::variant<F, GenericLoader>> m_factoryData;
 	};
 }
 
 
 template <typename M, typename T, typename F>
-M& ej::ResourceManager<M, T, F>::bind(const std::string& name, const FactoryDataType& factoryData)
+M& ej::ResourceManager<M, T, F>::bind(const std::string& name, const std::variant<F, GenericLoader>& factoryData)
 {
 	m_factoryData.emplace(name, factoryData);
 	return *dynamic_cast<M*>(this);
@@ -91,7 +96,18 @@ T* ej::ResourceManager<M, T, F>::get(const std::string& name)
 	if (result == nullptr) {
 		const auto it = m_factoryData.find(name);
 		if (it != m_factoryData.end()) {
-			auto data = load(it->second);
+			std::unique_ptr<T> data{};
+
+			std::visit([&data, this](auto&& arg) {
+				using FT = std::decay_t<decltype(arg)>;
+				if constexpr (std::is_same_v<FT, F>) {
+					data = load(arg);
+				}
+				else if constexpr (std::is_same_v<FT, GenericLoader>) {
+					data = arg();
+				}
+			}, it->second);
+
 			result = data.get();
 			insert(name, data);
 		}

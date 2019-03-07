@@ -13,48 +13,60 @@ extern "C" {
 #include "VideoStream.h"
 #include "Managers/VideoManager.h"
 
-class Video final
+namespace app
 {
-public:
-	explicit Video(const ej::Core& core, const std::string& file);
-	~Video();
+	class Video final
+	{
+		enum class CallbackState
+		{
+			Connection,
+			Interruption,
+		};
 
-	void init();
+	public:
+		explicit Video(const ej::Core& core, const std::string& file);
+		~Video();
 
-	VideoStream* getVideoStream() const;
-	AudioStream* getAudioStream() const;
+		void init();
 
-	bool isInitialized() const;
+		VideoStream* getVideoStream() const;
+		AudioStream* getAudioStream() const;
 
-private:
-	/**
-	 * \brief Connection timeout in milliseconds
-	 */
-	static const int32_t CONNECTION_TIMEOUT = 10000;
+		bool isInitialized() const;
 
-	void initializationTask();
-	void receivingTask();
-	void decodingTask();
+	private:
+		void initializationTask();
+		void receivingTask();
+		void decodingTask();
 
-	void receive();
+		void receive();
 
-	void clear();
+		void clear();
 
-	static int connectionCallback(void* data);
-	static int interruptionCallback(void* data);
+		static int interruptionCallback(void* data);
 
-	VideoManager* m_videoManager{nullptr};
+		/**
+		 * \brief Connection timeout in milliseconds
+		 */
+		static const int32_t CONNECTION_TIMEOUT = 10000;
 
-	std::string m_file;
+		VideoManager* m_videoManager = nullptr;
 
-	std::mutex m_receiverMutex;
-	AVFormatContext* m_formatContext = nullptr;
-	AVPacket m_packet{};
+		bool m_isInitialized = false;
 
-	std::unique_ptr<VideoStream> m_videoStream;
-	std::unique_ptr<AudioStream> m_audioStream;
+		std::string m_file;
 
-	VideoState m_state;
+		std::mutex m_receiverMutex;
+		AVFormatContext* m_formatContext = nullptr;
+		AVPacket m_packet{};
 
-	bool m_isInitialized = false;
-};
+		std::unique_ptr<VideoStream> m_videoStream;
+		std::unique_ptr<AudioStream> m_audioStream;
+
+		VideoState m_state;
+
+		bool m_shouldStop = false;
+		CallbackState m_callbackState;
+		sf::Clock m_connectionTimer;
+	};
+}

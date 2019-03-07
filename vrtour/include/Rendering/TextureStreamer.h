@@ -6,17 +6,20 @@
 
 #include "Video/VideoStream.h"
 
-class TextureStreamer final
+namespace app
 {
-public:
-	TextureStreamer();
-	~TextureStreamer();
+	class TextureStreamer final
+	{
+	public:
+		TextureStreamer();
+		~TextureStreamer();
 
-	void write(ej::Texture* texture, VideoStream* stream);
+		void write(ej::Texture* texture, VideoStream* stream);
 
-private:
-	uint64_t m_decodingId{ 0 };
+	private:
+		uint64_t m_decodingId = 0;
 
-	GLuint m_buffers[2]{ 0 };
-	size_t m_currentBufferIndex{ 0 };
-};
+		GLuint m_buffers[2]{ 0 };
+		size_t m_currentBufferIndex = 0;
+	};
+}

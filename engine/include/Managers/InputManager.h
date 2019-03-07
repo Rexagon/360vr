@@ -148,21 +148,21 @@ namespace ej
 		glm::ivec2 getMousePosition() const;
 
 	private:
-		WindowManager* m_windowManager{ nullptr };
+		WindowManager* m_windowManager = nullptr;
 
-		bool m_anyKeyUp{ false };
-		bool m_anyKeyDown{ false };
+		bool m_anyKeyUp = false;
+		bool m_anyKeyDown = false;
 		KeysState m_currentKeysState;
 		KeysState m_lastKeysState;
 
-		bool m_anyMouseButtonUp{ false };
-		bool m_anyMouseButtonDown{ false };
+		bool m_anyMouseButtonUp = false;
+		bool m_anyMouseButtonDown = false;
 		MouseButtonsState m_currentMouseButtonsState;
 		MouseButtonsState m_lastMouseButtonsState;
 
 		glm::ivec2 m_lastMousePosition{};
 		glm::ivec2 m_currentMousePosition{};
 
-		float m_mouseWheelDelta{ 0.0f };
+		float m_mouseWheelDelta = 0.0f;
 	};
 }

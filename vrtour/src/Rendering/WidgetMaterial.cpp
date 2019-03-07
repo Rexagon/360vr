@@ -3,7 +3,7 @@
 #include <Managers/RenderingManager.h>
 #include <Managers/TextureManager.h>
 
-WidgetMaterial::WidgetMaterial(const ej::Core& core) :
+app::WidgetMaterial::WidgetMaterial(const ej::Core& core) :
 	Material(core)
 {
 	const std::string shaderName = "widget";
@@ -24,7 +24,7 @@ WidgetMaterial::WidgetMaterial(const ej::Core& core) :
 	m_shader->setUniform("uTexture", 3);
 }
 
-void WidgetMaterial::bind()
+void app::WidgetMaterial::bind()
 {
 	auto state = m_renderingManager->getState();
 
@@ -36,12 +36,12 @@ void WidgetMaterial::bind()
 	m_shader->setUniform("uHasTexture", static_cast<int>(m_texture != nullptr));
 }
 
-void WidgetMaterial::setColor(float r, float g, float b, float a)
+void app::WidgetMaterial::setColor(float r, float g, float b, float a)
 {
 	m_color = glm::vec4(r, g, b, a);
 }
 
-void WidgetMaterial::setColor(const sf::Color& color)
+void app::WidgetMaterial::setColor(const sf::Color& color)
 {
 	m_color = glm::vec4(
 		static_cast<float>(color.r) / 255.0f,
@@ -51,12 +51,12 @@ void WidgetMaterial::setColor(const sf::Color& color)
 	);
 }
 
-void WidgetMaterial::setColor(const glm::vec4& color)
+void app::WidgetMaterial::setColor(const glm::vec4& color)
 {
 	m_color = color;
 }
 
-const glm::vec4& WidgetMaterial::getColor() const
+const glm::vec4& app::WidgetMaterial::getColor() const
 {
 	return m_color;
 }

@@ -41,7 +41,7 @@ namespace ej
 		virtual void draw() = 0;
 
 	protected:
-		RenderingManager* m_renderingManager{ nullptr };
+		RenderingManager* m_renderingManager = nullptr;
 
 		std::vector<MeshEntity*> m_entities;
 	};

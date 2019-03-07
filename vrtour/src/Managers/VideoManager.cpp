@@ -8,7 +8,7 @@ extern "C" {
 #include <libavformat/avformat.h>
 }
 
-VideoManager::VideoManager(const ej::Core & core) :
+app::VideoManager::VideoManager(const ej::Core & core) :
 	BaseManager(core)
 {
 	m_threadCount = std::thread::hardware_concurrency();
@@ -21,7 +21,7 @@ VideoManager::VideoManager(const ej::Core & core) :
 	}
 }
 
-VideoManager::~VideoManager()
+app::VideoManager::~VideoManager()
 {
 	if (!m_isInitialized) {
 		return;
@@ -33,7 +33,7 @@ VideoManager::~VideoManager()
 	avformat_network_deinit();
 }
 
-void VideoManager::init()
+void app::VideoManager::init()
 {
 	if (m_isInitialized) {
 		return;
@@ -52,22 +52,22 @@ void VideoManager::init()
 	m_isInitialized = true;
 }
 
-bool VideoManager::isInitialized() const
+bool app::VideoManager::isInitialized() const
 {
 	return m_isInitialized;
 }
 
-asio::io_service* VideoManager::getService() const
+asio::io_service* app::VideoManager::getService() const
 {
 	return m_ioService.get();
 }
 
-asio::io_service::strand* VideoManager::getStrand() const
+asio::io_service::strand* app::VideoManager::getStrand() const
 {
 	return m_strand.get();
 }
 
-void VideoManager::worker()
+void app::VideoManager::worker()
 {
 	std::string threadId;
 	{

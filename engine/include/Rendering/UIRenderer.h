@@ -27,7 +27,7 @@ namespace ej
 		void draw() override;
 
 	private:
-		WindowManager* m_windowManager{ nullptr };
+		WindowManager* m_windowManager = nullptr;
 
 		Camera m_camera{};
 		CameraEntity m_cameraEntity;

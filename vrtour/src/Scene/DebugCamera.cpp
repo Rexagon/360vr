@@ -3,14 +3,14 @@
 #include <cmath>
 #include <Core/Core.h>
 
-DebugCamera::DebugCamera(const ej::Core & core) :
+app::DebugCamera::DebugCamera(const ej::Core & core) :
 	m_cameraEntity(&m_camera)
 {
 	m_inputManager = core.get<ej::InputManager>();
 	m_windowManager = core.get<ej::WindowManager>();
 }
 
-void DebugCamera::update(const float dt)
+void app::DebugCamera::update(const float dt)
 {
 	auto& transform = m_cameraEntity.getTransform();
 
@@ -61,27 +61,27 @@ void DebugCamera::update(const float dt)
 	m_cameraEntity.synchronizeView();
 }
 
-ej::CameraEntity* DebugCamera::getCameraEntity()
+ej::CameraEntity* app::DebugCamera::getCameraEntity()
 {
 	return &m_cameraEntity;
 }
 
-void DebugCamera::setMovementSpeed(const float speed)
+void app::DebugCamera::setMovementSpeed(const float speed)
 {
 	m_movementSpeed = speed;
 }
 
-float DebugCamera::getMovementSpeed() const
+float app::DebugCamera::getMovementSpeed() const
 {
 	return m_movementSpeed;
 }
 
-void DebugCamera::setRotationSpeed(const float speed)
+void app::DebugCamera::setRotationSpeed(const float speed)
 {
 	m_rotationSpeed = speed;
 }
 
-float DebugCamera::getRotationSpeed() const
+float app::DebugCamera::getRotationSpeed() const
 {
 	return m_rotationSpeed;
 }

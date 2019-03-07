@@ -9,5 +9,9 @@ ej::Renderer::Renderer(const Core& core)
 
 void ej::Renderer::push(MeshEntity* entity)
 {
+	if (entity == nullptr) {
+		return;
+	}
+
 	m_entities.push_back(entity);
 }

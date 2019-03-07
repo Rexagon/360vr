@@ -29,6 +29,6 @@ namespace ej
 		 */
 		std::unique_ptr<Texture> load(const std::string& path) override;
 
-		FileManager* m_fileManager{ nullptr };
+		FileManager* m_fileManager = nullptr;
 	};
 }

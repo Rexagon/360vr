@@ -5,21 +5,24 @@
 
 #include <Resources/Material.h>
 
-class TextMaterial final : public ej::Material
+namespace app
 {
-public:
-	explicit TextMaterial(const ej::Core& core);
+	class TextMaterial final : public ej::Material
+	{
+	public:
+		explicit TextMaterial(const ej::Core& core);
 
-	void bind() override;
+		void bind() override;
 
-	void setColor(float r, float g, float b, float a = 1.0f);
-	void setColor(const sf::Color& color);
-	void setColor(const glm::vec4& color);
-	const glm::vec4& getColor() const;
+		void setColor(float r, float g, float b, float a = 1.0f);
+		void setColor(const sf::Color& color);
+		void setColor(const glm::vec4& color);
+		const glm::vec4& getColor() const;
 
-	void setTexture(const sf::Texture* texture);
+		void setTexture(const sf::Texture* texture);
 
-private:
-	const sf::Texture* m_texture{ nullptr };
-	glm::vec4 m_color{ 1.0f };
-};
+	private:
+		const sf::Texture* m_texture = nullptr;
+		glm::vec4 m_color{ 1.0f };
+	};
+}

@@ -2,7 +2,7 @@
 
 #include <Managers/MeshManager.h>
 
-TextWidget::TextWidget(const ej::Core& core) :
+app::TextWidget::TextWidget(const ej::Core& core) :
 	Widget(core), m_material(core)
 {
 	const auto meshName = "text_mesh_" + std::to_string(reinterpret_cast<intptr_t>(this));
@@ -19,12 +19,12 @@ TextWidget::TextWidget(const ej::Core& core) :
 	initMesh(mesh, &m_material);
 }
 
-void TextWidget::update(float dt)
+void app::TextWidget::update(float dt)
 {
 	ensureGeometryUpdate();
 }
 
-void TextWidget::setText(const std::string& text)
+void app::TextWidget::setText(const std::string& text)
 {
 	if (m_text != text) {
 		m_text = text;
@@ -32,12 +32,12 @@ void TextWidget::setText(const std::string& text)
 	}
 }
 
-const std::string& TextWidget::getText() const
+const std::string& app::TextWidget::getText() const
 {
 	return m_text;
 }
 
-void TextWidget::setBold(const bool bold)
+void app::TextWidget::setBold(const bool bold)
 {
 	if (m_isBold != bold) {
 		m_isBold = bold;
@@ -45,12 +45,12 @@ void TextWidget::setBold(const bool bold)
 	}
 }
 
-bool TextWidget::isBold() const
+bool app::TextWidget::isBold() const
 {
 	return m_isBold;
 }
 
-void TextWidget::setCharacterSize(const unsigned int size)
+void app::TextWidget::setCharacterSize(const unsigned int size)
 {
 	if (m_characterSize != size) {
 		m_characterSize = size;
@@ -58,12 +58,12 @@ void TextWidget::setCharacterSize(const unsigned int size)
 	}
 }
 
-unsigned TextWidget::getCharacterSize() const
+unsigned app::TextWidget::getCharacterSize() const
 {
 	return m_characterSize;
 }
 
-void TextWidget::setLetterSpacing(const float spacingFactor)
+void app::TextWidget::setLetterSpacing(const float spacingFactor)
 {
 	if (m_letterSpacingFactor != spacingFactor) {
 		m_letterSpacingFactor = spacingFactor;
@@ -71,12 +71,12 @@ void TextWidget::setLetterSpacing(const float spacingFactor)
 	}
 }
 
-float TextWidget::getLetterSpacing() const
+float app::TextWidget::getLetterSpacing() const
 {
 	return m_letterSpacingFactor;
 }
 
-void TextWidget::setFont(sf::Font* font)
+void app::TextWidget::setFont(sf::Font* font)
 {
 	if (font != nullptr && m_font != font) {
 		m_font = font;
@@ -84,19 +84,19 @@ void TextWidget::setFont(sf::Font* font)
 	}
 }
 
-sf::Font* TextWidget::getFont() const
+sf::Font* app::TextWidget::getFont() const
 {
 	return m_font;
 }
 
-sf::FloatRect TextWidget::getBounds() const
+sf::FloatRect app::TextWidget::getBounds() const
 {
 	ensureGeometryUpdate();
 
 	return m_bounds;
 }
 
-void TextWidget::ensureGeometryUpdate() const
+void app::TextWidget::ensureGeometryUpdate() const
 {
 	if (m_font == nullptr || !m_geometryNeedUpdate) {
 		return;

@@ -132,7 +132,7 @@ namespace ej
 		virtual void onUpdate(float dt) = 0;
 
 	private:
-		bool m_isRunning{ false };
+		bool m_isRunning = false;
 		std::unordered_map<std::type_index, std::unique_ptr<BaseManager>> m_managers;
 	};
 

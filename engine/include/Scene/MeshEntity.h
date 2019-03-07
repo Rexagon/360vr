@@ -18,7 +18,7 @@ namespace ej
 		Material* getMaterial() const;
 
 	private:
-		Mesh* m_mesh{ nullptr };
-		Material* m_material{ nullptr };
+		Mesh* m_mesh = nullptr;
+		Material* m_material = nullptr;
 	};
 }

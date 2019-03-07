@@ -3,18 +3,21 @@
 #include <functional>
 #include <SFML/Audio/SoundStream.hpp>
 
-class AudioPlayer final : public sf::SoundStream
+namespace app
 {
-public:
-	using Provider = std::function<bool(int16_t const**, size_t&)>;
+	class AudioPlayer final : public sf::SoundStream
+	{
+	public:
+		using Provider = std::function<bool(int16_t const**, size_t&)>;
 
-	AudioPlayer(unsigned channelCount, unsigned sampleRate, const Provider& provider);
+		AudioPlayer(unsigned channelCount, unsigned sampleRate, const Provider& provider);
 
-protected:
-	bool onGetData(Chunk& data) override;
+	protected:
+		bool onGetData(Chunk& data) override;
 
-	void onSeek(sf::Time timeOffset) override;
+		void onSeek(sf::Time timeOffset) override;
 
-private:
-	Provider m_provider;
-};
+	private:
+		Provider m_provider;
+	};
+}

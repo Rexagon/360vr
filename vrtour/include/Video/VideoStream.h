@@ -15,56 +15,59 @@ extern "C" {
 
 #include "VideoState.h"
 
-class VideoStream
+namespace app
 {
-public:
-	VideoStream(VideoState& state, AVStream* stream);
-	~VideoStream();
+	class VideoStream
+	{
+	public:
+		VideoStream(VideoState& state, AVStream* stream);
+		~VideoStream();
 
-	void init();
-	void clear();
+		void init();
+		void clear();
 
-	void receive(AVPacket* packet);
-	void decode();
+		void receive(AVPacket* packet);
+		void decode();
 
-	void flush();
+		void flush();
 
-	int getIndex() const;
+		bool isInitialized() const;
 
-	size_t shouldReceive() const;
+		int getIndex() const;
 
-	glm::uvec2 getSize() const;
-	size_t getBufferSize() const;
+		size_t shouldReceive() const;
 
-	uint64_t getCurrentDecodingId() const;
-	bool writeVideoData(uint8_t* destination, size_t size, uint64_t decodingId);
+		glm::uvec2 getSize() const;
+		size_t getBufferSize() const;
 
-	bool isInitialized() const;
+		uint64_t getCurrentDecodingId() const;
+		bool writeVideoData(uint8_t* destination, size_t size, uint64_t decodingId);
 
-private:
-	VideoState& m_state;
-	AVStream* m_stream;
+	private:
+		bool m_isInitialized = false;
 
-	std::mutex m_receiverMutex;
+		VideoState& m_state;
+		AVStream* m_stream;
 
-	std::mutex m_decoderMutex;
-	AVCodec* m_decoder = nullptr;
-	AVCodecContext* m_decoderContext = nullptr;
-	SwsContext* m_swsContext = nullptr;
-	uint64_t m_decodingId = 0;
+		std::mutex m_receiverMutex;
 
-	std::mutex m_bufferMutex;
-	AVFrame* m_buffer = nullptr;
-	std::vector<uint8_t> m_bufferData;
+		std::mutex m_decoderMutex;
+		AVCodec* m_decoder = nullptr;
+		AVCodecContext* m_decoderContext = nullptr;
+		SwsContext* m_swsContext = nullptr;
+		uint64_t m_decodingId = 0;
 
-	glm::uvec2 m_size{};
-	size_t m_bufferSize = 0;
-	bool m_hasData = false;
+		std::mutex m_bufferMutex;
+		AVFrame* m_buffer = nullptr;
+		std::vector<uint8_t> m_bufferData;
 
-	std::mutex m_queueMutex;
-	std::list<AVFrame*> m_frameQueue;
+		glm::uvec2 m_size{};
+		size_t m_bufferSize = 0;
+		bool m_hasData = false;
 
-	bool m_hasStarted = false;
+		std::mutex m_queueMutex;
+		std::list<AVFrame*> m_frameQueue;
 
-	bool m_isInitialized = false;
-};
+		bool m_hasStarted = false;
+	};
+}

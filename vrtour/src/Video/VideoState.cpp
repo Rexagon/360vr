@@ -1,6 +1,6 @@
 #include "Video/VideoState.h"
 
-void VideoState::restart(double offset)
+void app::VideoState::restart(double offset)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 
@@ -9,39 +9,39 @@ void VideoState::restart(double offset)
 	m_videoOffset = 0.0;
 }
 
-void VideoState::updateAudioTimings(double dts, double delay)
+void app::VideoState::updateAudioTimings(double dts, double delay)
 {
 	m_lastAudioDts = dts;
 	m_lastAudioDelay = delay;
 }
 
-double VideoState::getCurrentTime() const
+double app::VideoState::getCurrentTime() const
 {
 	const auto dt = static_cast<double>(m_clock.getElapsedTime().asSeconds());
 	return m_timeOffset + dt;
 }
 
-void VideoState::setVideoOffset(double offset)
+void app::VideoState::setVideoOffset(const double offset)
 {
 	m_videoOffset = offset;
 }
 
-double VideoState::getVideoOffset() const
+double app::VideoState::getVideoOffset() const
 {
 	return m_videoOffset;
 }
 
-double VideoState::getNextAudioDts() const
+double app::VideoState::getNextAudioDts() const
 {
 	return m_lastAudioDts + m_lastAudioDelay;
 }
 
-double VideoState::getLastAudioDts() const
+double app::VideoState::getLastAudioDts() const
 {
 	return m_lastAudioDts;
 }
 
-double VideoState::getLastAudioDelay() const
+double app::VideoState::getLastAudioDelay() const
 {
 	return m_lastAudioDelay;
 }

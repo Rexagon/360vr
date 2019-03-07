@@ -16,7 +16,7 @@ namespace ej
 		/**
 		 * \param core Main core object
 		 */
-		Material(const Core& core);
+		explicit Material(const Core& core);
 
 		/**
 		 * \brief Default destructor
@@ -43,9 +43,9 @@ namespace ej
 		Shader* getShader() const;
 
 	protected:
-		ShaderManager* m_shaderManager{nullptr};
-		RenderingManager* m_renderingManager{nullptr};
+		ShaderManager* m_shaderManager = nullptr;
+		RenderingManager* m_renderingManager = nullptr;
 
-		Shader* m_shader{nullptr};
+		Shader* m_shader = nullptr;
 	};
 }

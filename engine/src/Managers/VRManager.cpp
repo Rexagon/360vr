@@ -81,6 +81,7 @@ void ej::VRManager::update()
 		{
 		case vr::TrackedDeviceClass_HMD:
 		case vr::TrackedDeviceClass_Controller:
+		case vr::TrackedDeviceClass_TrackingReference:
 			m_trackedDeviceMatrices[i] = convert(devicePose.mDeviceToAbsoluteTracking);
 			break;
 
@@ -88,6 +89,11 @@ void ej::VRManager::update()
 			break;
 		}
 	}
+}
+
+bool ej::VRManager::isInitialized() const
+{
+	return m_isInitialized;
 }
 
 size_t ej::VRManager::getControllerCount() const
@@ -102,6 +108,20 @@ size_t ej::VRManager::getControllerCount() const
 const std::vector<ej::VRDeviceIndex>& ej::VRManager::getControllerIndices() const
 {
 	return m_controllerDevicesIndices;
+}
+
+size_t ej::VRManager::getTrackerCount() const
+{
+	if (!m_isInitialized) {
+		return 0;
+	}
+
+	return m_trackerDevicesIndices.size();
+}
+
+const std::vector<ej::VRDeviceIndex>& ej::VRManager::getTrackerIndices() const
+{
+	return m_trackerDevicesIndices;
 }
 
 glm::mat4 ej::VRManager::getEyeProjectionMatrix(const vr::EVREye eye, const glm::vec2& range) const
@@ -239,11 +259,6 @@ glm::uvec2 ej::VRManager::getRenderTargetSize() const
 	return glm::uvec2(width, height);
 }
 
-bool ej::VRManager::isInitialized() const
-{
-	return m_isInitialized;
-}
-
 bool ej::VRManager::isHmdConnected() const
 {
 	return m_isHmdConnected;
@@ -301,21 +316,24 @@ void ej::VRManager::updateControllersInfo()
 
 	m_isHmdConnected = false;
 	m_controllerDevicesIndices.clear();
+	m_trackerDevicesIndices.clear();
 
 	for (uint32_t i = 0; i < vr::k_unMaxTrackedDeviceCount; i++) {
 		switch (vr::VRSystem()->GetTrackedDeviceClass(i)) {
-		case vr::TrackedDeviceClass_Controller:
-			m_controllerDevicesIndices.push_back(i);
-			printf("Controllers index: %d\n", i);
-			break;
-
 		case vr::TrackedDeviceClass_HMD:
 			m_isHmdConnected = true;
 			m_hmdDeviceIndex = i;
 			printf("HMD index: %d\n", i);
 			break;
 
-		case vr::TrackedDeviceClass_Invalid:
+		case vr::TrackedDeviceClass_Controller:
+			m_controllerDevicesIndices.push_back(i);
+			printf("Controller index: %d\n", i);
+			break;
+
+		case vr::TrackedDeviceClass_TrackingReference:
+			m_trackerDevicesIndices.push_back(i);
+			printf("Tracker index: %d\n", i);
 			break;
 
 		default: break;

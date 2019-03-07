@@ -2,7 +2,7 @@
 
 #include <Managers/RenderingManager.h>
 
-SkyBoxMaterial::SkyBoxMaterial(const ej::Core& core) :
+app::SkyBoxMaterial::SkyBoxMaterial(const ej::Core& core) :
 	Material(core)
 {
 	const std::string shaderName = "skybox";
@@ -20,7 +20,7 @@ SkyBoxMaterial::SkyBoxMaterial(const ej::Core& core) :
 	m_shader->setUniform("uSkyTexture", 2);
 }
 
-void SkyBoxMaterial::bind()
+void app::SkyBoxMaterial::bind()
 {
 	auto state = m_renderingManager->getState();
 
@@ -32,12 +32,12 @@ void SkyBoxMaterial::bind()
 	m_shader->setUniform("uHasTexture", static_cast<int>(m_skyTexture != nullptr));
 }
 
-void SkyBoxMaterial::setSkyTexture(ej::Texture* texture)
+void app::SkyBoxMaterial::setSkyTexture(ej::Texture* texture)
 {
 	m_skyTexture = texture;
 }
 
-ej::Texture* SkyBoxMaterial::getSkyTexture() const
+ej::Texture* app::SkyBoxMaterial::getSkyTexture() const
 {
 	return m_skyTexture;
 }

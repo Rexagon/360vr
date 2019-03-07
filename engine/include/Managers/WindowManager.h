@@ -41,6 +41,6 @@ namespace ej
 		glm::uvec2 getWindowSize() const;
 
 	private:
-		std::unique_ptr<sf::RenderWindow> m_window;
+		std::unique_ptr<sf::RenderWindow> m_window{};
 	};
 }
