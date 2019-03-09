@@ -46,6 +46,8 @@ bool app::Video::isInitialized() const
 
 void app::Video::initializationTask()
 {
+	std::unique_lock<std::mutex> lockReceiver(m_receiverMutex);
+
 	m_formatContext = avformat_alloc_context();
 
 	// Create connection callback
@@ -65,7 +67,6 @@ void app::Video::initializationTask()
 
 	// Retrieve all stream information
 	if (avformat_find_stream_info(m_formatContext, nullptr) < 0) {
-		clear();
 		throw std::runtime_error("Failed to retrieve input stream information\n");
 	}
 
@@ -163,7 +164,7 @@ int app::Video::interruptionCallback(void* data)
 
 	switch (video->m_callbackState) {
 	case CallbackState::Connection:
-		return video->m_connectionTimer.getElapsedTime().asMilliseconds() > CONNECTION_TIMEOUT;
+		return video->m_connectionTimer.getElapsedTime().asMilliseconds() > CONNECTION_TIMEOUT || video->m_shouldStop;
 
 	case CallbackState::Interruption:
 		return video->m_shouldStop;

@@ -10,9 +10,10 @@ ej::Transform::Transform(Transform* parent) :
 	m_parent(parent)
 {}
 
-void ej::Transform::setParent(Transform* parent)
+ej::Transform& ej::Transform::setParent(Transform* parent)
 {
 	m_parent = parent;
+	return *this;
 }
 
 ej::Transform* ej::Transform::getParent() const
@@ -114,30 +115,34 @@ glm::mat4 ej::Transform::getScaleMatrixInverse() const
 	return m_scaleMatrixInverse;
 }
 
-void ej::Transform::move(float x, float y, float z)
+ej::Transform& ej::Transform::move(float x, float y, float z)
 {
 	m_position.x += x;
 	m_position.y += y;
 	m_position.z += z;
 	m_positionChanged = true;
+	return *this;
 }
 
-void ej::Transform::move(const glm::vec3 & vector)
+ej::Transform& ej::Transform::move(const glm::vec3 & vector)
 {
 	m_position += vector;
 	m_positionChanged = true;
+	return *this;
 }
 
-void ej::Transform::setPosition(float x, float y, float z)
+ej::Transform& ej::Transform::setPosition(float x, float y, float z)
 {
 	m_position = glm::vec3(x, y, z);
 	m_positionChanged = true;
+	return *this;
 }
 
-void ej::Transform::setPosition(const glm::vec3 & position)
+ej::Transform& ej::Transform::setPosition(const glm::vec3 & position)
 {
 	m_position = position;
 	m_positionChanged = true;
+	return *this;
 }
 
 glm::vec3 ej::Transform::getPosition() const
@@ -154,46 +159,52 @@ glm::vec3 ej::Transform::getGlobalPosition() const
 	return m_parent->getGlobalTransformationMatrix() * glm::vec4(getPosition(), 1.0f);
 }
 
-void ej::Transform::rotate(float x, float y, float z)
+ej::Transform& ej::Transform::rotate(float x, float y, float z)
 {
 	m_rotation = glm::quat(glm::vec3(glm::radians(x), glm::radians(y), glm::radians(z))) * m_rotation;
 	m_rotation = normalize(m_rotation);
 	m_rotationChanged = true;
+	return *this;
 }
 
-void ej::Transform::rotate(const glm::vec3 & eulerAngles)
+ej::Transform& ej::Transform::rotate(const glm::vec3 & eulerAngles)
 {
 	m_rotation = glm::quat(radians(eulerAngles)) * m_rotation;
 	m_rotation = normalize(m_rotation);
 	m_rotationChanged = true;
+	return *this;
 }
 
-void ej::Transform::rotate(const glm::quat & rotation)
+ej::Transform& ej::Transform::rotate(const glm::quat & rotation)
 {
 	m_rotation = rotation * m_rotation;
 	m_rotation = normalize(m_rotation);
 	m_rotationChanged = true;
+	return *this;
 }
 
-void ej::Transform::setRotation(float x, float y, float z)
+ej::Transform& ej::Transform::setRotation(float x, float y, float z)
 {
 	m_rotation = glm::quat(glm::vec3(glm::radians(x), glm::radians(y), glm::radians(z)));
 	m_rotation = normalize(m_rotation);
 	m_rotationChanged = true;
+	return *this;
 }
 
-void ej::Transform::setRotation(const glm::vec3 & eulerAngles)
+ej::Transform& ej::Transform::setRotation(const glm::vec3 & eulerAngles)
 {
 	m_rotation = glm::quat(glm::radians(eulerAngles));
 	m_rotation = normalize(m_rotation);
 	m_rotationChanged = true;
+	return *this;
 }
 
-void ej::Transform::setRotation(const glm::quat & rotation)
+ej::Transform& ej::Transform::setRotation(const glm::quat & rotation)
 {
 	m_rotation = rotation;
 	m_rotation = normalize(m_rotation);
 	m_rotationChanged = true;
+	return *this;
 }
 
 glm::quat ej::Transform::getRotation() const
@@ -206,40 +217,46 @@ glm::vec3 ej::Transform::getEulerRotation() const
 	return eulerAngles(m_rotation);
 }
 
-void ej::Transform::scale(float s)
+ej::Transform& ej::Transform::scale(float s)
 {
 	m_scale *= s;
 	m_scaleChanged = true;
+	return *this;
 }
 
-void ej::Transform::scale(float x, float y, float z)
+ej::Transform& ej::Transform::scale(float x, float y, float z)
 {
 	m_scale *= glm::vec3(x, y, z);
 	m_scaleChanged = true;
+	return *this;
 }
 
-void ej::Transform::scale(const glm::vec3 & s)
+ej::Transform& ej::Transform::scale(const glm::vec3 & s)
 {
 	m_scale *= s;
 	m_scaleChanged = true;
+	return *this;
 }
 
-void ej::Transform::setScale(float s)
+ej::Transform& ej::Transform::setScale(float s)
 {
 	m_scale = glm::vec3(s, s, s);
 	m_scaleChanged = true;
+	return *this;
 }
 
-void ej::Transform::setScale(float x, float y, float z)
+ej::Transform& ej::Transform::setScale(float x, float y, float z)
 {
 	m_scale = glm::vec3(x, y, z);
 	m_scaleChanged = true;
+	return *this;
 }
 
-void ej::Transform::setScale(const glm::vec3 & s)
+ej::Transform& ej::Transform::setScale(const glm::vec3 & s)
 {
 	m_scale = s;
 	m_scaleChanged = true;
+	return *this;
 }
 
 glm::vec3 ej::Transform::getScale() const

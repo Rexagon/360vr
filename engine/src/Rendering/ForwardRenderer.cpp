@@ -42,6 +42,7 @@ void ej::ForwardRenderer::draw()
 		shader->setUniform("uCameraViewProjectionMatrix", camera->getViewProjectionMatrix());
 		shader->setUniform("uCameraRotationMatrix", cameraTransform.getGlobalRotationMatrixInverse());
 		shader->setUniform("uCameraPosition", cameraTransform.getGlobalPosition());
+		shader->setUniform("uCameraDirection", cameraTransform.getDirectionFront());
 
 		shader->setUniform("uMeshTransformation", meshTransform.getGlobalTransformationMatrix());
 		shader->setUniform("uMeshPosition", meshTransform.getGlobalPosition());

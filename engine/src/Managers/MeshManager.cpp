@@ -89,7 +89,7 @@ std::unique_ptr<ej::Mesh> ej::MeshManager::load(const std::string& filename)
 		else if (tokens[0] == "vn" && tokens.size() == 4) {
 			// Parse normal
 			glm::vec3 normal;
-			for (size_t i = 0; i < 2; ++i) {
+			for (size_t i = 0; i < 3; ++i) {
 				normal[i] = std::stof(std::string{ tokens[i + 1] });
 			}
 			normals.emplace_back(normal);
@@ -111,13 +111,13 @@ std::unique_ptr<ej::Mesh> ej::MeshManager::load(const std::string& filename)
 				auto& vertex = vertices.back();
 
 				const auto subtokens = split(token, '/');
-				if (subtokens.size() > 0) {
+				if (subtokens.size() > 0 && !subtokens[0].empty()) {
 					vertex.positionIndex = std::stoull(std::string{ subtokens[0] }) - 1;
 				}
-				if (subtokens.size() > 1) {
+				if (subtokens.size() > 1 && !subtokens[1].empty()) {
 					vertex.texCoordsIndex = std::stoull(std::string{ subtokens[1] }) - 1;
 				}
-				if (subtokens.size() > 2) {
+				if (subtokens.size() > 2 && !subtokens[2].empty()) {
 					vertex.normalIndex = std::stoull(std::string{ subtokens[2] }) - 1;
 				}
 
@@ -151,10 +151,10 @@ std::unique_ptr<ej::Mesh> ej::MeshManager::load(const std::string& filename)
 			meshGeometry.positions.emplace_back(positions[vertex.positionIndex]);
 		}
 		if (hasTexCoords) {
-			meshGeometry.texCoords.emplace_back(positions[vertex.texCoordsIndex]);
+			meshGeometry.texCoords.emplace_back(textureCoords[vertex.texCoordsIndex]);
 		}
 		if (hasNormals) {
-			meshGeometry.normals.emplace_back(positions[vertex.normalIndex]);
+			meshGeometry.normals.emplace_back(normals[vertex.normalIndex]);
 		}
 	}
 

@@ -53,10 +53,16 @@ void app::MainScene::onInit()
 	createCamera();
 
 	if (ej::VRManager::checkHmdPresent()) {
-		m_vrManager = core.get<ej::VRManager>();
-		m_vrManager->init();
+		try {
+			m_vrManager = core.get<ej::VRManager>();
+			m_vrManager->init();
 
-		m_headSet = std::make_unique<HeadSet>(core);
+			m_headSet = std::make_unique<HeadSet>(core);
+		}
+		catch(const std::runtime_error& e) {
+			m_vrManager = nullptr;
+			printf("%s\n", e.what());
+		}
 	}
 
 	// Enable VSync only on desktop
@@ -64,6 +70,19 @@ void app::MainScene::onInit()
 
 	// Create scene structure
 	createSkyBox();
+
+	// Create test mesh
+	auto mesh = core.get<ej::MeshManager>()->bind("test_mesh", "meshes/uv_sphere.obj").get("test_mesh");
+	auto material = std::make_unique<SimpleMeshMaterial>(core);
+	ej::MeshEntity entity{ mesh, material.get() };
+
+	entity.getTransform()
+		.scale(0.5f)
+		.move(0.0f, 0.0f, -5.0f);
+
+	material->setColor(0.9f, 0.1f, 0.1f);
+
+	m_entities.emplace_back(entity, std::move(material));
 
 	// Create video targets
 	try {
@@ -223,7 +242,9 @@ void app::MainScene::drawScene()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	auto renderer = m_renderingManager->getForwardRenderer();
-	
+	for (auto& it : m_entities) {
+		renderer->push(&it.first);
+	}
 	renderer->push(&m_skyBox.first);
 
 	renderer->draw();

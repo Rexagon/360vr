@@ -10,7 +10,7 @@ namespace ej
 	public:
 		explicit Transform(Transform* parent = nullptr);
 
-		void setParent(Transform* parent);
+		Transform& setParent(Transform* parent);
 		Transform* getParent() const;
 
 		glm::mat4 getGlobalTransformationMatrix() const;
@@ -29,28 +29,28 @@ namespace ej
 		glm::mat4 getScaleMatrix() const;
 		glm::mat4 getScaleMatrixInverse() const;
 
-		void move(float x, float y, float z);
-		void move(const glm::vec3& vector);
-		void setPosition(float x, float y, float z);
-		void setPosition(const glm::vec3& position);
+		Transform& move(float x, float y, float z);
+		Transform& move(const glm::vec3& vector);
+		Transform& setPosition(float x, float y, float z);
+		Transform& setPosition(const glm::vec3& position);
 		glm::vec3 getPosition() const;
 		glm::vec3 getGlobalPosition() const;
 
-		void rotate(float x, float y, float z);
-		void rotate(const glm::vec3& eulerAngles);
-		void rotate(const glm::quat& rotation);
-		void setRotation(float x, float y, float z);
-		void setRotation(const glm::vec3& eulerAngles);
-		void setRotation(const glm::quat& rotation);
+		Transform& rotate(float x, float y, float z);
+		Transform& rotate(const glm::vec3& eulerAngles);
+		Transform& rotate(const glm::quat& rotation);
+		Transform& setRotation(float x, float y, float z);
+		Transform& setRotation(const glm::vec3& eulerAngles);
+		Transform& setRotation(const glm::quat& rotation);
 		glm::quat getRotation() const;
 		glm::vec3 getEulerRotation() const;
 
-		void scale(float s);
-		void scale(float x, float y, float z);
-		void scale(const glm::vec3& s);
-		void setScale(float s);
-		void setScale(float x, float y, float z);
-		void setScale(const glm::vec3& s);
+		Transform& scale(float s);
+		Transform& scale(float x, float y, float z);
+		Transform& scale(const glm::vec3& s);
+		Transform& setScale(float s);
+		Transform& setScale(float x, float y, float z);
+		Transform& setScale(const glm::vec3& s);
 		glm::vec3 getScale() const;
 
 		glm::vec3 getDirectionFront() const;

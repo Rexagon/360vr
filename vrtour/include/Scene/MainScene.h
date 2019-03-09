@@ -64,6 +64,8 @@ namespace app
 
 		std::pair<ej::MeshEntity, std::unique_ptr<SkyBoxMaterial>> m_skyBox{};
 
+		std::vector<std::pair<ej::MeshEntity, std::unique_ptr<ej::Material>>> m_entities;
+
 		std::unique_ptr<HeadSet> m_headSet;
 		std::unordered_map<ej::VRDeviceIndex, std::unique_ptr<SteamVRObject>> m_controllers;
 
