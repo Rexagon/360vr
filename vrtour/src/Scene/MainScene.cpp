@@ -84,6 +84,8 @@ void app::MainScene::onInit()
 
 	m_entities.emplace_back(entity, std::move(material));
 
+	m_collisionWorld.add(entity.getTransform().getGlobalPosition(), 0.5f, nullptr);
+
 	// Create video targets
 	try {
 		json config;
@@ -187,6 +189,15 @@ void app::MainScene::onUpdate(const float dt)
 
 	if (m_debugCamera != nullptr) {
 		m_debugCamera->update(dt);
+
+		const auto& transform = m_debugCamera->getCameraEntity()->getTransform();
+		void* data = nullptr;
+		if (m_collisionWorld.raycast(transform.getGlobalPosition(), transform.getDirectionFront(), data)) {
+			printf("Overlap!!\n");
+		}
+		else {
+			printf("Dont overlap!!\n");
+		}
 
 		m_renderingManager->getState()->setCurrentFrameBuffer(nullptr);
 

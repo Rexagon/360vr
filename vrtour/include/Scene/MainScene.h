@@ -9,6 +9,8 @@
 #include <Managers/WindowManager.h>
 #include <Managers/RenderingManager.h>
 
+#include "Scene/CollisionWorld.h"
+
 #include "Video/Video.h"
 #include "Scene/HeadSet.h"
 #include "Scene/DebugCamera.h"
@@ -70,5 +72,7 @@ namespace app
 		std::unordered_map<ej::VRDeviceIndex, std::unique_ptr<SteamVRObject>> m_controllers;
 
 		std::unique_ptr<DebugCamera> m_debugCamera;
+
+		CollisionWorld m_collisionWorld;
 	};
 }
