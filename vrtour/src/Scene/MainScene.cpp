@@ -89,8 +89,8 @@ void app::MainScene::onInit()
 			video->init();
 
 			const auto textureName = "target_" + target;
-			const auto texture = core.get<ej::TextureManager>()->bind(textureName, [this]() {
-				auto texture = std::make_unique<ej::Texture>(getCore());
+			const auto texture = core.get<ej::TextureManager>()->bind(textureName, [](const ej::Core& core) {
+				auto texture = std::make_unique<ej::Texture>(core);
 				texture->init(1920, 1080, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
 				return texture;
 			}).get(textureName);
@@ -148,7 +148,6 @@ void app::MainScene::onUpdate(const float dt)
 	if (m_transitionPair.first != nullptr) {
 		m_transitionPair.first->write();
 	}
-
 
 	if (m_transitionPair.second != nullptr) {
 		m_transitionPair.second->write();
@@ -232,9 +231,11 @@ void app::MainScene::drawScene()
 
 void app::MainScene::createSkyBox()
 {
-	const auto mesh = getCore().get<ej::MeshManager>()->bind("skybox_mesh", []() {
-		return ej::MeshGeometry::createCube(glm::vec3(1.0f, 1.0f, 1.0f),
-			ej::MeshGeometry::SIMPLE_VERTEX);
+	const auto mesh = getCore().get<ej::MeshManager>()->bind("skybox_mesh", [](const ej::Core& core) {
+		auto mesh = std::make_unique<ej::Mesh>(core);
+		mesh->init(ej::MeshGeometry::createCube(glm::vec3(1.0f, 1.0f, 1.0f),
+			ej::MeshGeometry::SIMPLE_VERTEX));
+		return mesh;
 	}).get("skybox_mesh");
 
 	auto material = std::make_unique<SkyBoxMaterial>(getCore());

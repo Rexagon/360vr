@@ -66,7 +66,7 @@ namespace app
 		VideoState m_state;
 
 		bool m_shouldStop = false;
-		CallbackState m_callbackState;
+		CallbackState m_callbackState = CallbackState::Connection;
 		sf::Clock m_connectionTimer;
 	};
 }

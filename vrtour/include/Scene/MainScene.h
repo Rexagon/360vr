@@ -1,6 +1,5 @@
 #pragma once
 
-#include <tuple>
 #include <memory>
 
 #include <Scene/MeshEntity.h>
