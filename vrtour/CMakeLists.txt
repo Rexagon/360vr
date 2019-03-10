@@ -12,6 +12,7 @@ set(SOURCES
 	"${SOURCE_DIR}/Rendering/TextMaterial.cpp"
 	"${SOURCE_DIR}/Rendering/TextureStreamer.cpp"
 	"${SOURCE_DIR}/Rendering/WidgetMaterial.cpp"
+	"${SOURCE_DIR}/Rendering/WireFrameMaterial.cpp"
 
 	"${SOURCE_DIR}/Scene/CollisionWorld.cpp"
 	"${SOURCE_DIR}/Scene/DebugCamera.cpp"

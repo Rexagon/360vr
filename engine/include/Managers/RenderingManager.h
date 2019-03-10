@@ -21,8 +21,7 @@ namespace ej
 		/**
 		 * \brief Constructor
 		 * 
-		 * Create and apply rendering state.
-		 * \see ej::RenderingState
+		 * Initialize GLEW
 		 * 
 		 * \param core Owner of this manager
 		 */
@@ -374,6 +373,11 @@ namespace ej
 
 		/**
 		 * \brief Bind current texture
+		 * 
+		 * Active texture will only be changed if pair of target/id is changed
+		 * for specified unit. To ensure active texture is changed call
+		 * RenderingManager::setActiveTexture()
+		 * 
 		 * \param textureTarget Target to which the texture is bound. Must be
 		 * one of GL_TEXTURE_1D, GL_TEXTURE_2D, GL_TEXTURE_3D,
 		 * GL_TEXTURE_1D_ARRAY, GL_TEXTURE_2D_ARRAY, GL_TEXTURE_RECTANGLE,
@@ -392,7 +396,7 @@ namespace ej
 		RenderingParameters m_renderingParameters;
 
 		GLint m_viewport[4]{};
-		GLclampf m_clearColor[4]{ 0.0f, 0.0f, 0.0f, 1.0f };
+		GLclampf m_clearColor[4]{ 0.2f, 0.2f, 0.2f, 1.0f };
 		float m_clearDepth = 1.0f;
 
 		GLuint m_currentShaderId = 0;

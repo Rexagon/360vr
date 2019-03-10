@@ -29,7 +29,7 @@ void app::TextMaterial::bind()
 {
 	if (m_texture != nullptr) {
 		m_renderingManager->bindTexture(GL_TEXTURE_2D, 
-			m_texture->getNativeHandle(), 4);
+			m_texture->getNativeHandle(), DEFAULT_TEXTURE_UNIT);
 	}
 
 	m_renderingManager->setCurrentShader(m_shader);

@@ -11,6 +11,7 @@
 
 #include <Rendering/ForwardRenderer.h>
 
+#include "Scene/StateGraph.h"
 #include "Scene/CollisionWorld.h"
 
 #include "Video/Video.h"
@@ -19,7 +20,6 @@
 #include "Scene/SteamVRObject.h"
 #include "Rendering/SkyboxMaterial.h"
 #include "Rendering/TextureStreamer.h"
-
 
 namespace app
 {
@@ -51,29 +51,25 @@ namespace app
 		void drawScene();
 
 		void createSkyBox();
+		void createWireFrame();
+		void createMarker();
 		void createCamera();
 
-		void prepareTransition(const std::string& begin, const std::string& end);
+		void updateTransition(float dt);
 
 		ej::VRManager* m_vrManager = nullptr;
 		ej::InputManager* m_inputManager = nullptr;
 		ej::WindowManager* m_windowManager = nullptr;
 		ej::RenderingManager* m_renderingManager = nullptr;
 
-		std::unordered_map<std::string, Target> m_targets;
+		StateGraph<Target> m_stateGraph;
 
-		std::unordered_map<std::string, std::string> m_transitions;
-
-		std::pair<std::string, std::string> m_currentTransition;
-		std::pair<Target*, Target*> m_transitionPair{nullptr, nullptr};
-
-		std::pair<ej::MeshEntity, std::unique_ptr<SkyBoxMaterial>> m_skyBox{};
-
+		SkyBoxMaterial* m_skyBoxMaterial = nullptr;
 		std::vector<std::pair<ej::MeshEntity, std::unique_ptr<ej::Material>>> m_entities;
 
-		std::unique_ptr<HeadSet> m_headSet;
 		std::unordered_map<ej::VRDeviceIndex, std::unique_ptr<SteamVRObject>> m_controllers;
 
+		std::unique_ptr<HeadSet> m_headSet;
 		std::unique_ptr<DebugCamera> m_debugCamera;
 
 		CollisionWorld m_collisionWorld;

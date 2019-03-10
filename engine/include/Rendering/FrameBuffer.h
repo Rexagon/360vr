@@ -6,6 +6,8 @@
 
 namespace ej 
 {
+	class RenderingManager;
+
 	/**
 	 * \brief OpenGL frame buffer wrapper
 	 */
@@ -48,6 +50,8 @@ namespace ej
 		GLuint getHandle() const;
 
 	private:
+		RenderingManager* m_renderingManager = nullptr;
+
 		bool m_isInitialized = false;
 
 		GLuint m_id = 0;

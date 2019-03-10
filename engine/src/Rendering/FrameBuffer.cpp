@@ -1,10 +1,12 @@
 #include "Rendering/FrameBuffer.h"
 
 #include <stdexcept>
+#include <Managers/RenderingManager.h>
 
 ej::FrameBuffer::FrameBuffer(const Core& core) :
 	m_colorTexture(core)
 {
+	m_renderingManager = core.get<RenderingManager>();
 }
 
 ej::FrameBuffer::~FrameBuffer()
@@ -31,12 +33,13 @@ void ej::FrameBuffer::init(const unsigned int width, const unsigned int height, 
 	}
 
 	glGenFramebuffers(1, &m_id);
-	glBindFramebuffer(GL_FRAMEBUFFER, m_id);
+	const auto lastFrameBufferId = m_renderingManager->getCurrentFrameBufferId();
+	m_renderingManager->setCurrentFrameBufferId(m_id);
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_colorTexture.getHandle(), 0);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_depthBuffer);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	m_renderingManager->setCurrentFrameBufferId(lastFrameBufferId);
 
 	m_isInitialized = true;
 }

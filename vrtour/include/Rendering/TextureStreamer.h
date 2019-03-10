@@ -26,6 +26,8 @@ namespace app
 		bool isInitialized() const;
 
 	private:
+		static const unsigned DEFAULT_TEXTURE_UNIT = 14;
+
 		ej::RenderingManager* m_renderingManager = nullptr;
 
 		bool m_isInitialized = false;

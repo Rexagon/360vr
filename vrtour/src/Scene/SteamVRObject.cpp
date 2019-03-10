@@ -122,6 +122,8 @@ bool app::SteamVRObject::tryLoadTexture()
 	m_texture->init(diffuseTexture->unWidth, diffuseTexture->unHeight,
 			GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, diffuseTexture->rubTextureMapData);
 
+	printf("Loaded texture: %u\n", m_texture->getHandle());
+
 	m_material.setDiffuseTexture(m_texture.get());
 	m_meshEntity.setMaterial(&m_material);
 	return true;

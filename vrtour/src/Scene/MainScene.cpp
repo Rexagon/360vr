@@ -9,6 +9,7 @@
 
 #include "Managers/VideoManager.h"
 #include "Rendering/SkyboxMaterial.h"
+#include "Rendering/WireFrameMaterial.h"
 
 using json = nlohmann::json;
 
@@ -45,9 +46,9 @@ void app::MainScene::onInit()
 	m_inputManager = core.get<ej::InputManager>();
 	m_windowManager = core.get<ej::WindowManager>();
 	m_renderingManager = core.get<ej::RenderingManager>();
+	m_renderingManager->synchronize();
 
 	core.get<VideoManager>()->init();
-	m_renderingManager->synchronize();
 
 	m_forwardRenderer = m_renderingManager->createRenderer<ej::ForwardRenderer>();
 
@@ -73,27 +74,17 @@ void app::MainScene::onInit()
 	// Create scene structure
 	createSkyBox();
 
-	// Create test mesh
-	auto mesh = core.get<ej::MeshManager>()->bind("test_mesh", "meshes/uv_sphere.obj").get("test_mesh");
-	auto material = std::make_unique<SimpleMeshMaterial>(core);
-	ej::MeshEntity entity{ mesh, material.get() };
+	// Create test meshes
+	createWireFrame();
+	createMarker();
 
-	entity.getTransform()
-		.scale(0.5f)
-		.move(0.0f, 0.0f, -5.0f);
-
-	material->setColor(0.9f, 0.1f, 0.1f);
-
-	m_entities.emplace_back(entity, std::move(material));
-
-	m_collisionWorld.add(entity.getTransform().getGlobalPosition(), 0.5f, nullptr);
-
-	// Create video targets
+	// Load data from config
 	try {
 		json config;
 		std::ifstream file("config.json");
 		file >> config;
 
+		// Read all targets
 		const auto urlsList = config.find("urls");
 		if (urlsList == config.end() || 
 			!urlsList.value().is_object() || 
@@ -121,10 +112,10 @@ void app::MainScene::onInit()
 			auto textureStreamer = std::make_unique<TextureStreamer>(core);
 			textureStreamer->init();
 
-			m_targets.try_emplace(target, 
-				Target{ texture, std::move(textureStreamer), std::move(video) });
+			m_stateGraph.addState(target, texture, std::move(textureStreamer), std::move(video));
 		}
 
+		// Read all transitions
 		const auto transitionsList = config.find("transitions");
 		if (transitionsList == config.end() ||
 			!transitionsList.value().is_array() ||
@@ -144,20 +135,21 @@ void app::MainScene::onInit()
 			const auto begin = transition.find("begin").value().get<std::string>();
 			const auto end = transition.find("end").value().get<std::string>();
 
-			m_transitions.try_emplace(begin, end);
+			m_stateGraph.addConnection(begin, end);
 		}
-	}
-	catch (const json::exception & e) {
-		printf("Error parsing video source: %s\n", e.what());
+
+		// Read first state
+		const auto firstState = config.find("begin");
+		if (firstState == config.end() ||
+			!firstState.value().is_string()) 
+		{
+			throw std::runtime_error("First state was not set");
+		}
+
+		m_stateGraph.setCurrentState(firstState.value().get<std::string>());
 	}
 	catch (const std::runtime_error& e) {
-		printf("Video source not provided\n");
-	}
-
-	if (!m_transitions.empty()) {
-		prepareTransition(
-			m_transitions.begin()->first, 
-			m_transitions.begin()->second);
+		printf("Config parsing error: %s\n", e.what());
 	}
 }
 
@@ -168,26 +160,7 @@ void app::MainScene::onUpdate(const float dt)
 		return;
 	}
 
-	if (m_transitionPair.first != nullptr) {
-		m_transitionPair.first->write();
-	}
-
-	if (m_transitionPair.second != nullptr) {
-		m_transitionPair.second->write();
-	}
-
-	if (m_inputManager->getKeyDown(ej::Key::T)) {
-		const auto begin = m_currentTransition.first;
-		const auto end = m_currentTransition.second;
-		
-		prepareTransition(begin, end);
-		m_currentTransition.first = end;
-		m_currentTransition.second = begin;
-
-		m_skyBox.second->startTransition();		
-	}
-
-	m_skyBox.second->update(dt);
+	updateTransition(dt);
 
 	if (m_debugCamera != nullptr) {
 		m_debugCamera->update(dt);
@@ -246,7 +219,6 @@ void app::MainScene::drawScene()
 	for (auto& it : m_entities) {
 		m_forwardRenderer->push(&it.first);
 	}
-	m_forwardRenderer->push(&m_skyBox.first);
 
 	m_renderingManager->draw();
 }
@@ -261,10 +233,74 @@ void app::MainScene::createSkyBox()
 	}).get("skybox_mesh");
 
 	auto material = std::make_unique<SkyBoxMaterial>(getCore());
+	m_skyBoxMaterial = material.get();
 
-	m_skyBox.first.setMesh(mesh);
-	m_skyBox.first.setMaterial(material.get());
-	m_skyBox.second = std::move(material);
+	ej::MeshEntity entity(mesh, material.get());
+	m_entities.emplace_back(entity, std::move(material));
+}
+
+void app::MainScene::createWireFrame()
+{
+	const auto meshName = "wireframe";
+
+	auto mesh = getCore().get<ej::MeshManager>()->bind(meshName, [](const ej::Core& core) {
+		auto mesh = std::make_unique<ej::Mesh>(core);
+
+		ej::MeshGeometry meshGeometry(ej::MeshGeometry::SIMPLE_VERTEX, GL_LINES);
+
+		const glm::vec2 halfSize{50.0f, 50.0f};
+		const glm::ivec2 segments{ 100, 100 };
+
+		unsigned int index = 0;
+
+		const size_t positionCount = (segments.x + 1) * 2 + (segments.y + 1) * 2;
+		meshGeometry.positions.reserve(positionCount);
+		meshGeometry.indices.reserve(positionCount);
+
+		for (auto i = 0; i <= segments.x; ++i) {
+			const auto x = -halfSize.x + 2.0f * halfSize.x * static_cast<float>(i) / segments.x;
+			meshGeometry.positions.emplace_back(x, 0.0f,-halfSize.y);
+			meshGeometry.positions.emplace_back(x, 0.0f, halfSize.y);
+			meshGeometry.indices.emplace_back(index++);
+			meshGeometry.indices.emplace_back(index++);
+		}
+
+		for (auto i = 0; i <= segments.y; ++i) {
+			const auto z = -halfSize.y + 2.0f * halfSize.y * static_cast<float>(i) / segments.y;
+			meshGeometry.positions.emplace_back(-halfSize.x, 0.0f, z);
+			meshGeometry.positions.emplace_back( halfSize.x, 0.0f, z);
+			meshGeometry.indices.emplace_back(index++);
+			meshGeometry.indices.emplace_back(index++);
+		}
+
+		mesh->init(meshGeometry);
+
+		return mesh;
+	}).get(meshName);
+	auto material = std::make_unique<WireFrameMaterial>(getCore());
+
+	ej::MeshEntity entity{ mesh, material.get() };
+
+	material->setColor(0.1f, 0.6f, 0.6f);
+
+	m_entities.emplace_back(entity, std::move(material));
+}
+
+void app::MainScene::createMarker()
+{
+	auto mesh = getCore().get<ej::MeshManager>()->bind("test_mesh", "meshes/uv_sphere.obj").get("test_mesh");
+	auto material = std::make_unique<SimpleMeshMaterial>(getCore());
+	ej::MeshEntity entity{ mesh, material.get() };
+
+	entity.getTransform()
+		.scale(0.5f)
+		.move(0.0f, 0.0f, -5.0f);
+
+	material->setColor(0.9f, 0.1f, 0.1f);
+
+	m_entities.emplace_back(entity, std::move(material));
+
+	m_collisionWorld.add(entity.getTransform().getGlobalPosition(), 0.5f, nullptr);
 }
 
 void app::MainScene::createCamera()
@@ -274,30 +310,25 @@ void app::MainScene::createCamera()
 	m_debugCamera->setRotationSpeed(-0.2f);
 }
 
-void app::MainScene::prepareTransition(const std::string& begin, const std::string& end)
+void app::MainScene::updateTransition(const float dt)
 {
-	m_currentTransition.first = begin;
-	m_currentTransition.second = end;
+	m_stateGraph.update(dt);
 
-	auto it = m_targets.find(begin);
-	if (it != m_targets.end()) {
-		auto* target = &it->second;
-		m_transitionPair.first = target;
-		m_skyBox.second->setSkyTexture(target->getTexture());
-	}
-	else {
-		m_transitionPair.first = nullptr;
-		m_skyBox.second->setSkyTexture(nullptr);
+	const auto& transition = m_stateGraph.getCurrentTransition();
+
+	ej::Texture* textureBegin = nullptr;
+	if (transition.begin != nullptr) {
+		transition.begin->data.write();
+		textureBegin = transition.begin->data.getTexture();
 	}
 
-	it = m_targets.find(end);
-	if (it != m_targets.end()) {
-		auto* target = &it->second;
-		m_transitionPair.second = target;
-		m_skyBox.second->setNextSkyTexture(target->getTexture());
+	ej::Texture* textureEnd = nullptr;
+	if (transition.end != nullptr) {
+		transition.end->data.write();
+		textureEnd = transition.end->data.getTexture();
 	}
-	else {
-		m_transitionPair.second = nullptr;
-		m_skyBox.second->setNextSkyTexture(nullptr);
-	}
+
+	m_skyBoxMaterial->setSkyTexture(textureBegin);
+	m_skyBoxMaterial->setNextSkyTexture(textureEnd);
+	m_skyBoxMaterial->setTransition(transition.value);
 }

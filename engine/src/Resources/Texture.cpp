@@ -31,6 +31,7 @@ bool ej::Texture::init(const unsigned int width, const GLenum internalFormat,
 	m_format = format;
 	m_type = type;
 
+	m_renderingManager->setActiveTexture(DEFAULT_TEXTURE_UNIT);
 	m_renderingManager->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 
 	glTexImage1D(m_target, 0, internalFormat, static_cast<GLsizei>(width), 
@@ -61,6 +62,7 @@ bool ej::Texture::init(const unsigned int width, const unsigned int height,
 	m_format = format;
 	m_type = type;
 
+	m_renderingManager->setActiveTexture(DEFAULT_TEXTURE_UNIT);
 	m_renderingManager->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 
 	glTexImage2D(m_target, 0, internalFormat, static_cast<GLsizei>(width), 
@@ -91,6 +93,7 @@ bool ej::Texture::init(unsigned int width, unsigned int height, unsigned int dep
 	m_format = format;
 	m_type = type;
 
+	m_renderingManager->setActiveTexture(DEFAULT_TEXTURE_UNIT);
 	m_renderingManager->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 
 	glTexImage3D(m_target, 0, internalFormat, static_cast<GLsizei>(width), 
@@ -112,6 +115,7 @@ void ej::Texture::resize(const unsigned int width, const unsigned int height,
 {
 	if (!m_initialized) return;
 
+	m_renderingManager->setActiveTexture(DEFAULT_TEXTURE_UNIT);
 	m_renderingManager->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 
 	switch (m_target) {
@@ -154,6 +158,7 @@ void ej::Texture::setFilters(const GLenum minFilter, const GLenum maxFilter)
 	m_maxFilter = maxFilter;
 
 	if (m_initialized) {
+		m_renderingManager->setActiveTexture(DEFAULT_TEXTURE_UNIT);
 		m_renderingManager->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 
 		if (m_minFilter != minFilter) {
@@ -208,6 +213,7 @@ void ej::Texture::setWrapMode(const GLenum wrapMode, const size_t component)
 		*wrapVariable = wrapMode;
 
 		if (m_initialized) {
+			m_renderingManager->setActiveTexture(DEFAULT_TEXTURE_UNIT);
 			m_renderingManager->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 			glTexParameteri(m_target, wrapComponent, wrapMode);
 		}
@@ -220,6 +226,7 @@ void ej::Texture::generateMipmap() const
 		return;
 	}
 
+	m_renderingManager->setActiveTexture(DEFAULT_TEXTURE_UNIT);
 	m_renderingManager->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 	glGenerateMipmap(m_target);
 }
