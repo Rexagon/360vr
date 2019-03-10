@@ -2,6 +2,7 @@
 
 #include "Resources/Shader.h"
 #include "Managers/ShaderManager.h"
+#include "Rendering/RenderingParameters.h"
 
 namespace ej
 {
@@ -42,9 +43,16 @@ namespace ej
 		 */
 		Shader* getShader() const;
 
+		/**
+		 * \return Material specific rendering parameters
+		 */
+		const RenderingParameters& getRenderingParameters() const;
+
 	protected:
 		ShaderManager* m_shaderManager = nullptr;
 		RenderingManager* m_renderingManager = nullptr;
+
+		RenderingParameters m_renderingParameters;
 
 		Shader* m_shader = nullptr;
 	};

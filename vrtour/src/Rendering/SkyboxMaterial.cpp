@@ -1,5 +1,6 @@
 #include "Rendering/SkyboxMaterial.h"
 
+#include <Rendering/ForwardRenderer.h>
 #include <Managers/RenderingManager.h>
 
 app::SkyBoxMaterial::SkyBoxMaterial(const ej::Core& core) :
@@ -16,20 +17,20 @@ app::SkyBoxMaterial::SkyBoxMaterial(const ej::Core& core) :
 
 	m_shader->setAttribute(0, "vPosition");
 
-	m_renderingManager->getState()->setCurrentShader(m_shader);
+	m_renderingManager->setCurrentShader(m_shader);
 	m_shader->setUniform("uSkyTexture", 2);
 	m_shader->setUniform("uNextSkyTexture", 3);
+
+	m_renderingParameters = ej::ForwardRenderer::createRenderingParameters();
+	m_renderingParameters.faceCullingSide = GL_FRONT;
 }
 
 void app::SkyBoxMaterial::bind()
 {
-	auto state = m_renderingManager->getState();
+	m_renderingManager->bindTexture(m_skyTexture, 2);
+	m_renderingManager->bindTexture(m_nextSkyTexture, 3);
 
-	state->setFaceCullingSide(GL_FRONT);
-	state->bindTexture(m_skyTexture, 2);
-	state->bindTexture(m_nextSkyTexture, 3);
-
-	state->setCurrentShader(m_shader);
+	m_renderingManager->setCurrentShader(m_shader);
 
 	m_shader->setUniform("uTransition", m_transition);
 	m_shader->setUniform("uHasTexture", static_cast<int>(m_skyTexture != nullptr));

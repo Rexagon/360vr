@@ -14,6 +14,11 @@ namespace ej
 	{
 	public:
 		/**
+		 * \return Default parameters for UI materials
+		 */
+		static RenderingParameters createRenderingParameters();
+
+		/**
 		 * \param core Owner of this manager
 		 */
 		explicit UIRenderer(const Core& core);

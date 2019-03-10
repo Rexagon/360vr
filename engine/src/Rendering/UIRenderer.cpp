@@ -3,6 +3,17 @@
 #include "Managers/WindowManager.h"
 #include "Managers/RenderingManager.h"
 
+ej::RenderingParameters ej::UIRenderer::createRenderingParameters()
+{
+	RenderingParameters renderingParameters;
+	renderingParameters.isDepthTestEnabled = false;
+	renderingParameters.isFaceCullingEnabled = false;
+	renderingParameters.isBlendingEnabled = true;
+	renderingParameters.blendingFunctionSrc = GL_SRC_ALPHA;
+	renderingParameters.blendingFunctionDst = GL_ONE_MINUS_SRC_ALPHA;
+	return renderingParameters;
+}
+
 ej::UIRenderer::UIRenderer(const Core& core) :
 	Renderer(core), m_cameraEntity(&m_camera)
 {
@@ -21,13 +32,6 @@ void ej::UIRenderer::draw()
 
 	m_cameraEntity.synchronizeView();
 
-	auto state = m_renderingManager->getState();
-
-	state->setDepthTestEnabled(false);
-	state->setFaceCullingEnabled(false);
-	state->setBlendingEnabled(true);
-	state->setBlendingFunctions(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	for (auto& entity : m_entities) {
 		if (entity->getMesh() == nullptr || entity->getMaterial() == nullptr ||
 			entity->getMaterial()->getShader() == nullptr) 
@@ -37,10 +41,12 @@ void ej::UIRenderer::draw()
 
 		const auto& meshTransform = entity->getTransform();
 
-		entity->getMaterial()->bind();
+		const auto& material = entity->getMaterial();
+		m_renderingManager->apply(material->getRenderingParameters());
+		material->bind();
 
 		auto shader = entity->getMaterial()->getShader();
-		state->setCurrentShader(shader);
+		m_renderingManager->setCurrentShader(shader);
 
 		shader->setUniform("uCameraViewProjectionMatrix", m_camera.getViewProjectionMatrix());
 		shader->setUniform("uMeshTransformation", meshTransform.getGlobalTransformationMatrix());

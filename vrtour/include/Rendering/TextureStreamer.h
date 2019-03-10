@@ -3,9 +3,13 @@
 #include <GL/glew.h>
 
 #include <Resources/Texture.h>
-#include <Managers/RenderingManager.h>
 
 #include "Video/VideoStream.h"
+
+namespace ej 
+{
+	class RenderingManager;
+}
 
 namespace app
 {

@@ -1,10 +1,14 @@
 #pragma once
 
 #include <Scene/Transform.h>
+#include <Scene/CameraEntity.h>
+#include <Managers/VRManager.h>
 #include <Rendering/FrameBuffer.h>
 
-#include <Managers/VRManager.h>
-#include <Managers/RenderingManager.h>
+namespace ej
+{
+	class RenderingManager;
+}
 
 namespace app
 {

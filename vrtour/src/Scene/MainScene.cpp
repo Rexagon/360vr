@@ -47,7 +47,9 @@ void app::MainScene::onInit()
 	m_renderingManager = core.get<ej::RenderingManager>();
 
 	core.get<VideoManager>()->init();
-	m_renderingManager->init();
+	m_renderingManager->synchronize();
+
+	m_forwardRenderer = m_renderingManager->createRenderer<ej::ForwardRenderer>();
 
 	// Create player
 	createCamera();
@@ -190,21 +192,12 @@ void app::MainScene::onUpdate(const float dt)
 	if (m_debugCamera != nullptr) {
 		m_debugCamera->update(dt);
 
-		const auto& transform = m_debugCamera->getCameraEntity()->getTransform();
-		void* data = nullptr;
-		if (m_collisionWorld.raycast(transform.getGlobalPosition(), transform.getDirectionFront(), data)) {
-			printf("Overlap!!\n");
-		}
-		else {
-			printf("Dont overlap!!\n");
-		}
-
-		m_renderingManager->getState()->setCurrentFrameBuffer(nullptr);
+		m_renderingManager->setCurrentFrameBuffer(nullptr);
 
 		const auto& windowSize = m_windowManager->getWindow().getSize();
-		m_renderingManager->getState()->setViewport(0, 0, windowSize.x, windowSize.y);
+		m_renderingManager->setViewport(0, 0, windowSize.x, windowSize.y);
 
-		m_renderingManager->getForwardRenderer()->setCameraEntity(m_debugCamera->getCameraEntity());
+		m_forwardRenderer->setCameraEntity(m_debugCamera->getCameraEntity());
 
 		drawScene();
 	}
@@ -221,9 +214,7 @@ void app::MainScene::onUpdate(const float dt)
 		for (size_t i = 0; i < 2; ++i) {
 			const auto eye = static_cast<vr::EVREye>(i);
 			m_headSet->bindEye(eye);
-			m_renderingManager
-				->getForwardRenderer()
-				->setCameraEntity(m_headSet->getCameraEntity(eye));
+			m_forwardRenderer->setCameraEntity(m_headSet->getCameraEntity(eye));
 
 			// Push all controller models to renderer
 			for (const auto& index : m_vrManager->getControllerIndices()) {
@@ -237,7 +228,7 @@ void app::MainScene::onUpdate(const float dt)
 				entity->getTransform().setTransformationMatrix(
 					m_vrManager->getDeviceTransformation(index));
 
-				m_renderingManager->getForwardRenderer()->push(entity);
+				m_forwardRenderer->push(entity);
 			}
 
 			// Finally draw scene
@@ -252,13 +243,12 @@ void app::MainScene::drawScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	auto renderer = m_renderingManager->getForwardRenderer();
 	for (auto& it : m_entities) {
-		renderer->push(&it.first);
+		m_forwardRenderer->push(&it.first);
 	}
-	renderer->push(&m_skyBox.first);
+	m_forwardRenderer->push(&m_skyBox.first);
 
-	renderer->draw();
+	m_renderingManager->draw();
 }
 
 void app::MainScene::createSkyBox()

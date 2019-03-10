@@ -5,7 +5,7 @@
 ej::Texture::Texture(const Core& core, const GLenum target) :
 	m_target(target)
 {
-	m_renderingState = core.get<RenderingManager>()->getState();
+	m_renderingManager = core.get<RenderingManager>();
 }
 
 ej::Texture::~Texture()
@@ -18,8 +18,8 @@ ej::Texture::~Texture()
 bool ej::Texture::init(const unsigned int width, const GLenum internalFormat, 
 	const GLenum format, const GLenum type, const void * data)
 {
-	if (m_initialized || m_renderingState == nullptr || 
-		m_target != GL_TEXTURE_1D || width == 0) 
+	if (m_initialized || m_target != GL_TEXTURE_1D || 
+		width == 0) 
 	{
 		return false;
 	}
@@ -31,7 +31,7 @@ bool ej::Texture::init(const unsigned int width, const GLenum internalFormat,
 	m_format = format;
 	m_type = type;
 
-	m_renderingState->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
+	m_renderingManager->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 
 	glTexImage1D(m_target, 0, internalFormat, static_cast<GLsizei>(width), 
 		0, format, type, data);
@@ -48,8 +48,8 @@ bool ej::Texture::init(const unsigned int width, const unsigned int height,
 	const GLenum internalFormat, const GLenum format, const GLenum type,
 	const void * data)
 {
-	if (m_initialized || m_renderingState == nullptr || 
-		m_target != GL_TEXTURE_2D || width == 0 || height == 0) 
+	if (m_initialized || m_target != GL_TEXTURE_2D || 
+		width == 0 || height == 0) 
 	{
 		return false;
 	}
@@ -61,7 +61,7 @@ bool ej::Texture::init(const unsigned int width, const unsigned int height,
 	m_format = format;
 	m_type = type;
 
-	m_renderingState->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
+	m_renderingManager->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 
 	glTexImage2D(m_target, 0, internalFormat, static_cast<GLsizei>(width), 
 		static_cast<GLsizei>(height), 0, format, type, data);
@@ -78,8 +78,8 @@ bool ej::Texture::init(const unsigned int width, const unsigned int height,
 bool ej::Texture::init(unsigned int width, unsigned int height, unsigned int depth, 
 	GLenum internalFormat, GLenum format, GLenum type, const void * data)
 {
-	if (m_initialized || m_renderingState == nullptr || 
-		m_target != GL_TEXTURE_3D || width == 0 || height == 0 || depth == 0) 
+	if (m_initialized || m_target != GL_TEXTURE_3D || 
+		width == 0 || height == 0 || depth == 0) 
 	{
 		return false;
 	}
@@ -91,7 +91,7 @@ bool ej::Texture::init(unsigned int width, unsigned int height, unsigned int dep
 	m_format = format;
 	m_type = type;
 
-	m_renderingState->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
+	m_renderingManager->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 
 	glTexImage3D(m_target, 0, internalFormat, static_cast<GLsizei>(width), 
 		static_cast<GLsizei>(height), static_cast<GLsizei>(depth), 
@@ -112,7 +112,7 @@ void ej::Texture::resize(const unsigned int width, const unsigned int height,
 {
 	if (!m_initialized) return;
 
-	m_renderingState->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
+	m_renderingManager->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 
 	switch (m_target) {
 		case GL_TEXTURE_1D:
@@ -154,7 +154,7 @@ void ej::Texture::setFilters(const GLenum minFilter, const GLenum maxFilter)
 	m_maxFilter = maxFilter;
 
 	if (m_initialized) {
-		m_renderingState->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
+		m_renderingManager->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 
 		if (m_minFilter != minFilter) {
 			glTexParameteri(m_target, GL_TEXTURE_MIN_FILTER, minFilter);
@@ -208,7 +208,7 @@ void ej::Texture::setWrapMode(const GLenum wrapMode, const size_t component)
 		*wrapVariable = wrapMode;
 
 		if (m_initialized) {
-			m_renderingState->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
+			m_renderingManager->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 			glTexParameteri(m_target, wrapComponent, wrapMode);
 		}
 	}
@@ -220,7 +220,7 @@ void ej::Texture::generateMipmap() const
 		return;
 	}
 
-	m_renderingState->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
+	m_renderingManager->bindTexture(m_target, m_id, DEFAULT_TEXTURE_UNIT);
 	glGenerateMipmap(m_target);
 }
 

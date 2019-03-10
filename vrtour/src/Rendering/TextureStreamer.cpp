@@ -1,5 +1,7 @@
 #include "Rendering/TextureStreamer.h"
 
+#include <Managers/RenderingManager.h>
+
 app::TextureStreamer::TextureStreamer(const ej::Core& core)
 {
 	m_renderingManager = core.get<ej::RenderingManager>();
@@ -42,12 +44,10 @@ void app::TextureStreamer::write(ej::Texture* texture, VideoStream* stream)
 		texture->resize(videoSize.x, videoSize.y);
 	}
 
-	auto* state = m_renderingManager->getState();
-
 	m_currentBufferIndex = (m_currentBufferIndex + 1) % 2;
 	const auto nextBufferIndex = (m_currentBufferIndex + 1) % 2;
 
-	state->bindTexture(GL_TEXTURE_2D, texture->getHandle(), 14);
+	m_renderingManager->bindTexture(GL_TEXTURE_2D, texture->getHandle(), 14);
 
 	const auto size = stream->getBufferSize();
 

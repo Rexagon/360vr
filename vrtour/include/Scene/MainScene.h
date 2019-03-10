@@ -9,6 +9,8 @@
 #include <Managers/WindowManager.h>
 #include <Managers/RenderingManager.h>
 
+#include <Rendering/ForwardRenderer.h>
+
 #include "Scene/CollisionWorld.h"
 
 #include "Video/Video.h"
@@ -17,6 +19,7 @@
 #include "Scene/SteamVRObject.h"
 #include "Rendering/SkyboxMaterial.h"
 #include "Rendering/TextureStreamer.h"
+
 
 namespace app
 {
@@ -74,5 +77,7 @@ namespace app
 		std::unique_ptr<DebugCamera> m_debugCamera;
 
 		CollisionWorld m_collisionWorld;
+
+		ej::ForwardRenderer* m_forwardRenderer = nullptr;
 	};
 }
