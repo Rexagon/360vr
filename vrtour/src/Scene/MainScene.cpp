@@ -162,6 +162,19 @@ void app::MainScene::onUpdate(const float dt)
 
 	updateTransition(dt);
 
+	if (m_inputManager->getKeyDown(ej::Key::T)) {
+		const auto& nextTransition = m_stateGraph.getCurrentState()->connections.front()->name;
+
+		m_stateGraph.startTransition(nextTransition);
+	}
+
+	for (const auto& [controllerIndex, object] : m_controllers) {
+		if (m_vrManager->getButtonDown(controllerIndex, ej::VRButton::k_EButton_SteamVR_Touchpad)) {
+			const auto& nextTransition = m_stateGraph.getCurrentState()->connections.front()->name;
+			m_stateGraph.startTransition(nextTransition);
+		}
+	}
+
 	if (m_debugCamera != nullptr) {
 		m_debugCamera->update(dt);
 

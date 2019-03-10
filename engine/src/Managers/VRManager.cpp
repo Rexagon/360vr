@@ -110,6 +110,33 @@ const std::vector<ej::VRDeviceIndex>& ej::VRManager::getControllerIndices() cons
 	return m_controllerDevicesIndices;
 }
 
+bool ej::VRManager::getButton(const VRDeviceIndex device, const VRButton button) const
+{
+	if (!m_isInitialized || device >= DEVICE_COUNT) {
+		return false;
+	}
+
+	return m_currentButtonsState[device][button];
+}
+
+bool ej::VRManager::getButtonDown(const VRDeviceIndex device, const VRButton button) const
+{
+	if (!m_isInitialized || device >= DEVICE_COUNT) {
+		return false;
+	}
+
+	return !m_lastButtonsState[device][button] && m_currentButtonsState[device][button];
+}
+
+bool ej::VRManager::getButtonUp(const VRDeviceIndex device, const VRButton button) const
+{
+	if (!m_isInitialized || device >= DEVICE_COUNT) {
+		return false;
+	}
+
+	return m_lastButtonsState[device][button] && !m_currentButtonsState[device][button];
+}
+
 size_t ej::VRManager::getTrackerCount() const
 {
 	if (!m_isInitialized) {

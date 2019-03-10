@@ -70,6 +70,30 @@ namespace ej
 		const std::vector<VRDeviceIndex>& getControllerIndices() const;
 
 		/**
+		 * \brief Get key state
+		 * \param device Device index
+		 * \param button Button code
+		 * \return true if pressed
+		 */
+		bool getButton(VRDeviceIndex device, VRButton button) const;
+
+		/**
+		 * \brief Check if key was pressed since last frame
+		 * \param device Device index
+		 * \param button Button code
+		 * \return true if pressed
+		 */
+		bool getButtonDown(VRDeviceIndex device, VRButton button) const;
+
+		/**
+		 * \brief Check if key was released since last frame
+		 * \param device Device index
+		 * \param button Button code
+		 * \return true if released
+		 */
+		bool getButtonUp(VRDeviceIndex device, VRButton button) const;
+
+		/**
 		 * \brief Get active tracking camera count
 		 * \return Active tracking camera count
 		 */
