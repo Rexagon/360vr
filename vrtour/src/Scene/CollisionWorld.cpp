@@ -45,6 +45,7 @@ void app::CollisionWorld::add(const glm::vec3& center, float radius, void* data)
 	auto shape = std::make_unique<btSphereShape>(radius);
 
 	object->setCollisionShape(shape.get());
+	object->setUserPointer(data);
 
 	m_collisionWorld->addCollisionObject(object.get());
 

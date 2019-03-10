@@ -7,7 +7,7 @@
 
 namespace app
 {
-	template<typename T>
+	template<typename T, typename C>
 	class StateGraph final
 	{
 	public:
@@ -21,7 +21,7 @@ namespace app
 			std::string name;
 			T data;
 
-			std::vector<State*> connections;
+			std::vector<std::pair<State*, C>> connections;
 		};
 
 		struct Transition final
@@ -41,11 +41,14 @@ namespace app
 
 		void setCurrentState(const std::string& name);
 
-		void addConnection(const std::string& begin, const std::string& end);
+		template<typename... Args>
+		void addConnection(const std::string& begin, const std::string& end, Args&&... args);
 
 		const State* getCurrentState() const;
 
 		void setTransitionSpeed(float speed);
+
+		bool wasTransitionFinished() const;
 
 		const Transition& getCurrentTransition() const;
 
@@ -55,13 +58,17 @@ namespace app
 		float m_transitionSpeed = 1.0f;
 		Transition m_currentTransition;
 
+		bool m_transitionFinished = false;
+
 		std::unordered_map<std::string, std::unique_ptr<State>> m_states;
 	};
 }
 
-template <typename T>
-void app::StateGraph<T>::update(const float dt)
+template <typename T, typename C>
+void app::StateGraph<T, C>::update(const float dt)
 {
+	m_transitionFinished = false;
+
 	if (m_currentTransition.begin == nullptr || 
 		m_currentTransition.isPaused) 
 	{
@@ -76,11 +83,13 @@ void app::StateGraph<T>::update(const float dt)
 
 		m_currentTransition.value = 0.0f;
 		m_currentTransition.isPaused = true;
+
+		m_transitionFinished = true;
 	}
 }
 
-template <typename T>
-void app::StateGraph<T>::startTransition(const std::string& name)
+template <typename T, typename C>
+void app::StateGraph<T, C>::startTransition(const std::string& name)
 {
 	const auto it = m_states.find(name);
 	if (it == m_states.end()) {
@@ -94,9 +103,9 @@ void app::StateGraph<T>::startTransition(const std::string& name)
 	m_currentTransition.isPaused = false;
 }
 
-template <typename T> 
+template <typename T, typename C>
 template <typename ... Args>
-const typename app::StateGraph<T>::State* app::StateGraph<T>::addState(const std::string& name, Args&& ... args)
+const typename app::StateGraph<T, C>::State* app::StateGraph<T, C>::addState(const std::string& name, Args&& ... args)
 {
 	auto state = std::make_unique<State>(name, std::forward<Args>(args)...);
 	const auto result = state.get();
@@ -104,8 +113,8 @@ const typename app::StateGraph<T>::State* app::StateGraph<T>::addState(const std
 	return result;
 }
 
-template <typename T>
-void app::StateGraph<T>::setCurrentState(const std::string& name)
+template <typename T, typename C>
+void app::StateGraph<T, C>::setCurrentState(const std::string& name)
 {
 	const auto it = m_states.find(name);
 	if (it == m_states.end()) {
@@ -120,8 +129,9 @@ void app::StateGraph<T>::setCurrentState(const std::string& name)
 	m_currentTransition.isPaused = true;
 }
 
-template <typename T>
-void app::StateGraph<T>::addConnection(const std::string& begin, const std::string& end)
+template <typename T, typename C>
+template <typename ... Args>
+void app::StateGraph<T, C>::addConnection(const std::string& begin, const std::string& end, Args&&... args)
 {
 	const auto itBegin = m_states.find(begin);
 	if (itBegin == m_states.end()) {
@@ -133,17 +143,17 @@ void app::StateGraph<T>::addConnection(const std::string& begin, const std::stri
 		return;
 	}
 
-	itBegin->second->connections.emplace_back(itEnd->second.get());
+	itBegin->second->connections.emplace_back(itEnd->second.get(), C{ std::forward<Args>(args)... });
 }
 
-template <typename T>
-const typename app::StateGraph<T>::State* app::StateGraph<T>::getCurrentState() const
+template <typename T, typename C>
+const typename app::StateGraph<T, C>::State* app::StateGraph<T, C>::getCurrentState() const
 {
 	return m_currentState;
 }
 
-template <typename T>
-void app::StateGraph<T>::setTransitionSpeed(const float speed)
+template <typename T, typename C>
+void app::StateGraph<T, C>::setTransitionSpeed(const float speed)
 {
 	if (speed <= 0.0f) {
 		return;
@@ -151,8 +161,14 @@ void app::StateGraph<T>::setTransitionSpeed(const float speed)
 	m_transitionSpeed = speed;
 }
 
-template <typename T>
-const typename app::StateGraph<T>::Transition& app::StateGraph<T>::getCurrentTransition() const
+template <typename T, typename C>
+bool app::StateGraph<T, C>::wasTransitionFinished() const
+{
+	return m_transitionFinished;
+}
+
+template <typename T, typename C>
+const typename app::StateGraph<T, C>::Transition& app::StateGraph<T, C>::getCurrentTransition() const
 {
 	return m_currentTransition;
 }

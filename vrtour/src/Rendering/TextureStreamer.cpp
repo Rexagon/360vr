@@ -47,7 +47,6 @@ void app::TextureStreamer::write(ej::Texture* texture, VideoStream* stream)
 	m_currentBufferIndex = (m_currentBufferIndex + 1) % 2;
 	const auto nextBufferIndex = (m_currentBufferIndex + 1) % 2;
 
-	m_renderingManager->setActiveTexture(DEFAULT_TEXTURE_UNIT);
 	m_renderingManager->bindTexture(GL_TEXTURE_2D, texture->getHandle(),
 		DEFAULT_TEXTURE_UNIT);
 

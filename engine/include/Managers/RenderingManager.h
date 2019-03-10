@@ -1,5 +1,7 @@
 #pragma once
 
+#include <bitset>
+
 #include <SFML/Graphics/Color.hpp>
 
 #include "Core/BaseManager.h"
@@ -403,7 +405,6 @@ namespace ej
 		GLuint m_currentFrameBufferId = 0;
 
 		size_t m_activeTextureUnit = 0;
-		std::pair<GLenum, GLuint> m_currentTextures[TEXTURE_COUNT]{ std::pair{0, 0} };
 
 		std::vector<std::unique_ptr<Renderer>> m_renderers;
 	};

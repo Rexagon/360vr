@@ -136,7 +136,7 @@ void app::Video::receive()
 		m_videoStream->receive(&m_packet);
 	}
 	else if (m_packet.stream_index == m_audioStream->getIndex()) {
-		m_audioStream->receive(&m_packet);
+		//m_audioStream->receive(&m_packet);
 	}
 
 	av_packet_unref(&m_packet);

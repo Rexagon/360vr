@@ -42,6 +42,8 @@ void app::MainScene::onInit()
 {
 	const auto& core = getCore();
 
+	//m_stateGraph.setTransitionSpeed(0.05f);
+
 	// Initialize managers
 	m_inputManager = core.get<ej::InputManager>();
 	m_windowManager = core.get<ej::WindowManager>();
@@ -76,7 +78,6 @@ void app::MainScene::onInit()
 
 	// Create test meshes
 	createWireFrame();
-	createMarker();
 
 	// Load data from config
 	try {
@@ -135,7 +136,23 @@ void app::MainScene::onInit()
 			const auto begin = transition.find("begin").value().get<std::string>();
 			const auto end = transition.find("end").value().get<std::string>();
 
-			m_stateGraph.addConnection(begin, end);
+			glm::vec3 position;
+
+			const auto positionData = transition.find("position");
+			if (positionData->is_array()) {
+				size_t component = 0;
+				for (auto positionIt = positionData->begin(); positionIt != positionData->end(); ++positionIt) {
+					if (positionIt.value().is_number()) {
+						position[component] = positionIt.value().get<float>();
+					}
+
+					if (++component > 3) {
+						break;
+					}
+				}
+			}
+
+			m_stateGraph.addConnection(begin, end, position);
 		}
 
 		// Read first state
@@ -151,6 +168,9 @@ void app::MainScene::onInit()
 	catch (const std::runtime_error& e) {
 		printf("Config parsing error: %s\n", e.what());
 	}
+
+	updateControllers();
+	updateMarkers();
 }
 
 void app::MainScene::onUpdate(const float dt)
@@ -162,67 +182,69 @@ void app::MainScene::onUpdate(const float dt)
 
 	updateTransition(dt);
 
-	if (m_inputManager->getKeyDown(ej::Key::T)) {
-		const auto& nextTransition = m_stateGraph.getCurrentState()->connections.front()->name;
-
-		m_stateGraph.startTransition(nextTransition);
-	}
-
-	for (const auto& [controllerIndex, object] : m_controllers) {
-		if (m_vrManager->getButtonDown(controllerIndex, ej::VRButton::k_EButton_SteamVR_Touchpad)) {
-			const auto& nextTransition = m_stateGraph.getCurrentState()->connections.front()->name;
-			m_stateGraph.startTransition(nextTransition);
-		}
+	for (auto& it : m_markers) {
+		it->material->setColor(0.9f, 0.1f, 0.1f);
 	}
 
 	if (m_debugCamera != nullptr) {
 		m_debugCamera->update(dt);
 
-		m_renderingManager->setCurrentFrameBuffer(nullptr);
-
-		const auto& windowSize = m_windowManager->getWindow().getSize();
-		m_renderingManager->setViewport(0, 0, windowSize.x, windowSize.y);
-
-		m_forwardRenderer->setCameraEntity(m_debugCamera->getCameraEntity());
-
-		drawScene();
+		drawDesktop();
 	}
 
 	if (m_vrManager != nullptr) {
 		m_vrManager->update();
 		m_headSet->update(dt);
 
-		for (const auto& index : m_vrManager->getControllerIndices()) {
-			const auto name = m_vrManager->getDeviceRenderModelName(index);
-			m_controllers.try_emplace(index, std::make_unique<SteamVRObject>(getCore(), name));
+		if (m_vrManager->wasDevicesInfoUpdated()) {
+			updateControllers();
 		}
 
-		for (size_t i = 0; i < 2; ++i) {
-			const auto eye = static_cast<vr::EVREye>(i);
-			m_headSet->bindEye(eye);
-			m_forwardRenderer->setCameraEntity(m_headSet->getCameraEntity(eye));
+		handleControllersRaycast();
 
-			// Push all controller models to renderer
-			for (const auto& index : m_vrManager->getControllerIndices()) {
-				const auto it = m_controllers.find(index);
-				if (it == m_controllers.end()) {
-					continue;
-				}
+		drawVR();
+	}
+}
 
-				auto* entity = it->second->getMeshEntity();
+void app::MainScene::drawDesktop()
+{
+	m_renderingManager->setCurrentFrameBuffer(nullptr);
 
-				entity->getTransform().setTransformationMatrix(
-					m_vrManager->getDeviceTransformation(index));
+	const auto& windowSize = m_windowManager->getWindow().getSize();
+	m_renderingManager->setViewport(0, 0, windowSize.x, windowSize.y);
 
-				m_forwardRenderer->push(entity);
+	m_forwardRenderer->setCameraEntity(m_debugCamera->getCameraEntity());
+
+	drawScene();
+}
+
+void app::MainScene::drawVR()
+{
+	for (size_t i = 0; i < 2; ++i) {
+		const auto eye = static_cast<vr::EVREye>(i);
+		m_headSet->bindEye(eye);
+		m_forwardRenderer->setCameraEntity(m_headSet->getCameraEntity(eye));
+
+		// Push all controller models to renderer
+		for (const auto& index : m_vrManager->getControllerIndices()) {
+			const auto it = m_controllers.find(index);
+			if (it == m_controllers.end()) {
+				continue;
 			}
 
-			// Finally draw scene
-			drawScene();
+			auto* entity = it->second->getMeshEntity();
+
+			entity->getTransform().setTransformationMatrix(
+				m_vrManager->getDeviceTransformation(index));
+
+			m_forwardRenderer->push(entity);
 		}
 
-		m_headSet->submit();
+		// Finally draw scene
+		drawScene();
 	}
+
+	m_headSet->submit();
 }
 
 void app::MainScene::drawScene()
@@ -230,7 +252,11 @@ void app::MainScene::drawScene()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	for (auto& it : m_entities) {
-		m_forwardRenderer->push(&it.first);
+		m_forwardRenderer->push(&it->meshEntity);
+	}
+
+	for (auto& it : m_markers) {
+		m_forwardRenderer->push(&it->meshEntity);
 	}
 
 	m_renderingManager->draw();
@@ -238,25 +264,34 @@ void app::MainScene::drawScene()
 
 void app::MainScene::createSkyBox()
 {
-	const auto mesh = getCore().get<ej::MeshManager>()->bind("skybox_mesh", [](const ej::Core& core) {
+	const auto meshName = "skybox";
+
+	auto sceneEntity = std::make_unique<SceneEntity>();
+
+	const auto mesh = getCore().get<ej::MeshManager>()->bind(meshName, [](const ej::Core& core) {
 		auto mesh = std::make_unique<ej::Mesh>(core);
 		mesh->init(ej::MeshGeometry::createCube(glm::vec3(1.0f, 1.0f, 1.0f),
 			ej::MeshGeometry::SIMPLE_VERTEX));
 		return mesh;
-	}).get("skybox_mesh");
+	}).get(meshName);
+	sceneEntity->meshEntity.setMesh(mesh);
 
 	auto material = std::make_unique<SkyBoxMaterial>(getCore());
 	m_skyBoxMaterial = material.get();
+	sceneEntity->meshEntity.setMaterial(material.get());
 
-	ej::MeshEntity entity(mesh, material.get());
-	m_entities.emplace_back(entity, std::move(material));
+	sceneEntity->material = std::move(material);
+
+	m_entities.emplace_back(std::move(sceneEntity));
 }
 
 void app::MainScene::createWireFrame()
 {
 	const auto meshName = "wireframe";
 
-	auto mesh = getCore().get<ej::MeshManager>()->bind(meshName, [](const ej::Core& core) {
+	auto sceneEntity = std::make_unique<SceneEntity>();
+
+	const auto mesh = getCore().get<ej::MeshManager>()->bind(meshName, [](const ej::Core& core) {
 		auto mesh = std::make_unique<ej::Mesh>(core);
 
 		ej::MeshGeometry meshGeometry(ej::MeshGeometry::SIMPLE_VERTEX, GL_LINES);
@@ -290,30 +325,69 @@ void app::MainScene::createWireFrame()
 
 		return mesh;
 	}).get(meshName);
+	sceneEntity->meshEntity.setMesh(mesh);
+
 	auto material = std::make_unique<WireFrameMaterial>(getCore());
-
-	ej::MeshEntity entity{ mesh, material.get() };
-
 	material->setColor(0.1f, 0.6f, 0.6f);
+	sceneEntity->meshEntity.setMaterial(material.get());
 
-	m_entities.emplace_back(entity, std::move(material));
+	sceneEntity->material = std::move(material);
+
+	m_entities.emplace_back(std::move(sceneEntity));
 }
 
-void app::MainScene::createMarker()
+void app::MainScene::createMarker(const std::string& name, const glm::vec3& position)
 {
-	auto mesh = getCore().get<ej::MeshManager>()->bind("test_mesh", "meshes/uv_sphere.obj").get("test_mesh");
-	auto material = std::make_unique<SimpleMeshMaterial>(getCore());
-	ej::MeshEntity entity{ mesh, material.get() };
+	const auto meshName = "marker";
 
-	entity.getTransform()
+	auto marker = std::make_unique<Marker>();
+	marker->stateName = name;
+
+	const auto mesh = getCore().get<ej::MeshManager>()->bind(meshName, "meshes/uv_sphere.obj").get(meshName);
+	marker->meshEntity.setMesh(mesh);
+
+	marker->material = std::make_unique<SimpleMeshMaterial>(getCore());
+	marker->meshEntity.setMaterial(marker->material.get());
+
+	marker->meshEntity.getTransform()
 		.scale(0.5f)
-		.move(0.0f, 0.0f, -5.0f);
+		.move(position);
 
-	material->setColor(0.9f, 0.1f, 0.1f);
+	m_collisionWorld.add(position, 0.5f, marker.get());
 
-	m_entities.emplace_back(entity, std::move(material));
+	m_markers.emplace_back(std::move(marker));
+}
 
-	m_collisionWorld.add(entity.getTransform().getGlobalPosition(), 0.5f, nullptr);
+void app::MainScene::createLine(ej::Transform* parent)
+{
+	const auto meshName = "line";
+
+	auto sceneEntity = std::make_unique<SceneEntity>();
+
+	const auto mesh = getCore().get<ej::MeshManager>()->bind(meshName, [](const ej::Core & core) {
+		auto mesh = std::make_unique<ej::Mesh>(core);
+		ej::MeshGeometry meshGeometry{ ej::MeshGeometry::SIMPLE_VERTEX, GL_LINES };
+
+		meshGeometry.positions = { {0.0f, 0.0f, 0.0f}, { 0.0, 0.0, -1.0f } };
+		meshGeometry.indices = { 0, 1 };
+
+		mesh->init(meshGeometry);
+
+		return mesh;
+	}).get(meshName);
+	sceneEntity->meshEntity.setMesh(mesh);
+
+	auto material = std::make_unique<WireFrameMaterial>(getCore());
+	material->setColor(0.1f, 0.7f, 0.1f);
+	sceneEntity->meshEntity.setMaterial(material.get());
+
+	sceneEntity->material = std::move(material);
+
+	sceneEntity->meshEntity.getTransform()
+		.setParent(parent)
+		.setScale(10.0f);
+
+	m_entities.emplace_back(std::move(sceneEntity));
 }
 
 void app::MainScene::createCamera()
@@ -323,9 +397,53 @@ void app::MainScene::createCamera()
 	m_debugCamera->setRotationSpeed(-0.2f);
 }
 
+void app::MainScene::handleControllersRaycast()
+{
+	for (const auto& [controllerIndex, object] : m_controllers) {
+		const auto& transform = object->getMeshEntity()->getTransform();
+
+		void* data;
+		if (m_collisionWorld.raycast(transform.getGlobalPosition(), glm::vec4(transform.getDirectionFront(), 1.0f), data)) {
+			auto* marker = reinterpret_cast<Marker*>(data);
+			marker->material->setColor(0.9f, 0.3f, 0.3f);
+
+			if (m_vrManager->getButtonDown(controllerIndex, ej::VRButton::k_EButton_SteamVR_Touchpad)) {
+				m_stateGraph.startTransition(marker->stateName);
+
+				clearMarkers();
+			}
+		}
+	}
+}
+
+void app::MainScene::updateMarkers()
+{
+	const auto& currentState = m_stateGraph.getCurrentState();
+
+	clearMarkers();
+
+	if (currentState == nullptr) {
+		return;
+	}
+
+	for (const auto& state : currentState->connections) {
+		createMarker(state.first->name, state.second);
+	}
+}
+
+void app::MainScene::clearMarkers()
+{
+	m_collisionWorld.clear();
+	m_markers.clear();
+}
+
 void app::MainScene::updateTransition(const float dt)
 {
 	m_stateGraph.update(dt);
+
+	if (m_stateGraph.wasTransitionFinished()) {
+		updateMarkers();
+	}
 
 	const auto& transition = m_stateGraph.getCurrentTransition();
 
@@ -344,4 +462,25 @@ void app::MainScene::updateTransition(const float dt)
 	m_skyBoxMaterial->setSkyTexture(textureBegin);
 	m_skyBoxMaterial->setNextSkyTexture(textureEnd);
 	m_skyBoxMaterial->setTransition(transition.value);
+}
+
+void app::MainScene::updateControllers()
+{
+	if (m_vrManager == nullptr || !m_vrManager->isInitialized()) {
+		return;
+	}
+
+	for (const auto& index : m_vrManager->getControllerIndices()) {
+		const auto name = m_vrManager->getDeviceRenderModelName(index);
+
+		const auto it = m_controllers.find(index);
+		if (it != m_controllers.end()) {
+			continue;
+		}
+
+		auto object = std::make_unique<SteamVRObject>(getCore(), name);
+
+		createLine(&object->getMeshEntity()->getTransform());
+		m_controllers.emplace(index, std::move(object));
+	}
 }

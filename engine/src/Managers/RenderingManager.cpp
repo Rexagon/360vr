@@ -69,12 +69,6 @@ void ej::RenderingManager::synchronize()
 	// set current frame buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, m_currentFrameBufferId);
 
-	for (size_t i = 0; i < TEXTURE_COUNT; ++i) {
-		const auto& texture = m_currentTextures[i];
-		glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(i));
-		glBindTexture(texture.first, texture.second);
-	}
-
 	// set active texture unit
 	glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(m_activeTextureUnit));
 }
@@ -378,13 +372,10 @@ void ej::RenderingManager::bindTexture(const Texture * texture, const unsigned i
 {
 	GLenum textureTarget = GL_TEXTURE_2D;
 	GLuint textureId = 0;
+
 	if (texture != nullptr) {
 		textureTarget = texture->getTarget();
 		textureId = texture->getHandle();
-	}
-	else if (unit < TEXTURE_COUNT) {
-		// Don't change cached texture target for nullptr
-		textureTarget = m_currentTextures[unit].first;
 	}
 
 	bindTexture(textureTarget, textureId, unit);
@@ -392,17 +383,9 @@ void ej::RenderingManager::bindTexture(const Texture * texture, const unsigned i
 
 void ej::RenderingManager::bindTexture(const GLenum textureTarget, const GLuint textureId, const unsigned int unit)
 {
-	if (unit < TEXTURE_COUNT) {
-		if (textureTarget == m_currentTextures[unit].first &&
-			textureId == m_currentTextures[unit].second)
-		{
-			return;
-		}
-
-		m_currentTextures[unit].first = textureTarget;
-		m_currentTextures[unit].second = textureId;
-	}
-
 	setActiveTexture(unit);
+
+	//TODO: find way to properly cache textures
+
 	glBindTexture(textureTarget, textureId);
 }

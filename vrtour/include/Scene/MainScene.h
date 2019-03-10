@@ -42,30 +42,55 @@ namespace app
 			std::unique_ptr<Video> m_video;
 		};
 
+		struct SceneEntity
+		{
+			ej::MeshEntity meshEntity;
+			std::unique_ptr<ej::Material> material;
+		};
+
+		struct Marker final
+		{
+			std::string stateName;
+			ej::MeshEntity meshEntity;
+			std::unique_ptr<SimpleMeshMaterial> material;
+		};
+
 	public:
 		void onInit() override;
 
 		void onUpdate(float dt) override;
 
 	private:
+		void drawDesktop();
+		void drawVR();
+
 		void drawScene();
 
 		void createSkyBox();
 		void createWireFrame();
-		void createMarker();
+		void createMarker(const std::string& name, const glm::vec3& position);
+		void createLine(ej::Transform* parent);
 		void createCamera();
 
+		void handleControllersRaycast();
+
+		void updateMarkers();
+		void clearMarkers();
 		void updateTransition(float dt);
+
+		void updateControllers();
 
 		ej::VRManager* m_vrManager = nullptr;
 		ej::InputManager* m_inputManager = nullptr;
 		ej::WindowManager* m_windowManager = nullptr;
 		ej::RenderingManager* m_renderingManager = nullptr;
 
-		StateGraph<Target> m_stateGraph;
+		StateGraph<Target, glm::vec3> m_stateGraph;
 
 		SkyBoxMaterial* m_skyBoxMaterial = nullptr;
-		std::vector<std::pair<ej::MeshEntity, std::unique_ptr<ej::Material>>> m_entities;
+
+		std::vector<std::unique_ptr<SceneEntity>> m_entities;
+		std::vector<std::unique_ptr<Marker>> m_markers;
 
 		std::unordered_map<ej::VRDeviceIndex, std::unique_ptr<SteamVRObject>> m_controllers;
 

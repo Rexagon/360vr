@@ -45,7 +45,7 @@ void ej::VRManager::init()
 
 	m_isInitialized = true;
 
-	updateControllersInfo();
+	updateDevicesInfo();
 }
 
 void ej::VRManager::update()
@@ -57,6 +57,7 @@ void ej::VRManager::update()
 	m_compositor->WaitGetPoses(&m_trackedDevicePoses[0], vr::k_unMaxTrackedDeviceCount, nullptr, 0);
 
 	vr::VREvent_t event{};
+	m_devicesInfoUpdated = false;
 	while (m_system->PollNextEvent(&event, sizeof(event))) {
 		processEvent(event);
 	}
@@ -149,6 +150,11 @@ size_t ej::VRManager::getTrackerCount() const
 const std::vector<ej::VRDeviceIndex>& ej::VRManager::getTrackerIndices() const
 {
 	return m_trackerDevicesIndices;
+}
+
+bool ej::VRManager::wasDevicesInfoUpdated() const
+{
+	return m_devicesInfoUpdated;
 }
 
 glm::mat4 ej::VRManager::getEyeProjectionMatrix(const vr::EVREye eye, const glm::vec2& range) const
@@ -315,7 +321,7 @@ void ej::VRManager::processEvent(const vr::VREvent_t& event)
 	switch (event.eventType) {
 	case vr::VREvent_TrackedDeviceActivated:
 	case vr::VREvent_TrackedDeviceDeactivated:
-		updateControllersInfo();
+		updateDevicesInfo();
 		break;
 
 	case vr::VREvent_ButtonPress:
@@ -335,7 +341,7 @@ void ej::VRManager::processEvent(const vr::VREvent_t& event)
 	}
 }
 
-void ej::VRManager::updateControllersInfo()
+void ej::VRManager::updateDevicesInfo()
 {
 	if (!m_isInitialized) {
 		return;
@@ -351,16 +357,19 @@ void ej::VRManager::updateControllersInfo()
 			m_isHmdConnected = true;
 			m_hmdDeviceIndex = i;
 			printf("HMD index: %d\n", i);
+			m_devicesInfoUpdated = true;
 			break;
 
 		case vr::TrackedDeviceClass_Controller:
 			m_controllerDevicesIndices.push_back(i);
 			printf("Controller index: %d\n", i);
+			m_devicesInfoUpdated = true;
 			break;
 
 		case vr::TrackedDeviceClass_TrackingReference:
 			m_trackerDevicesIndices.push_back(i);
 			printf("Tracker index: %d\n", i);
+			m_devicesInfoUpdated = true;
 			break;
 
 		default: break;

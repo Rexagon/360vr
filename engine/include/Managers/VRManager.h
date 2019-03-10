@@ -106,6 +106,12 @@ namespace ej
 		const std::vector<VRDeviceIndex>& getTrackerIndices() const;
 
 		/**
+		 * \brief Check if any device was detached or attacked since last frame
+		 * \return true if information was updated
+		 */
+		bool wasDevicesInfoUpdated() const;
+
+		/**
 		 * \brief Get eye projection
 		 * \param eye Left or Right eye
 		 * \param range Depth range for projection
@@ -210,7 +216,7 @@ namespace ej
 
 	private:
 		void processEvent(const vr::VREvent_t & event);
-		void updateControllersInfo();
+		void updateDevicesInfo();
 
 		static const size_t DEVICE_COUNT = vr::k_unMaxTrackedDeviceCount;
 
@@ -224,6 +230,8 @@ namespace ej
 		VRDeviceIndex m_hmdDeviceIndex = -1;
 		std::vector<VRDeviceIndex> m_controllerDevicesIndices;
 		std::vector<VRDeviceIndex> m_trackerDevicesIndices;
+
+		bool m_devicesInfoUpdated = false;
 
 		std::array<std::bitset<vr::k_EButton_Max>, DEVICE_COUNT> m_currentButtonsState{};
 		std::array<std::bitset<vr::k_EButton_Max>, DEVICE_COUNT> m_lastButtonsState{};
