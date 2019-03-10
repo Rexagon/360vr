@@ -295,6 +295,7 @@ void ej::RenderingState::bindTexture(const Texture* texture, const unsigned int 
 		textureId = texture->getHandle();
 	}
 	else if (unit < TEXTURE_COUNT) {
+		// Don't change cached texture target for nullptr
 		textureTarget = m_currentTextures[unit].first;
 	}
 
@@ -303,11 +304,15 @@ void ej::RenderingState::bindTexture(const Texture* texture, const unsigned int 
 
 void ej::RenderingState::bindTexture(const GLenum textureTarget, const GLuint textureId, const unsigned int unit)
 {
-	if (unit < TEXTURE_COUNT && 
-		textureTarget == m_currentTextures[unit].first &&
-		textureId == m_currentTextures[unit].second) 
-	{
-		return;
+	if (unit < TEXTURE_COUNT) {
+		if (textureTarget == m_currentTextures[unit].first &&
+			textureId == m_currentTextures[unit].second)
+		{
+			return;
+		}
+
+		m_currentTextures[unit].first = textureTarget;
+		m_currentTextures[unit].second = textureId;
 	}
 
 	setActiveTexture(unit);
