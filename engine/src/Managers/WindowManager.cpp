@@ -15,6 +15,8 @@ ej::WindowManager::WindowManager(const Core& core, const std::string & title, co
 	contextSettings.depthBits = 24;
 	contextSettings.stencilBits = 8;
 
+	contextSettings.antialiasingLevel = 4;
+
 	m_window = std::make_unique<sf::RenderWindow>(videoMode, title, style, contextSettings);
 	m_window->setVerticalSyncEnabled(false);
 }

@@ -9,8 +9,10 @@ app::TextWidget::TextWidget(const ej::Core& core) :
 
 	auto mesh = core.get<ej::MeshManager>()->get(meshName);
 	if (mesh == nullptr) {
-		mesh = core.get<ej::MeshManager>()->bind(meshName, []() {
-			return ej::MeshGeometry(ej::MeshGeometry::TEXTURED_VERTEX);
+		mesh = core.get<ej::MeshManager>()->bind(meshName, [](const ej::Core& core) {
+			auto mesh = std::make_unique<ej::Mesh>(core);
+			mesh->init(ej::MeshGeometry{ ej::MeshGeometry::TEXTURED_VERTEX });
+			return mesh;
 		}).get(meshName);
 	}
 

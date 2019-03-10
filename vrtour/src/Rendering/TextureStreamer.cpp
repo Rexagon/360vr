@@ -1,6 +1,20 @@
 #include "Rendering/TextureStreamer.h"
 
-app::TextureStreamer::TextureStreamer()
+#include <Managers/RenderingManager.h>
+
+app::TextureStreamer::TextureStreamer(const ej::Core& core)
+{
+	m_renderingManager = core.get<ej::RenderingManager>();
+}
+
+app::TextureStreamer::~TextureStreamer()
+{
+	if (m_isInitialized) {
+		glDeleteBuffers(2, m_buffers);
+	}
+}
+
+void app::TextureStreamer::init()
 {
 	glGenBuffers(2, m_buffers);
 
@@ -9,16 +23,15 @@ app::TextureStreamer::TextureStreamer()
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, m_buffers[1]);
 	glBufferData(GL_PIXEL_UNPACK_BUFFER, 800 * 600 * 3, nullptr, GL_STREAM_DRAW);
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
-}
 
-app::TextureStreamer::~TextureStreamer()
-{
-	glDeleteBuffers(2, m_buffers);
+	m_isInitialized = true;
 }
 
 void app::TextureStreamer::write(ej::Texture* texture, VideoStream* stream)
 {
-	//TODO: fix rendering state resynchronization
+	if (!m_isInitialized) {
+		return;
+	}
 
 	if (texture == nullptr || stream == nullptr || 
 		stream->getCurrentDecodingId() == m_decodingId) 
@@ -34,7 +47,8 @@ void app::TextureStreamer::write(ej::Texture* texture, VideoStream* stream)
 	m_currentBufferIndex = (m_currentBufferIndex + 1) % 2;
 	const auto nextBufferIndex = (m_currentBufferIndex + 1) % 2;
 
-	glBindTexture(GL_TEXTURE_2D, texture->getHandle());
+	m_renderingManager->bindTexture(GL_TEXTURE_2D, texture->getHandle(),
+		DEFAULT_TEXTURE_UNIT);
 
 	const auto size = stream->getBufferSize();
 
@@ -56,6 +70,9 @@ void app::TextureStreamer::write(ej::Texture* texture, VideoStream* stream)
 	}
 
 	glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+}
 
-	glBindTexture(GL_TEXTURE_2D, 0);
+bool app::TextureStreamer::isInitialized() const
+{
+	return m_isInitialized;
 }

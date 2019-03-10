@@ -1,7 +1,8 @@
 #include "Rendering/TextMaterial.h"
 
-#include <Managers/RenderingManager.h>
+#include <Rendering/UIRenderer.h>
 #include <Managers/TextureManager.h>
+#include <Managers/RenderingManager.h>
 
 app::TextMaterial::TextMaterial(const ej::Core& core) :
 	Material(core)
@@ -18,20 +19,20 @@ app::TextMaterial::TextMaterial(const ej::Core& core) :
 	m_shader->setAttribute(0, "vPosition");
 	m_shader->setAttribute(1, "vTexCoords");
 
-	m_renderingManager->getState()->setCurrentShader(m_shader);
+	m_renderingManager->setCurrentShader(m_shader);
 	m_shader->setUniform("uTexture", 3);
+
+	m_renderingParameters = ej::UIRenderer::createRenderingParameters();
 }
 
 void app::TextMaterial::bind()
 {
-	auto state = m_renderingManager->getState();
-
 	if (m_texture != nullptr) {
-		state->setActiveTexture(3);
-		glBindTexture(GL_TEXTURE_2D, m_texture->getNativeHandle());
+		m_renderingManager->bindTexture(GL_TEXTURE_2D, 
+			m_texture->getNativeHandle(), DEFAULT_TEXTURE_UNIT);
 	}
 
-	state->setCurrentShader(m_shader);
+	m_renderingManager->setCurrentShader(m_shader);
 
 	m_shader->setUniform("uColor", m_color);
 	m_shader->setUniform("uHasTexture", static_cast<int>(m_texture != nullptr));

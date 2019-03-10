@@ -1,8 +1,30 @@
 {
 	"urls": {
-		"insta 360": "rtmp://rtuitlab.ru/stream/test"
+		"insta 360": "rtmp://rtuitlab.ru/stream/test",
+		"japan tv": "http://192.240.127.34:1935/live/cs14.stream/playlist.m3u8",
+		"film": "rtmp://184.72.239.149/vod/BigBuckBunny_115k.mov"
 	},
-	"japan tv": "http://192.240.127.34:1935/live/cs14.stream/playlist.m3u8",
-	"insta 360": "rtmp://rtuitlab.ru/stream/test",
-	"strange": "http://192.240.127.34:1935/live/cs19.stream/playlist.m3u8"
+	"begin": "insta 360",
+	"transitions": [
+		{
+			"begin": "insta 360",
+			"end": "japan tv",
+			"position": [0, 2, -5]
+		},
+		{
+			"begin": "japan tv",
+			"end": "film",
+			"position": [-5, 2, 0]
+		},
+		{
+			"begin": "japan tv",
+			"end": "insta 360",
+			"position": [3, 2, 0]
+		},
+		{
+			"begin": "film",
+			"end": "japan tv",
+			"position": [-3, -1, -2]
+		}
+	]
 }

@@ -1,9 +1,11 @@
 #version 330
 
+in vec3 fPosition;
 in vec2 fTexCoords;
 in vec3 fNormal;
 
 uniform sampler2D uDiffuseTexture;
+uniform vec3 uCameraPosition;
 uniform vec4 uColor;
 uniform ivec2 uTextureFlip;
 uniform int uHasTexture;
@@ -26,5 +28,9 @@ void main()
     diffuse *= texture(uDiffuseTexture, texCoords);
   }
 
-  color = diffuse.rgb;
+  vec3 lightDirection = uCameraPosition - fPosition;
+  float light = clamp(dot(normalize(lightDirection), normalize(fNormal)), 0.0, 1.0);
+  light = 0.1 + 0.9 * light;
+
+  color = diffuse.rgb * light;
 }

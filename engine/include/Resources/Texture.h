@@ -9,7 +9,7 @@
 
 namespace ej 
 {
-	class RenderingState;
+	class RenderingManager;
 
 	/**
 	 * \brief Image living on the graphics card that can be used for drawing
@@ -180,7 +180,7 @@ namespace ej
 
 		bool m_initialized = false;
 
-		RenderingState* m_renderingState = nullptr;
+		RenderingManager* m_renderingManager = nullptr;
 
 		GLuint m_id = 0;
 		GLenum m_target = GL_TEXTURE_2D;

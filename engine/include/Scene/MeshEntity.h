@@ -9,7 +9,7 @@ namespace ej
 	class MeshEntity final : public Entity
 	{
 	public:
-		MeshEntity(Mesh* mesh, Material* material);
+		explicit MeshEntity(Mesh* mesh = nullptr, Material* material = nullptr);
 
 		void setMesh(Mesh* mesh);
 		Mesh* getMesh() const;

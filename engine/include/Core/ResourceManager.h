@@ -23,7 +23,7 @@ namespace ej
 		using ResourceType = T;
 		using FactoryDataType = F;
 
-		using GenericLoader = std::function<std::unique_ptr<T>()>;
+		using GenericLoader = std::function<std::unique_ptr<T>(const Core&)>;
 
 		/**
 		 * \param core Owner of this manager
@@ -104,7 +104,7 @@ T* ej::ResourceManager<M, T, F>::get(const std::string& name)
 					data = load(arg);
 				}
 				else if constexpr (std::is_same_v<FT, GenericLoader>) {
-					data = arg();
+					data = arg(m_core);
 				}
 			}, it->second);
 

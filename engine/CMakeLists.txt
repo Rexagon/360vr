@@ -18,7 +18,6 @@ set(SOURCES
 	"${SOURCE_DIR}/Rendering/ForwardRenderer.cpp"
 	"${SOURCE_DIR}/Rendering/FrameBuffer.cpp"
 	"${SOURCE_DIR}/Rendering/Renderer.cpp"
-	"${SOURCE_DIR}/Rendering/RenderingState.cpp"
 	"${SOURCE_DIR}/Rendering/UIRenderer.cpp"
 
 	"${SOURCE_DIR}/Resources/Material.cpp"

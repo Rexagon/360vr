@@ -11,6 +11,8 @@ namespace ej
 	class ForwardRenderer final : public Renderer
 	{
 	public:
+		static RenderingParameters createRenderingParameters();
+
 		/**
 		 * \param core Owner of this manager
 		 */

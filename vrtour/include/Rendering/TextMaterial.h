@@ -22,6 +22,8 @@ namespace app
 		void setTexture(const sf::Texture* texture);
 
 	private:
+		static const unsigned DEFAULT_TEXTURE_UNIT = 4;
+
 		const sf::Texture* m_texture = nullptr;
 		glm::vec4 m_color{ 1.0f };
 	};

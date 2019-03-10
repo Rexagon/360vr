@@ -1,5 +1,7 @@
 #include "Scene/HeadSet.h"
 
+#include <Managers/RenderingManager.h>
+
 app::HeadSet::HeadSet(const ej::Core & core) :
 	m_cameraEntities{ ej::CameraEntity(&m_cameras[0]), ej::CameraEntity(&m_cameras[1]) },
 	m_eyeBuffers{ ej::FrameBuffer(core), ej::FrameBuffer(core) }
@@ -37,12 +39,10 @@ void app::HeadSet::update(const float dt)
 
 void app::HeadSet::bindEye(const vr::EVREye eye)
 {
-	auto state = m_renderingManager->getState();
-
-	state->setCurrentFrameBuffer(&m_eyeBuffers[eye]);
+	m_renderingManager->setCurrentFrameBuffer(&m_eyeBuffers[eye]);
 
 	const auto& size = m_eyeBuffers[eye].getColorTexture().getSize();
-	state->setViewport(0, 0, size.x, size.y);
+	m_renderingManager->setViewport(0, 0, size.x, size.y);
 }
 
 void app::HeadSet::submit()

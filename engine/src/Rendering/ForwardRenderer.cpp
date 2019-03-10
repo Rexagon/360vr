@@ -2,6 +2,15 @@
 
 #include "Managers/RenderingManager.h"
 
+ej::RenderingParameters ej::ForwardRenderer::createRenderingParameters()
+{
+	RenderingParameters renderingParameters;
+	renderingParameters.isDepthTestEnabled = true;
+	renderingParameters.isDepthWriteEnabled = true;
+	renderingParameters.isBlendingEnabled = false;
+	return renderingParameters;
+}
+
 ej::ForwardRenderer::ForwardRenderer(const Core& core) :
 	Renderer(core)
 {
@@ -13,12 +22,6 @@ void ej::ForwardRenderer::draw()
 		m_entities.clear();
 		return;
 	}
-
-	auto state = m_renderingManager->getState();
-
-	state->setDepthTestEnabled(true);
-	state->setFaceCullingEnabled(true);
-	state->setBlendingEnabled(false);
 
 	const auto& camera = m_cameraEntity->getCamera();
 	const auto& cameraTransform = m_cameraEntity->getTransform();
@@ -32,16 +35,19 @@ void ej::ForwardRenderer::draw()
 
 		const auto& meshTransform = entity->getTransform();
 
-		entity->getMaterial()->bind();
+		const auto& material = entity->getMaterial();
+		m_renderingManager->apply(material->getRenderingParameters());
+		material->bind();
 
 		auto shader = entity->getMaterial()->getShader();
-		state->setCurrentShader(shader);
+		m_renderingManager->setCurrentShader(shader);
 
 		shader->setUniform("uCameraViewMatrix", camera->getViewMatrix());
 		shader->setUniform("uCameraProjectionMatrix", camera->getProjectionMatrix());
 		shader->setUniform("uCameraViewProjectionMatrix", camera->getViewProjectionMatrix());
 		shader->setUniform("uCameraRotationMatrix", cameraTransform.getGlobalRotationMatrixInverse());
 		shader->setUniform("uCameraPosition", cameraTransform.getGlobalPosition());
+		shader->setUniform("uCameraDirection", cameraTransform.getDirectionFront());
 
 		shader->setUniform("uMeshTransformation", meshTransform.getGlobalTransformationMatrix());
 		shader->setUniform("uMeshPosition", meshTransform.getGlobalPosition());

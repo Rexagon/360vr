@@ -7,10 +7,12 @@
 
 namespace ej
 {
+	class FileManager;
+
 	/**
 	 * \brief Manage meshes
 	 */
-	class MeshManager final : public ResourceManager<MeshManager, Mesh, std::function<MeshGeometry()>>
+	class MeshManager final : public ResourceManager<MeshManager, Mesh>
 	{
 	public:
 
@@ -22,9 +24,11 @@ namespace ej
 	private:
 		/**
 		 * \brief Load mesh
-		 * \param loader Loader function
+		 * \param filename OBJ file name
 		 * \return Mesh
 		 */
-		std::unique_ptr<Mesh> load(const std::function<MeshGeometry()>& loader) override;
+		std::unique_ptr<Mesh> load(const std::string& filename) override;
+
+		FileManager* m_fileManager = nullptr;
 	};
 }

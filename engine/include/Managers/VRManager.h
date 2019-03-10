@@ -70,6 +70,30 @@ namespace ej
 		const std::vector<VRDeviceIndex>& getControllerIndices() const;
 
 		/**
+		 * \brief Get key state
+		 * \param device Device index
+		 * \param button Button code
+		 * \return true if pressed
+		 */
+		bool getButton(VRDeviceIndex device, VRButton button) const;
+
+		/**
+		 * \brief Check if key was pressed since last frame
+		 * \param device Device index
+		 * \param button Button code
+		 * \return true if pressed
+		 */
+		bool getButtonDown(VRDeviceIndex device, VRButton button) const;
+
+		/**
+		 * \brief Check if key was released since last frame
+		 * \param device Device index
+		 * \param button Button code
+		 * \return true if released
+		 */
+		bool getButtonUp(VRDeviceIndex device, VRButton button) const;
+
+		/**
 		 * \brief Get active tracking camera count
 		 * \return Active tracking camera count
 		 */
@@ -80,6 +104,12 @@ namespace ej
 		 * \return Const reference to active tracking cameras
 		 */
 		const std::vector<VRDeviceIndex>& getTrackerIndices() const;
+
+		/**
+		 * \brief Check if any device was detached or attacked since last frame
+		 * \return true if information was updated
+		 */
+		bool wasDevicesInfoUpdated() const;
 
 		/**
 		 * \brief Get eye projection
@@ -186,7 +216,7 @@ namespace ej
 
 	private:
 		void processEvent(const vr::VREvent_t & event);
-		void updateControllersInfo();
+		void updateDevicesInfo();
 
 		static const size_t DEVICE_COUNT = vr::k_unMaxTrackedDeviceCount;
 
@@ -200,6 +230,8 @@ namespace ej
 		VRDeviceIndex m_hmdDeviceIndex = -1;
 		std::vector<VRDeviceIndex> m_controllerDevicesIndices;
 		std::vector<VRDeviceIndex> m_trackerDevicesIndices;
+
+		bool m_devicesInfoUpdated = false;
 
 		std::array<std::bitset<vr::k_EButton_Max>, DEVICE_COUNT> m_currentButtonsState{};
 		std::array<std::bitset<vr::k_EButton_Max>, DEVICE_COUNT> m_lastButtonsState{};

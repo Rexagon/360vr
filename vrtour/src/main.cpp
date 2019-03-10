@@ -65,7 +65,6 @@ private:
 	app::UIManager* m_uiManager;
 	ej::InputManager* m_inputManager;
 	ej::SceneManager* m_sceneManager;
-
 };
 
 EJ_MAIN(MyCore);

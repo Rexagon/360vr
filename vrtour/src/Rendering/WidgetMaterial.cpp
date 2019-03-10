@@ -1,7 +1,8 @@
 #include "Rendering/WidgetMaterial.h"
 
-#include <Managers/RenderingManager.h>
+#include <Rendering/UIRenderer.h>
 #include <Managers/TextureManager.h>
+#include <Managers/RenderingManager.h>
 
 app::WidgetMaterial::WidgetMaterial(const ej::Core& core) :
 	Material(core)
@@ -20,18 +21,17 @@ app::WidgetMaterial::WidgetMaterial(const ej::Core& core) :
 
 	m_texture = core.get<ej::TextureManager>()->get("carpet");
 
-	m_renderingManager->getState()->setCurrentShader(m_shader);
+	m_renderingManager->setCurrentShader(m_shader);
 	m_shader->setUniform("uTexture", 3);
+
+	m_renderingParameters = ej::UIRenderer::createRenderingParameters();
 }
 
 void app::WidgetMaterial::bind()
 {
-	auto state = m_renderingManager->getState();
+	m_renderingManager->bindTexture(m_texture, 5);
 
-	state->bindTexture(m_texture, 3);
-
-	state->setCurrentShader(m_shader);
-
+	m_renderingManager->setCurrentShader(m_shader);
 	m_shader->setUniform("uColor", m_color);
 	m_shader->setUniform("uHasTexture", static_cast<int>(m_texture != nullptr));
 }

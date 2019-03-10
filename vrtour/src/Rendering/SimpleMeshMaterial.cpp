@@ -1,5 +1,6 @@
 #include "Rendering/SimpleMeshMaterial.h"
 
+#include <Rendering/ForwardRenderer.h>
 #include <Managers/RenderingManager.h>
 
 app::SimpleMeshMaterial::SimpleMeshMaterial(const ej::Core& core, ej::Texture* diffuseTexture) :
@@ -18,19 +19,18 @@ app::SimpleMeshMaterial::SimpleMeshMaterial(const ej::Core& core, ej::Texture* d
 	m_shader->setAttribute(1, "vTexCoords");
 	m_shader->setAttribute(2, "vNormal");
 
-	m_renderingManager->getState()->setCurrentShader(m_shader);
+	m_renderingManager->setCurrentShader(m_shader);
 	m_shader->setUniform("uDiffuseTexture", 0);
+
+	m_renderingParameters = ej::ForwardRenderer::createRenderingParameters();
+	m_renderingParameters.faceCullingSide = GL_BACK;
 }
 
 void app::SimpleMeshMaterial::bind()
 {
-	auto state = m_renderingManager->getState();
+	m_renderingManager->bindTexture(m_diffuseTexture, 0);
 
-	state->setFaceCullingSide(GL_BACK);
-	state->bindTexture(m_diffuseTexture, 0);
-
-	state->setCurrentShader(m_shader);
-
+	m_renderingManager->setCurrentShader(m_shader);
 	m_shader->setUniform("uColor", m_color);
 	m_shader->setUniform("uTextureFlip", m_textureFlip);
 	m_shader->setUniform("uHasTexture", static_cast<int>(m_diffuseTexture != nullptr));

@@ -12,3 +12,8 @@ ej::Shader* ej::Material::getShader() const
 {
 	return m_shader;
 }
+
+const ej::RenderingParameters& ej::Material::getRenderingParameters() const
+{
+	return m_renderingParameters;
+}
