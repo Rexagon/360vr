@@ -38,3 +38,6 @@ ipch/
 *.pdb
 *.db
 log.txt
+
+.idea
+cmake-build-*

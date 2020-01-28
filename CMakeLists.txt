@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 
-project(360vr VERSION 0.1 LANGUAGES CXX)
+project(360vr VERSION 0.1)
 
 if (NOT WIN32)
   message(FATAL_ERROR "This project currently supports only windows")
